@@ -52,15 +52,17 @@ function LinkButton({
   return (
     <Link
       href={href}
-      className="group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+      className="group rounded-lg border  border-gray-200 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100"
     >
-      <h2 className="mb-1 text-base font-semibold">
+      <h2 className="mb-1 text-base font-semibold text-black">
         {title}{' '}
         <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
           -&gt;
         </span>
       </h2>
-      <p className="m-0 max-w-[30ch] text-xs opacity-50">{description}</p>
+      <p className="m-0 max-w-[30ch] text-xs opacity-50 text-gray-600">
+        {description}
+      </p>
     </Link>
   );
 }
