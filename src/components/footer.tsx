@@ -3,17 +3,39 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-      <LinkButton
-        title="Forms"
-        description="Build forms with Frigade"
-        href="/forms"
-      />
-      <LinkButton
-        title="Tours"
-        description="Build tours with Frigade"
-        href="/tours"
-      />
+    <div className="w-full bg-white border-t border-[#E5E5E5] flex justify-center">
+      <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-6 text-left p-4 gap-6">
+        <LinkButton
+          title="Forms"
+          description="Powerful Inline Forms"
+          href="/forms"
+        />
+        <LinkButton
+          title="Forms"
+          description="Powerful Inline Forms"
+          href="/forms"
+        />
+        <LinkButton
+          title="Forms"
+          description="Powerful Inline Forms"
+          href="/forms"
+        />
+        <LinkButton
+          title="Forms"
+          description="Powerful Inline Forms"
+          href="/forms"
+        />
+        <LinkButton
+          title="Forms"
+          description="Powerful Inline Forms"
+          href="/forms"
+        />
+        <LinkButton
+          title="Forms"
+          description="Powerful Inline Forms"
+          href="/forms"
+        />
+      </div>
     </div>
   );
 }
@@ -30,15 +52,15 @@ function LinkButton({
   return (
     <Link
       href={href}
-      className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+      className="group rounded-lg border px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
     >
-      <h2 className="mb-3 text-2xl font-semibold">
+      <h2 className="mb-3 text-base font-semibold">
         {title}{' '}
         <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
           -&gt;
         </span>
       </h2>
-      <p className="m-0 max-w-[30ch] text-sm opacity-50">{description}</p>
+      <p className="m-0 max-w-[30ch] text-xs opacity-50">{description}</p>
     </Link>
   );
 }
