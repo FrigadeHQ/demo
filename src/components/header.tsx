@@ -1,8 +1,7 @@
 import React from 'react';
-import {Badge} from "@/components/ui/badge"
-import {Button} from "@/components/ui/button"
-import Link from "next/link";
-
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export function Header() {
   return (
@@ -10,22 +9,49 @@ export function Header() {
       <div className="z-10 w-full max-w-7xl items-center justify-between p-6 xl:px-0 text-sm flex">
         <div className="flex items-center dark:via-black static size-auto gap-2">
           <img src="/images/frigade.svg"></img>
-          <Badge className="px-2 py-0.5 mt-0.5 bg-blue-600 border-none">
-            <span className='text-[9px]'>Demo</span>
+          <Badge className="px-2 py-0.5 mt-0.5 bg-blue-600 border-none text-white">
+            <span className="text-[9px]">Demo</span>
           </Badge>
         </div>
 
         <div className="flex items-center dark:via-black static size-auto gap-6">
-          <Link href="https://frigade.com?ref=demo" target="_blank" className="m-0 max-w-[30ch] lg:display text-sm font-medium hover:text-blue-500">Website</Link>
-          <Link href="https://docs.frigade.com?ref=demo" target="_blank" className="m-0 max-w-[30ch] hidden md:block text-sm font-medium hover:text-blue-500">Docs</Link>
+          <HeaderLink href={'https://frigade.com?ref=demo'}>Website</HeaderLink>
+          <HeaderLink href={'https://docs.frigade.com?ref=demo'}>
+            Docs
+          </HeaderLink>
           {/*TODO Add Github link*/}
-          <Link href="https://github.com" target="_blank" className="m-0 max-w-[30ch] hidden md:block text-sm font-medium hover:text-blue-500">Github</Link>
-          {/*TODO Add Github link*/}
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-            <Link href="https://app.frigade.com/sign-up?ref=demo" target='_blank'>Get Started</Link>
+          <HeaderLink href={'https://github.com'}>Github</HeaderLink>
+          <Button
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Link
+              href="https://app.frigade.com/sign-up?ref=demo"
+              target="_blank"
+            >
+              Get Started
+            </Link>
           </Button>
         </div>
       </div>
     </div>
+  );
+}
+
+function HeaderLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      className="m-0 max-w-[30ch] lg:display text-sm font-medium hover:text-blue-500 text-black"
+    >
+      {children}
+    </Link>
   );
 }
