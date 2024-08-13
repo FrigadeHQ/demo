@@ -1,3 +1,5 @@
+'use client';
+
 import * as Frigade from '@frigade/react';
 import { useFlow, useUser } from '@frigade/react';
 import { Progress } from '@/components/ui/progress';
