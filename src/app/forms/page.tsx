@@ -16,13 +16,7 @@ export default function Forms() {
     100;
   return (
     <>
-      <div
-        className="container relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0 overflow-y-scroll"
-        style={{
-          height: 'calc(100vh - 70px)',
-          paddingBottom: '70px',
-        }}
-      >
+      <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0 overflow-y-scroll">
         <div className="col-span-4">
           <Card className="md:w-[500px] w-full flex flex-col justify-center mx-auto shadow-sm pb-5 overflow-hidden">
             <Progress value={progress} className="rounded-none" />
