@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-
-import * as Frigade from '@frigade/react';
 import { NextUIProvider } from '@nextui-org/react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import * as Frigade from '@frigade/react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   if (typeof process.env.NEXT_PUBLIC_FRIGADE_API_KEY === 'undefined') {
