@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -17,11 +18,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useTheme } from 'next-themes';
 
 const frameworks = [
   {
-    value: 'default',
-    label: 'Default',
+    value: 'light',
+    label: 'Light',
   },
   {
     value: 'dark',
@@ -30,8 +32,20 @@ const frameworks = [
 ];
 
 export function ThemeDropdown() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('');
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(theme ?? 'light');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    setTheme(value);
+  }, [setTheme, value]);
+
+  if (!mounted) return null;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -53,10 +67,10 @@ export function ThemeDropdown() {
           <CommandList>
             <CommandEmpty>No framework found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {frameworks.map((themes) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={themes.value}
+                  value={themes.value}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? '' : currentValue);
                     setOpen(false);
@@ -65,10 +79,10 @@ export function ThemeDropdown() {
                   <Check
                     className={cn(
                       'mr-2 h-4 w-4',
-                      value === framework.value ? 'opacity-100' : 'opacity-0',
+                      value === themes.value ? 'opacity-100' : 'opacity-0',
                     )}
                   />
-                  {framework.label}
+                  {themes.label}
                 </CommandItem>
               ))}
             </CommandGroup>

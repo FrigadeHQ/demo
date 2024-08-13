@@ -3,6 +3,8 @@
 import React from 'react';
 
 import * as Frigade from '@frigade/react';
+import { NextUIProvider } from '@nextui-org/react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   if (typeof process.env.NEXT_PUBLIC_FRIGADE_API_KEY === 'undefined') {
@@ -12,8 +14,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-      <Frigade.Provider apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}>
+    <NextUIProvider>
+      <NextThemesProvider attribute="class" defaultTheme="light">
+        <Frigade.Provider apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}>
           {children}
-      </Frigade.Provider>
+        </Frigade.Provider>
+      </NextThemesProvider>
+    </NextUIProvider>
   );
 }
