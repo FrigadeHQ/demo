@@ -12,8 +12,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <Frigade.Provider apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}>
-      {children}
-    </Frigade.Provider>
+      <Frigade.Provider apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}>
+          {children}
+      </Frigade.Provider>
   );
 }
