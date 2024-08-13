@@ -1,20 +1,57 @@
 'use client';
 
 import * as Frigade from '@frigade/react';
-import { useFlow, useUser } from '@frigade/react';
+import { useFlow } from '@frigade/react';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 export default function Forms() {
   const ONBOARDING_FORM_FLOW_ID = 'flow_kTB2fci9';
   const { flow } = useFlow(ONBOARDING_FORM_FLOW_ID);
-  const { addProperties } = useUser();
+  const [isPaused, setIsPaused] = useState(false);
   const progress =
-    ((flow?.getNumberOfCompletedSteps() || 0) /
+    (Math.max(flow?.getCurrentStepIndex() || 0, 0.05) /
       (flow?.getNumberOfAvailableSteps() || 1)) *
     100;
+
+  if (!flow) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (flow?.isCompleted) {
+    return (
+      <div className="flex items-center justify-center w-full h-full flex-col gap-4">
+        <h1>Flow is completed</h1>
+        <Button onClick={() => flow?.restart()}>Restart form</Button>
+      </div>
+    );
+  }
+
+  if (isPaused) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <div className="w-[300px] text-sm flex flex-col gap-4">
+          <div>
+            <strong>{flow?.getCurrentStepIndex()}</strong> of{' '}
+            <strong>{flow?.getNumberOfAvailableSteps()} steps completed</strong>
+          </div>
+          <Progress value={progress} />
+
+          <Button onClick={() => setIsPaused(false)} size="sm">
+            Resume
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0 overflow-y-scroll">
@@ -71,7 +108,12 @@ export default function Forms() {
                       // },
                     }}
                   />
-                  <Button variant="link">
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      setIsPaused(true);
+                    }}
+                  >
                     <p className="text-sm text-muted-foreground">
                       Skip for now
                     </p>
