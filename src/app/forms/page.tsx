@@ -35,8 +35,11 @@ export default function Forms() {
   if (flow?.isCompleted) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
-        <h1>Flow is completed</h1>
-        <Button onClick={() => flow?.restart()}>Restart form</Button>
+        {/*<h1>Form completed</h1>*/}
+        <div className="flex gap-2">
+          <Button onClick={() => flow?.restart()}>Restart form</Button>
+          <Button onClick={() => flow?.restart()}>Restart form</Button>
+        </div>
       </div>
     );
   }
@@ -50,7 +53,7 @@ export default function Forms() {
             <strong>{flow?.getNumberOfAvailableSteps()}</strong> steps completed
           </div>
 
-          <Progress value={progress} />
+          {/*<Progress value={progress} />*/}
 
           <Button onClick={() => setIsPaused(false)} size="sm">
             Resume form

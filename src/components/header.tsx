@@ -9,8 +9,8 @@ export function Header() {
       <div className="z-10 w-full max-w-7xl items-center justify-between p-6 xl:px-0 text-sm flex">
         <div className="flex items-center dark:via-black static size-auto gap-2">
           <img src="/images/frigade.svg"></img>
-          <Badge className="px-2 py-0.5 mt-0.5 bg-blue-600 border-none text-white">
-            <span className="text-[9px]">Demo</span>
+          <Badge className="px-2 py-0.5 mt-0.5 bg-blue-600 hover:bg-blue-600 border-none text-white">
+            <span className="text-[10px]">Demo</span>
           </Badge>
         </div>
 
