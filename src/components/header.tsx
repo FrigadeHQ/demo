@@ -23,7 +23,7 @@ export function Header() {
           <HeaderLink href={'https://github.com'}>Github</HeaderLink>
           <Button
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-blue-600 hover:bg-blue-700 text-white hover:border-blue-700"
           >
             <Link
               href="https://app.frigade.com/sign-up?ref=demo"

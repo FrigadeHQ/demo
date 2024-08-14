@@ -15,7 +15,33 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <NextUIProvider>
       <NextThemesProvider attribute="class" defaultTheme="light">
-        <Frigade.Provider apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}>
+        <Frigade.Provider
+          apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}
+          theme={{
+            colors: {
+              primary: {
+                background: 'hsl(var(--primary))',
+                surface: 'hsl(var(--primary))',
+                border: 'hsl(var(--primary))',
+                hover: {
+                  background: 'hsl(var(--primary) / 0.9)',
+                  surface: 'hsl(var(--primary) / 0.9)',
+                  border: 'hsl(var(--primary) / 0.9)',
+                },
+              },
+              secondary: {
+                background: 'hsl(var(--secondary))',
+                surface: 'hsl(var(--secondary))',
+                border: 'hsl(var(--secondary))',
+                hover: {
+                  background: 'hsl(var(--secondary) / 0.8)',
+                  surface: 'hsl(var(--secondary) / 0.8)',
+                  border: 'hsl(var(--secondary) / 0.8)',
+                },
+              },
+            },
+          }}
+        >
           {children}
         </Frigade.Provider>
       </NextThemesProvider>
