@@ -13,12 +13,12 @@ export function Footer() {
         <LinkButton
           title="Tours"
           description="Powerful Inline Forms"
-          href="/forms"
+          href="/tours"
         />
         <LinkButton
           title="Cards"
           description="Powerful Inline Forms"
-          href="/forms"
+          href="/cards"
         />
         <LinkButton
           title="Modals"

@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { MovieTypeaheadField } from '@/components/movie-typeahead-field';
 
+const FORM_FLOW_ID = 'flow_kTB2fci9';
+
 export default function Forms() {
-  const ONBOARDING_FORM_FLOW_ID = 'flow_kTB2fci9';
-  const { flow } = useFlow(ONBOARDING_FORM_FLOW_ID);
+  const { flow } = useFlow(FORM_FLOW_ID);
   const [isPaused, setIsPaused] = useState(false);
   const progress =
     (Math.max(flow?.getCurrentStepOrder() || 0, 0.3) /
@@ -31,8 +32,19 @@ export default function Forms() {
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
         {/*<h1>Form completed</h1>*/}
         <div className="flex gap-2">
-          <Button onClick={() => flow?.restart()}>Restart form</Button>
-          <Button onClick={() => flow?.restart()}>Restart form</Button>
+          <Button variant="outline" onClick={() => flow?.restart()}>
+            Restart form
+          </Button>
+          <Button
+            onClick={() =>
+              window.open(
+                'https://app.frigade.com/sign-up?ref=demo_forms',
+                '_blank',
+              )
+            }
+          >
+            Start building
+          </Button>
         </div>
       </div>
     );
@@ -71,7 +83,7 @@ export default function Forms() {
               ) : (
                 <div className="flex-col justify-center w-full relative">
                   <Frigade.Form
-                    flowId={ONBOARDING_FORM_FLOW_ID}
+                    flowId={FORM_FLOW_ID}
                     className="onboarding-form pt-12"
                     fieldTypes={{
                       'movie-typeahead': MovieTypeaheadField,
