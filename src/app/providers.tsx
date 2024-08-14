@@ -39,6 +39,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   border: 'hsl(var(--secondary) / 0.8)',
                 },
               },
+              neutral: {
+                foreground: 'hsl(var(--neutral-foreground))',
+                '400': 'hsl(var(--neutral-400))',
+              },
             },
           }}
         >
