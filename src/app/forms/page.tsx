@@ -1,7 +1,14 @@
 'use client';
 
 import * as Frigade from '@frigade/react';
-import { useFlow } from '@frigade/react';
+import {
+  BaseField,
+  Box,
+  FormFieldProps,
+  Image,
+  Text,
+  useFlow,
+} from '@frigade/react';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
@@ -69,6 +76,9 @@ export default function Forms() {
                   <Frigade.Form
                     flowId={ONBOARDING_FORM_FLOW_ID}
                     className="onboarding-form pt-12"
+                    fieldTypes={{
+                      'icon-field': IconField,
+                    }}
                     css={{
                       '.fr-form-step-footer': {
                         marginTop: '25px',
@@ -94,14 +104,8 @@ export default function Forms() {
                       '.fr-field-input, .fr-field-select': {
                         height: '38px',
                       },
-                      '.fr-field-radio:hover, .fr-field-check:hover': {
-                        borderColor: 'var(--fr-colors-primary-background)',
-                      },
                       '.fr-field-label-required': {
                         display: 'none',
-                      },
-                      '.fr-field-select-icon': {
-                        color: 'var(--fr-colors-neutral-foreground)',
                       },
                       '.fr-field-radio': {
                         cursor: 'pointer',
@@ -109,10 +113,6 @@ export default function Forms() {
                       '.fr-field-check, .fr-field-radio': {
                         height: '38px',
                       },
-                      // FIXME/HELPME: @micah for some reason this doesn't work.
-                      // '.fr-field-select-option:hover': {
-                      //   backgroundColor: 'var(--fr-colors-secondary-hover-background)',
-                      // },
                     }}
                   />
                   <div className="absolute left-0 bottom-0">
@@ -129,9 +129,6 @@ export default function Forms() {
             </div>
             <style>
               {`
-                .fr-field-select-option:hover {
-                  background-color: var(--fr-colors-secondary-hover-background);
-                }
                 .fr-field-select-option {
                   height: 38px;
                 }
@@ -145,5 +142,32 @@ export default function Forms() {
         </div>
       </div>
     </>
+  );
+}
+
+function IconField(props: FormFieldProps) {
+  return (
+    <BaseField {...props}>
+      {(fieldProps) => (
+        <Box position="relative">
+          <Image
+            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWRvbGxhci1zaWduIj48bGluZSB4MT0iMTIiIHgyPSIxMiIgeTE9IjIiIHkyPSIyMiIvPjxwYXRoIGQ9Ik0xNyA1SDkuNWEzLjUgMy41IDAgMCAwIDAgN2g1YTMuNSAzLjUgMCAwIDEgMCA3SDYiLz48L3N2Zz4="
+            alt="icon"
+            width="16"
+            height="16"
+            position="absolute"
+            top="calc(50% - 8px)"
+            left="8px"
+          />
+          <Text.Body2
+            as="input"
+            part="field-text"
+            type="text"
+            pl="24px"
+            {...fieldProps}
+          />
+        </Box>
+      )}
+    </BaseField>
   );
 }
