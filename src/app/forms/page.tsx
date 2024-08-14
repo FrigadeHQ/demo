@@ -64,16 +64,19 @@ export default function Forms() {
                   <Spinner />
                 </div>
               ) : (
-                <div className="flex-col justify-center w-full">
+                <div className="flex-col justify-center w-full relative">
                   <Frigade.Form
                     flowId={ONBOARDING_FORM_FLOW_ID}
                     className="onboarding-form pt-12 pb-4"
                     css={{
+                      '.fr-form-step-footer': {
+                        marginTop: '25px',
+                      },
                       '.fr-button-primary': {
-                        width: '50%',
+                        width: '25%',
                       },
                       '.fr-button-secondary': {
-                        width: '50%',
+                        width: '25%',
                       },
                       '.fr-field-label': {
                         fontSize: '14px',
@@ -111,16 +114,15 @@ export default function Forms() {
                       // },
                     }}
                   />
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      setIsPaused(true);
-                    }}
-                  >
-                    <p className="text-sm text-muted-foreground">
-                      Skip for now
-                    </p>
-                  </Button>
+                  <div className="absolute left-0 bottom-4">
+                    <Frigade.Button.Secondary
+                      onClick={() => {
+                        setIsPaused(true);
+                      }}
+                      title="Do later"
+                      className="text-muted-foreground text-sm"
+                    />
+                  </div>
                 </div>
               )}
             </div>
