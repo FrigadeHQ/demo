@@ -13,7 +13,7 @@ export default function Forms() {
   const { flow } = useFlow(ONBOARDING_FORM_FLOW_ID);
   const [isPaused, setIsPaused] = useState(false);
   const progress =
-    (Math.max(flow?.getCurrentStepIndex() || 0, 0.05) /
+    (Math.max(flow?.getCurrentStepOrder() || 0, 0.05) /
       (flow?.getNumberOfAvailableSteps() || 1)) *
     100;
 
@@ -39,7 +39,7 @@ export default function Forms() {
       <div className="flex items-center justify-center w-full h-full">
         <div className="w-[300px] text-sm flex flex-col gap-4">
           <div>
-            <strong>{flow?.getCurrentStepIndex()}</strong> of{' '}
+            <strong>{flow?.getCurrentStepOrder()}</strong> of{' '}
             <strong>{flow?.getNumberOfAvailableSteps()} steps completed</strong>
           </div>
           <Progress value={progress} />
