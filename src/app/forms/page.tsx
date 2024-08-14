@@ -11,9 +11,9 @@ import { useState } from 'react';
 export default function Forms() {
   const ONBOARDING_FORM_FLOW_ID = 'flow_kTB2fci9';
   const { flow } = useFlow(ONBOARDING_FORM_FLOW_ID);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
   const progress =
-    (Math.max(flow?.getCurrentStepOrder() || 0, 0.05) /
+    (Math.max(flow?.getCurrentStepOrder() || 0, 0.3) /
       (flow?.getNumberOfAvailableSteps() || 1)) *
     100;
 
@@ -37,14 +37,15 @@ export default function Forms() {
   if (isPaused) {
     return (
       <div className="flex items-center justify-center w-full h-full">
-        <div className="w-[300px] text-sm flex flex-col gap-4 border p-6 rounded-md">
-          <div>
+        <div className="w-[200px] text-sm flex flex-col gap-2 border rounded-md overflow-hidden p-4">
+          <div className="text-xs">
             <strong>{flow?.getCurrentStepOrder()}</strong> of{' '}
             <strong>{flow?.getNumberOfAvailableSteps()}</strong> steps completed
           </div>
+
           <Progress value={progress} />
 
-          <Button onClick={() => setIsPaused(false)} size="sm">
+          <Button onClick={() => setIsPaused(false)} variant="link" size="sm">
             Resume form
           </Button>
         </div>
@@ -67,7 +68,7 @@ export default function Forms() {
                 <div className="flex-col justify-center w-full relative">
                   <Frigade.Form
                     flowId={ONBOARDING_FORM_FLOW_ID}
-                    className="onboarding-form pt-12 pb-4"
+                    className="onboarding-form pt-12"
                     css={{
                       '.fr-form-step-footer': {
                         marginTop: '25px',
@@ -114,14 +115,14 @@ export default function Forms() {
                       // },
                     }}
                   />
-                  <div className="absolute left-0 bottom-4">
-                    <Frigade.Button.Secondary
+                  <div className="absolute left-0 bottom-0">
+                    <Frigade.Button.Link
                       onClick={() => {
                         setIsPaused(true);
                       }}
-                      title="Do later"
-                      className="text-muted-foreground text-sm"
-                    />
+                    >
+                      <p className="text-muted-foreground text-sm">Do later</p>
+                    </Frigade.Button.Link>
                   </div>
                 </div>
               )}
