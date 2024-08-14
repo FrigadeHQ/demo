@@ -70,7 +70,10 @@ export default function Forms() {
                     className="onboarding-form pt-12 pb-4"
                     css={{
                       '.fr-button-primary': {
-                        width: '100%',
+                        width: '50%',
+                      },
+                      '.fr-button-secondary': {
+                        width: '50%',
                       },
                       '.fr-field-label': {
                         fontSize: '14px',
