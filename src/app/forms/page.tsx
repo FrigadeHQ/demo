@@ -37,15 +37,15 @@ export default function Forms() {
   if (isPaused) {
     return (
       <div className="flex items-center justify-center w-full h-full">
-        <div className="w-[300px] text-sm flex flex-col gap-4">
+        <div className="w-[300px] text-sm flex flex-col gap-4 border p-6 rounded-md">
           <div>
             <strong>{flow?.getCurrentStepOrder()}</strong> of{' '}
-            <strong>{flow?.getNumberOfAvailableSteps()} steps completed</strong>
+            <strong>{flow?.getNumberOfAvailableSteps()}</strong> steps completed
           </div>
           <Progress value={progress} />
 
           <Button onClick={() => setIsPaused(false)} size="sm">
-            Resume
+            Resume form
           </Button>
         </div>
       </div>
