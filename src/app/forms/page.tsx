@@ -1,19 +1,13 @@
 'use client';
 
 import * as Frigade from '@frigade/react';
-import {
-  BaseField,
-  Box,
-  FormFieldProps,
-  Image,
-  Text,
-  useFlow,
-} from '@frigade/react';
+import { useFlow } from '@frigade/react';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { MovieTypeaheadField } from '@/components/movie-typeahead-field';
 
 export default function Forms() {
   const ONBOARDING_FORM_FLOW_ID = 'flow_kTB2fci9';
@@ -80,7 +74,7 @@ export default function Forms() {
                     flowId={ONBOARDING_FORM_FLOW_ID}
                     className="onboarding-form pt-12"
                     fieldTypes={{
-                      'icon-field': IconField,
+                      'movie-typeahead': MovieTypeaheadField,
                     }}
                     css={{
                       '.fr-form-step-footer': {
@@ -145,32 +139,5 @@ export default function Forms() {
         </div>
       </div>
     </>
-  );
-}
-
-function IconField(props: FormFieldProps) {
-  return (
-    <BaseField {...props}>
-      {(fieldProps) => (
-        <Box position="relative">
-          <Image
-            src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWRvbGxhci1zaWduIj48bGluZSB4MT0iMTIiIHgyPSIxMiIgeTE9IjIiIHkyPSIyMiIvPjxwYXRoIGQ9Ik0xNyA1SDkuNWEzLjUgMy41IDAgMCAwIDAgN2g1YTMuNSAzLjUgMCAwIDEgMCA3SDYiLz48L3N2Zz4="
-            alt="icon"
-            width="16"
-            height="16"
-            position="absolute"
-            top="calc(50% - 8px)"
-            left="8px"
-          />
-          <Text.Body2
-            as="input"
-            part="field-text"
-            type="text"
-            pl="24px"
-            {...fieldProps}
-          />
-        </Box>
-      )}
-    </BaseField>
   );
 }
