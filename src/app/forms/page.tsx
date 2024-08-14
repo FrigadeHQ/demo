@@ -57,7 +57,7 @@ export default function Forms() {
     <>
       <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0 overflow-y-scroll">
         <div className="col-span-4">
-          <Card className="md:w-[500px] w-full flex flex-col justify-center mx-auto shadow-sm pb-5 overflow-hidden">
+          <Card className="md:w-[500px] bg-card w-full flex flex-col justify-center mx-auto shadow-sm pb-5 overflow-hidden">
             <Progress value={progress} className="rounded-none" />
             <div className="flex flex-col justify-center space-y-6 w-full px-5">
               {flow?.isCompleted || !flow ? (
