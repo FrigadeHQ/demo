@@ -39,7 +39,18 @@ export function MovieTypeaheadField({ field }: FormFieldProps) {
             `https://api.themoviedb.org/3/search/movie?api_key=29ba16d0873c81ba95c281dded7c6b14&query=${field.value}`,
           );
           const data = await response.json();
-          setMovies(data.results);
+          setMovies(
+            data.results
+              // filter dupes
+              .filter(
+                (movie: Movie, index: number, self: Movie[]) =>
+                  index ===
+                  self.findIndex(
+                    (m) =>
+                      m.title?.toLowerCase() === movie.title?.toLowerCase(),
+                  ),
+              ),
+          );
         } catch (error) {
           console.error('Error fetching movies:', error);
         } finally {
