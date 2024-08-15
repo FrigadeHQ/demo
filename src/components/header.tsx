@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export function Header() {
   return (
-    <div className="w-full bg-white border-b border-[#E5E5E5] flex justify-center">
+    <div className="w-full bg-white border-b border-[#E5E5E5] flex justify-center z-10">
       <div className="z-10 w-full max-w-7xl items-center justify-between p-6 xl:px-0 text-sm flex">
         <div className="flex items-center dark:via-black static size-auto gap-2">
           <img src="/images/frigade.svg"></img>
