@@ -22,6 +22,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { useState } from 'react';
 
 const TOUR_FLOW_ID = 'flow_F0MP8vnI';
 const BANNER_FLOW_ID = 'flow_LrVN8xha';
@@ -57,8 +58,10 @@ export default function Tours() {
 }
 
 export function Component() {
-  const { flow: flowOne } = useFlow(TOUR_FLOW_ID);
-  const { flow: flowTwo } = useFlow(BANNER_FLOW_ID);
+  const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);
+  const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
+  const [isResetting, setIsResetting] = useState(false);
+
   return (
     <div className="relative hidden flex-col items-start gap-6 md:flex">
       <Frigade.Banner
@@ -99,9 +102,9 @@ export function Component() {
                       (e) => {
                         if (
                           parseInt(e.target.value) > 100 &&
-                          flowOne.getCurrentStep()?.id === 'tour-step-two'
+                          tourFlow.getCurrentStep()?.id === 'tour-step-two'
                         ) {
-                          flowOne.getCurrentStep()?.complete();
+                          tourFlow.getCurrentStep()?.complete();
                         }
                       }
                     }
@@ -166,7 +169,7 @@ export function Component() {
                   >
                     <ToggleGroupItem value="s">S</ToggleGroupItem>
                     <ToggleGroupItem
-                      onClick={() => flowOne.getCurrentStep()?.complete()}
+                      onClick={() => tourFlow.getCurrentStep()?.complete()}
                       value="m"
                     >
                       M
@@ -182,9 +185,12 @@ export function Component() {
       <div className="flex flex-row gap-4 w-full">
         <Button
           className="flex w-full"
-          onClick={() => {
-            flowOne?.restart();
-            flowTwo?.restart();
+          disabled={isResetting}
+          onClick={async () => {
+            setIsResetting(true);
+            await tourFlow?.restart();
+            bannerFlow?.restart();
+            setIsResetting(false);
           }}
         >
           Launch Tour
