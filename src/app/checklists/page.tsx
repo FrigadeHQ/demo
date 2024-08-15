@@ -1,6 +1,6 @@
 'use client';
 import * as Frigade from '@frigade/react';
-import { useFlow } from '@frigade/react';
+import { useFlow, useUser } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -9,6 +9,7 @@ const CHECKLIST_FLOW_ID = 'flow_lSjFTcXz';
 export default function Checklists() {
   // set two constants for two different Frigade Flows
   const { flow } = useFlow(CHECKLIST_FLOW_ID);
+  const { addProperties } = useUser();
 
   return (
     <div className="items-center justify-center flex flex-col w-full mt-4">
@@ -32,8 +33,9 @@ export default function Checklists() {
         <Button
           variant="default"
           className="flex"
-          onClick={() => {
+          onClick={async () => {
             flow.steps.get('checklist-step-two')?.complete();
+            await addProperties({ hasFinishedStepTwo: true });
           }}
         >
           User action
@@ -51,8 +53,9 @@ export default function Checklists() {
         <Button
           variant="ghost"
           className="flex"
-          onClick={() => {
-            flow.restart();
+          onClick={async () => {
+            await addProperties({ hasFinishedStepTwo: false });
+            await flow.restart();
             document.querySelector('input')!.value = '';
           }}
         >
