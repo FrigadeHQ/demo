@@ -20,7 +20,7 @@ export function Header() {
             Docs
           </HeaderLink>
           {/*TODO Add Github link*/}
-          <HeaderLink href={'https://github.com'}>Github</HeaderLink>
+          {/*<HeaderLink href={'https://github.com'}>Github</HeaderLink>*/}
           <Button
             size="sm"
             className="bg-blue-600 hover:bg-blue-700 text-white hover:border-blue-700"
