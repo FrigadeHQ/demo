@@ -27,7 +27,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 const TOUR_FLOW_ID = 'flow_F0MP8vnI';
 const BANNER_FLOW_ID = 'flow_LrVN8xha';
 
-export function Tours() {
+export default function Page() {
   return (
     <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0">
       <div className="col-span-4">
