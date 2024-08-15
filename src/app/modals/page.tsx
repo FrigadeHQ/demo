@@ -104,11 +104,11 @@ export default function Modals() {
           border="1px solid #FFFFFF20"
         />
       )}
-      <Frigade.Announcement
-        flowId={ANNOUNCEMENT_THREE_FLOW_ID}
-        dismissible={true}
-        border="1px solid #FFFFFF20"
-      />
+      {/*<Frigade.Announcement*/}
+      {/*  flowId={ANNOUNCEMENT_THREE_FLOW_ID}*/}
+      {/*  dismissible={true}*/}
+      {/*  border="1px solid #FFFFFF20"*/}
+      {/*/>*/}
       {isAnnouncementFourVisible && (
         <SanityAnnouncement flowId={ANNOUNCEMENT_FOUR_FLOW_ID} />
       )}
