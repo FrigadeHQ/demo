@@ -16,11 +16,21 @@ export default function Checklists() {
         flowId={CHECKLIST_FLOW_ID}
         forceMount={true}
         className="w-full"
+        css={{
+          '.fr-carousel-next-wrapper': {
+            background:
+              'linear-gradient(to left, var(--fr-colors-primary-foreground), transparent 50%)',
+          },
+          '.fr-carousel-prev-wrapper': {
+            background:
+              'linear-gradient(to right, var(--fr-colors-primary-foreground), transparent 50%)',
+          },
+        }}
       />
 
       <div className="flex flex-row justify-center mt-8 gap-6 items-center border border-muted w-auto p-6 rounded-md">
         <Button
-          variant="outline"
+          variant="default"
           className="flex"
           onClick={() => {
             flow.steps.get('checklist-step-two')?.complete();

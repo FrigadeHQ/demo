@@ -42,7 +42,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 },
               },
               neutral: {
-                background: 'hsl(var(--neutral-background))',
+                background: 'hsl(var(--card))',
                 foreground: 'hsl(var(--neutral-foreground))',
                 '400': 'hsl(var(--neutral-400))',
                 border: 'hsl(var(--border))',

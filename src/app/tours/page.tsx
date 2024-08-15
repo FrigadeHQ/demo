@@ -34,12 +34,15 @@ export default function Tours() {
           flowId={TOUR_FLOW_ID}
           align="before"
           dismissible={false}
+          // TODO Figure out neutral border color
+          // border="1px solid"
           css={{
             '.fr-progress': {
               display: 'none',
             },
             '.fr-button-secondary': {
               backgroundColor: 'transparent',
+              // TODO looks okay but the border color is not being passed in / may be wrong
               border: '1px solid border-muted',
             },
             '.fr-tooltip-footer:not(:has(button))': {
