@@ -20,6 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           theme={{
             colors: {
               primary: {
+                foreground: 'hsl(var(--primary-foreground))',
                 background: 'hsl(var(--primary))',
                 surface: 'hsl(var(--primary))',
                 border: 'hsl(var(--primary))',
@@ -40,6 +41,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 },
               },
               neutral: {
+                background: 'hsl(var(--neutral-background))',
                 foreground: 'hsl(var(--neutral-foreground))',
                 '400': 'hsl(var(--neutral-400))',
               },
