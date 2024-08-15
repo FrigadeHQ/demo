@@ -150,7 +150,6 @@ export default function Forms() {
               `}
             </style>
           </Card>
-          <Button variant="secondary">Hello world</Button>
         </div>
       </div>
     </>
