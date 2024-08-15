@@ -67,7 +67,7 @@ export function Component() {
         <CardHeader>
           <CardTitle>Demo card</CardTitle>
           <CardDescription id="demo-card-subtitle">
-            Lipsum dolor sit amet, consectetur adipiscing elit
+            Tap the <b>Launch Tour</b> button below to see a tour.
           </CardDescription>
         </CardHeader>
         <CardContent>
