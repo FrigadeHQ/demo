@@ -15,7 +15,7 @@ export default function Forms() {
   const { flow } = useFlow(FORM_FLOW_ID);
   const [isPaused, setIsPaused] = useState(false);
   const progress =
-    (Math.max(flow?.getCurrentStepOrder() || 0, 0.3) /
+    (Math.max(flow?.getCurrentStepOrder() || 0, 0.15) /
       (flow?.getNumberOfAvailableSteps() || 1)) *
     100;
 
