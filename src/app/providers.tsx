@@ -19,11 +19,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <Frigade.Provider
           apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}
           userId={getUserId()}
-          // css={{
-          //   '.fr-dialog-wrapper': {
-          //     zIndex: 100,
-          //   },
-          // }}
+          css={{
+            '.fr-dialog-wrapper': {
+              zIndex: 100,
+            },
+          }}
           theme={{
             colors: {
               primary: {
