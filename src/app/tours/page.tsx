@@ -2,6 +2,7 @@
 
 import * as Frigade from '@frigade/react';
 import { useFlow } from '@frigade/react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +23,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { useState } from 'react';
 
 const TOUR_FLOW_ID = 'flow_F0MP8vnI';
 const BANNER_FLOW_ID = 'flow_LrVN8xha';
@@ -31,6 +31,22 @@ export default function Tours() {
   return (
     <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0">
       <div className="col-span-4">
+        <Component />
+      </div>
+    </div>
+  );
+}
+
+export function Component() {
+  const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);
+  const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
+  const [isResetting, setIsResetting] = useState(false);
+
+  const [isTourVisible, setIsTourVisible] = useState(false);
+
+  return (
+    <div className="relative hidden flex-col items-start gap-6 md:flex">
+      {isTourVisible && (
         <Frigade.Tour
           flowId={TOUR_FLOW_ID}
           align="before"
@@ -51,19 +67,7 @@ export default function Tours() {
             },
           }}
         />
-        <Component />
-      </div>
-    </div>
-  );
-}
-
-function Component() {
-  const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);
-  const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
-  const [isResetting, setIsResetting] = useState(false);
-
-  return (
-    <div className="relative hidden flex-col items-start gap-6 md:flex">
+      )}
       <Frigade.Banner
         flowId={BANNER_FLOW_ID}
         dismissible={true}
@@ -102,9 +106,9 @@ function Component() {
                       (e) => {
                         if (
                           parseInt(e.target.value) > 100 &&
-                          tourFlow?.getCurrentStep()?.id === 'tour-step-two'
+                          tourFlow.getCurrentStep()?.id === 'tour-step-two'
                         ) {
-                          tourFlow?.getCurrentStep()?.complete();
+                          tourFlow.getCurrentStep()?.complete();
                         }
                       }
                     }
@@ -169,7 +173,7 @@ function Component() {
                   >
                     <ToggleGroupItem value="s">S</ToggleGroupItem>
                     <ToggleGroupItem
-                      onClick={() => tourFlow?.getCurrentStep()?.complete()}
+                      onClick={() => tourFlow.getCurrentStep()?.complete()}
                       value="m"
                     >
                       M
@@ -191,6 +195,7 @@ function Component() {
             await tourFlow?.restart();
             bannerFlow?.restart();
             setIsResetting(false);
+            setIsTourVisible(true);
           }}
         >
           Launch Tour

@@ -34,8 +34,7 @@ export default function Checklists() {
           variant="default"
           className="flex"
           onClick={async () => {
-            flow?.steps.get('checklist-step-two')?.complete();
-            await addProperties({ hasFinishedStepTwo: true });
+            flow.steps.get('checklist-step-two')?.complete();
           }}
         >
           User action
@@ -43,9 +42,10 @@ export default function Checklists() {
         <Input
           placeholder="Write 'native'"
           className="w-[130px]"
-          onChange={(e) => {
+          onChange={async (e) => {
             if (e.target.value === 'native') {
-              flow?.steps.get('checklist-step-four')?.complete();
+              flow.steps.get('checklist-step-four')?.complete();
+              await addProperties({ hasFinishedStepFour: true });
             }
           }}
         />
@@ -54,8 +54,8 @@ export default function Checklists() {
           variant="ghost"
           className="flex"
           onClick={async () => {
-            await addProperties({ hasFinishedStepTwo: false });
-            await flow?.restart();
+            await addProperties({ hasFinishedStepFour: false });
+            await flow.restart();
             document.querySelector('input')!.value = '';
           }}
         >
