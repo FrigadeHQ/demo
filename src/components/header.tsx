@@ -49,7 +49,7 @@ function HeaderLink({
     <Link
       href={href}
       target="_blank"
-      className="m-0 max-w-[30ch] lg:display text-sm font-medium hover:text-blue-500 text-black"
+      className="m-0 max-w-[30ch] hidden sm:block text-sm font-medium hover:text-blue-500 text-black"
     >
       {children}
     </Link>
