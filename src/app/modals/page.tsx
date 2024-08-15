@@ -123,6 +123,11 @@ export default function Modals() {
           width="500px"
           repeatable={true}
           border="1px solid #FFFFFF20"
+          css={{
+            '.fr-field-label-required': {
+              display: 'none',
+            },
+          }}
         />
       )}
     </>
