@@ -44,8 +44,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
               neutral: {
                 background: 'hsl(var(--card))',
                 foreground: 'hsl(var(--neutral-foreground))',
-                '400': 'hsl(var(--neutral-400))',
                 border: 'hsl(var(--border))',
+                '100': 'hsl(var(--accent))',
+                '200': 'hsl(var(--accent))',
+                '300': 'hsl(var(--accent))',
+                '400': 'hsl(var(--accent))',
+                '500': 'hsl(var(--accent))',
+                '600': 'hsl(var(--accent))',
+                '700': 'hsl(var(--accent))',
+                '800': 'hsl(var(--accent))',
+                '900': 'hsl(var(--accent))',
               },
             },
           }}
