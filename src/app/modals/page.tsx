@@ -1,6 +1,6 @@
 'use client';
 import * as Frigade from '@frigade/react';
-import { useFlow } from '@frigade/react';
+import { Dialog, useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { ANNOUNCEMENT_CSS } from '@/lib/frigade-styles';
@@ -18,6 +18,8 @@ export default function Modals() {
   const { flow: announcementOne } = useFlow(ANNOUNCEMENT_ONE_FLOW_ID);
   const { flow: announcementTwo } = useFlow(ANNOUNCEMENT_TWO_FLOW_ID);
   const { flow: announcementFour } = useFlow(ANNOUNCEMENT_FOUR_FLOW_ID);
+  const { flow: NPS } = useFlow(NPS_FLOW_ID);
+  const { flow: UserFeedback } = useFlow(FORM_FLOW_ID);
 
   const [isAnnouncementOneVisible, setIsAnnouncementOneVisible] =
     useState(false);
@@ -25,6 +27,8 @@ export default function Modals() {
     useState(false);
   const [isAnnouncementFourVisible, setIsAnnouncementFourVisible] =
     useState(false);
+  const [isUserFeedbackVisible, setIsUserFeedbackVisible] = useState(false);
+  const [isNPSVisible, setIsNPSVisible] = useState(false);
 
   return (
     <>
@@ -63,11 +67,25 @@ export default function Modals() {
           <Button size="sm" variant="outline">
             Corner Modal
           </Button>
-          <Button size="sm" variant="outline">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              NPS.restart();
+              setIsNPSVisible(true);
+            }}
+          >
             NPS Survey
           </Button>
-          <Button size="sm" variant="outline">
-            Feedback Survey
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              UserFeedback.restart();
+              setIsUserFeedbackVisible(true);
+            }}
+          >
+            User Feedback
           </Button>
         </div>
       </div>
@@ -94,8 +112,19 @@ export default function Modals() {
       {isAnnouncementFourVisible && (
         <SanityAnnouncement flowId={ANNOUNCEMENT_FOUR_FLOW_ID} />
       )}
-      <Frigade.Survey.NPS flowId={NPS_FLOW_ID} dismissible={true} />
-      {/*<Frigade.Form flowId={FORM_FLOW_ID} dismissible={true} />*/}
+      {isNPSVisible && (
+        <Frigade.Survey.NPS flowId={NPS_FLOW_ID} dismissible={true} />
+      )}
+      {isUserFeedbackVisible && (
+        <Frigade.Form
+          as={Dialog}
+          flowId={FORM_FLOW_ID}
+          dismissible={true}
+          width="500px"
+          repeatable={true}
+          border="1px solid #FFFFFF20"
+        />
+      )}
     </>
   );
 }
