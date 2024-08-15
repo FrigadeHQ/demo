@@ -39,7 +39,7 @@ export function SanityAnnouncement({ flowId, ...props }: AnnouncementProps) {
             >
               {step.imageUri && (
                 <Card radius={4} overflow="hidden">
-                  <img src={step.imageUri} />
+                  <img src={step.imageUri} className="h-[136px]" />
                 </Card>
               )}
 
