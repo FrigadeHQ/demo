@@ -27,7 +27,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 const TOUR_FLOW_ID = 'flow_F0MP8vnI';
 const BANNER_FLOW_ID = 'flow_LrVN8xha';
 
-export default function Tours() {
+export function Tours() {
   return (
     <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0">
       <div className="col-span-4">
@@ -37,7 +37,7 @@ export default function Tours() {
   );
 }
 
-export function Component() {
+function Component() {
   const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);
   const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
   const [isResetting, setIsResetting] = useState(false);
