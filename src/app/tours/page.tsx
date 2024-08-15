@@ -57,7 +57,7 @@ export default function Tours() {
   );
 }
 
-export function Component() {
+function Component() {
   const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);
   const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
   const [isResetting, setIsResetting] = useState(false);
@@ -102,9 +102,9 @@ export function Component() {
                       (e) => {
                         if (
                           parseInt(e.target.value) > 100 &&
-                          tourFlow.getCurrentStep()?.id === 'tour-step-two'
+                          tourFlow?.getCurrentStep()?.id === 'tour-step-two'
                         ) {
-                          tourFlow.getCurrentStep()?.complete();
+                          tourFlow?.getCurrentStep()?.complete();
                         }
                       }
                     }
@@ -169,7 +169,7 @@ export function Component() {
                   >
                     <ToggleGroupItem value="s">S</ToggleGroupItem>
                     <ToggleGroupItem
-                      onClick={() => tourFlow.getCurrentStep()?.complete()}
+                      onClick={() => tourFlow?.getCurrentStep()?.complete()}
                       value="m"
                     >
                       M

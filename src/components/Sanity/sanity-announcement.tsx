@@ -6,7 +6,7 @@ import { AnnouncementProps, Flow, Progress, Text } from '@frigade/react';
 export function SanityAnnouncement({ flowId, ...props }: AnnouncementProps) {
   return (
     <ThemeProvider theme={buildTheme()}>
-      {/*TODO complaining?*/}
+      {/* @ts-expect-error - Flow expects a function to be passed to it */}
       <Flow as={null} flowId={flowId} {...props}>
         {({
           flow,

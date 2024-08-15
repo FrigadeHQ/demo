@@ -37,8 +37,8 @@ export default function Modals() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              announcementOne.restart();
+            onClick={async () => {
+              await announcementOne?.restart();
               setIsAnnouncementOneVisible(true);
             }}
           >
@@ -47,8 +47,8 @@ export default function Modals() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              announcementTwo.restart();
+            onClick={async () => {
+              await announcementTwo?.restart();
               setIsAnnouncementTwoVisible(true);
             }}
           >
@@ -57,8 +57,8 @@ export default function Modals() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              announcementFour.restart();
+            onClick={async () => {
+              await announcementFour?.restart();
               setIsAnnouncementFourVisible(true);
             }}
           >
@@ -70,8 +70,8 @@ export default function Modals() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              NPS.restart();
+            onClick={async () => {
+              await NPS?.restart();
               setIsNPSVisible(true);
             }}
           >
@@ -80,8 +80,8 @@ export default function Modals() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => {
-              UserFeedback.restart();
+            onClick={async () => {
+              await UserFeedback?.restart();
               setIsUserFeedbackVisible(true);
             }}
           >
