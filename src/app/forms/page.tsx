@@ -7,7 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Spinner } from '@/components/spinner';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { MovieTypeaheadField } from '@/components/movie-typeahead-field';
+import { MovieTypeaheadField } from '@/components/custom-form-fields/movie-typeahead-field';
+import { MandatoryVideoFormField } from '@/components/custom-form-fields/mandatory-video-form-field';
 
 const FORM_FLOW_ID = 'flow_kTB2fci9';
 
@@ -87,6 +88,7 @@ export default function Forms() {
                     className="onboarding-form pt-12"
                     fieldTypes={{
                       'movie-typeahead': MovieTypeaheadField,
+                      'mandatory-video': MandatoryVideoFormField,
                     }}
                     css={{
                       '.fr-form-step-footer': {
