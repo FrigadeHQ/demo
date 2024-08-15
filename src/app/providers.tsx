@@ -31,6 +31,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 },
               },
               secondary: {
+                foreground: 'hsl(var(--secondary-foreground))',
                 background: 'hsl(var(--secondary))',
                 surface: 'hsl(var(--secondary))',
                 border: 'hsl(var(--secondary))',
@@ -44,6 +45,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 background: 'hsl(var(--neutral-background))',
                 foreground: 'hsl(var(--neutral-foreground))',
                 '400': 'hsl(var(--neutral-400))',
+                border: 'hsl(var(--border))',
               },
             },
           }}
