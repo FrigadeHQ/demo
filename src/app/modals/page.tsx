@@ -64,9 +64,9 @@ export default function Modals() {
           >
             Custom Modal
           </Button>
-          <Button size="sm" variant="outline">
-            Corner Modal
-          </Button>
+          {/*<Button size="sm" variant="outline">*/}
+          {/*  Corner Modal*/}
+          {/*</Button>*/}
           <Button
             size="sm"
             variant="outline"
