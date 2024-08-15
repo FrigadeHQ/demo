@@ -53,6 +53,7 @@ function Component() {
           dismissible={false}
           // TODO Figure out neutral border color
           border="1px solid #FFFFFF20"
+          zIndex={1000}
           css={{
             '.fr-progress': {
               display: 'none',
