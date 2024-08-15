@@ -4,6 +4,7 @@ import React from 'react';
 import { NextUIProvider } from '@nextui-org/react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import * as Frigade from '@frigade/react';
+import { getUserId } from '@/lib/utils';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   if (typeof process.env.NEXT_PUBLIC_FRIGADE_API_KEY === 'undefined') {
@@ -17,6 +18,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <NextThemesProvider attribute="class" defaultTheme="light">
         <Frigade.Provider
           apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}
+          userId={getUserId()}
           theme={{
             colors: {
               primary: {
