@@ -35,7 +35,7 @@ export default function Tours() {
           align="before"
           dismissible={false}
           // TODO Figure out neutral border color
-          // border="1px solid"
+          border="1px solid #FFFFFF20"
           css={{
             '.fr-progress': {
               display: 'none',

@@ -3,6 +3,7 @@ import * as Frigade from '@frigade/react';
 import { useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { ANNOUNCEMENT_CSS } from '@/lib/frigade-styles';
 
 const ANNOUNCEMENT_ONE_FLOW_ID = 'flow_OMJL2QzR';
 const ANNOUNCEMENT_TWO_FLOW_ID = 'flow_Uynd2FX0';
@@ -14,9 +15,12 @@ const FORM_FLOW_ID = 'flow_aI9TTbI6';
 export default function Modals() {
   // set two constants for two different Frigade Flows
   const { flow: announcementOne } = useFlow(ANNOUNCEMENT_ONE_FLOW_ID);
+  const { flow: announcementTwo } = useFlow(ANNOUNCEMENT_TWO_FLOW_ID);
+
   const [isAnnouncementOneVisible, setIsAnnouncementOneVisible] =
     useState(false);
-  //const [isAnnouncementTwoVisible, setIsAnnouncementTwoVisible] = useState(false);
+  const [isAnnouncementTwoVisible, setIsAnnouncementTwoVisible] =
+    useState(false);
 
   return (
     <>
@@ -32,7 +36,14 @@ export default function Modals() {
           >
             Modal
           </Button>
-          <Button size="sm" variant="outline">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              announcementTwo.restart();
+              setIsAnnouncementTwoVisible(true);
+            }}
+          >
             Styled Modal
           </Button>
           <Button size="sm" variant="outline">
@@ -53,15 +64,21 @@ export default function Modals() {
         <Frigade.Announcement
           flowId={ANNOUNCEMENT_ONE_FLOW_ID}
           dismissible={true}
+          border="1px solid #FFFFFF20"
+        />
+      )}
+      {isAnnouncementTwoVisible && (
+        <Frigade.Announcement
+          flowId={ANNOUNCEMENT_TWO_FLOW_ID}
+          dismissible={false}
+          css={ANNOUNCEMENT_CSS}
+          border="1px solid #FFFFFF20"
         />
       )}
       <Frigade.Announcement
-        flowId={ANNOUNCEMENT_TWO_FLOW_ID}
-        dismissible={true}
-      />
-      <Frigade.Announcement
         flowId={ANNOUNCEMENT_THREE_FLOW_ID}
         dismissible={true}
+        border="1px solid #FFFFFF20"
       />
       {/*TODO: Add the Custom Announcement*/}
       <Frigade.Survey.NPS flowId={NPS_FLOW_ID} dismissible={true} />
