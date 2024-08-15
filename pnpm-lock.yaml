@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@frigade/react':
-    specifier: ^2.4.17
-    version: 2.4.17(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.4.18
+    version: 2.4.18(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -392,8 +392,8 @@ packages:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.4.17(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-ONIRKdtM76EZEdyi8NSxYptla0UtbaIAWGq7wNVNhdhPDEXm7JiXjeT9Vp3hFB6//LFAhvDXV57U+6ypdqAmyA==}
+  /@frigade/react@2.4.18(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-4dhCDuupt/9f44JrV/VKCWt6Dwc6sIyvhfg8uw3MJ25GytnNAFto/0lKaZ5lYI3QUC//YK0NsaXN73JL4TN/ig==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18
