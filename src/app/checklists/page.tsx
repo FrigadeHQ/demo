@@ -29,16 +29,13 @@ export default function Checklists() {
           User action
         </Button>
         <Input
-          placeholder="Write 'four'"
+          placeholder="Write 'native'"
           className="w-[130px]"
-          onChange={
-            // if the value is equal to 'four', complete the current Frigade step
-            (e) => {
-              if (e.target.value === 'four') {
-                flow.steps.get('checklist-step-four')?.complete();
-              }
+          onChange={(e) => {
+            if (e.target.value === 'native') {
+              flow.steps.get('checklist-step-four')?.complete();
             }
-          }
+          }}
         />
         <div className="border-r border-muted h-6"></div>
         <Button

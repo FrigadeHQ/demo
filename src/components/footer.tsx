@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <div className="w-full bg-white border-t border-[#E5E5E5] flex justify-center">
-      <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-3 xl:grid-cols-6 text-left py-8 gap-6">
+    <div className="w-full bg-white border-t border-[#E5E5E5] flex justify-center px-6 xl:px-0">
+      <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-3 xl:grid-cols-5 text-left py-8 gap-6">
         <LinkButton
           title="Forms"
           description="Like Typeform, but native"
@@ -16,24 +16,19 @@ export function Footer() {
           href="/tours"
         />
         <LinkButton
-          title="Cards"
-          description="Live within your UI"
-          href="/cards"
+          title="Checklists"
+          description="Configurable and dynamic"
+          href="/checklists"
         />
         <LinkButton
           title="Modals"
           description="Easy to target and launch"
-          href="/forms"
+          href="/modals"
         />
         <LinkButton
-          title="Surveys"
-          description="Right user at the right time"
-          href="/forms"
-        />
-        <LinkButton
-          title="Checklists"
-          description="Configurable and dynamic"
-          href="/checklists"
+          title="Cards"
+          description="Live within your UI"
+          href="/cards"
         />
       </div>
     </div>

@@ -1,0 +1,71 @@
+'use client';
+import * as Frigade from '@frigade/react';
+import { useFlow } from '@frigade/react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+
+const ANNOUNCEMENT_ONE_FLOW_ID = 'flow_OMJL2QzR';
+const ANNOUNCEMENT_TWO_FLOW_ID = 'flow_Uynd2FX0';
+const ANNOUNCEMENT_THREE_FLOW_ID = 'flow_CTwUzb9X';
+const ANNOUNCEMENT_FOUR_FLOW_ID = 'flow_HL3Hq1KH';
+const NPS_FLOW_ID = 'flow_Gd8oTupY';
+const FORM_FLOW_ID = 'flow_aI9TTbI6';
+
+export default function Modals() {
+  // set two constants for two different Frigade Flows
+  const { flow: announcementOne } = useFlow(ANNOUNCEMENT_ONE_FLOW_ID);
+  const [isAnnouncementOneVisible, setIsAnnouncementOneVisible] =
+    useState(false);
+  //const [isAnnouncementTwoVisible, setIsAnnouncementTwoVisible] = useState(false);
+
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center gap-8">
+        <div className="grid grid-cols-3 gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              announcementOne.restart();
+              setIsAnnouncementOneVisible(true);
+            }}
+          >
+            Modal
+          </Button>
+          <Button size="sm" variant="outline">
+            Styled Modal
+          </Button>
+          <Button size="sm" variant="outline">
+            Custom Modal
+          </Button>
+          <Button size="sm" variant="outline">
+            Corner Modal
+          </Button>
+          <Button size="sm" variant="outline">
+            NPS Survey
+          </Button>
+          <Button size="sm" variant="outline">
+            Feedback Survey
+          </Button>
+        </div>
+      </div>
+      {isAnnouncementOneVisible && (
+        <Frigade.Announcement
+          flowId={ANNOUNCEMENT_ONE_FLOW_ID}
+          dismissible={true}
+        />
+      )}
+      <Frigade.Announcement
+        flowId={ANNOUNCEMENT_TWO_FLOW_ID}
+        dismissible={true}
+      />
+      <Frigade.Announcement
+        flowId={ANNOUNCEMENT_THREE_FLOW_ID}
+        dismissible={true}
+      />
+      {/*TODO: Add the Custom Announcement*/}
+      <Frigade.Survey.NPS flowId={NPS_FLOW_ID} dismissible={true} />
+      {/*<Frigade.Form flowId={FORM_FLOW_ID} dismissible={true} />*/}
+    </>
+  );
+}

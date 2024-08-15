@@ -40,6 +40,11 @@ export default function Cards() {
                 fontSize: '14px',
                 fontWeight: 500,
               },
+              '.fr-subtitle': {
+                fontSize: '12px',
+                // TODO: Make it the same as the other cards
+                color: 'muted-foreground',
+              },
             }}
           />
           <DemoCard
@@ -53,10 +58,11 @@ export default function Cards() {
             subtitle="Lorem ipsum dolor"
           />
         </div>
-        <div className="flex flex-row w-full">
+        <div className="flex flex-row w-full justify-center">
           {/*on click, reset flowOne and flowTwo*/}
           <Button
-            className="flex w-full"
+            className="flex"
+            variant="outline"
             onClick={() => {
               flowOne?.restart();
               flowTwo?.restart();
