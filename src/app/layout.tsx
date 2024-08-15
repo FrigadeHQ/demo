@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className} style={{ backgroundColor: 'white' }}>
         <Providers>
           <main className="flex bg-[#F6F8F7] min-h-screen flex-col items-center justify-between p-0 gap-8">
             <Header />
