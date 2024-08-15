@@ -7,33 +7,33 @@ export function Footer() {
       <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-3 xl:grid-cols-6 text-left py-8 gap-6">
         <LinkButton
           title="Forms"
-          description="Powerful Inline Forms"
+          description="Like Typeform, but native"
           href="/forms"
         />
         <LinkButton
           title="Tours"
-          description="Powerful Inline Forms"
+          description="Flexible and interactive"
           href="/tours"
         />
         <LinkButton
           title="Cards"
-          description="Powerful Inline Forms"
+          description="Live within your UI"
           href="/cards"
         />
         <LinkButton
           title="Modals"
-          description="Powerful Inline Forms"
+          description="Easy to target and launch"
           href="/forms"
         />
         <LinkButton
           title="Surveys"
-          description="Powerful Inline Forms"
+          description="Right user at the right time"
           href="/forms"
         />
         <LinkButton
           title="Checklists"
-          description="Powerful Inline Forms"
-          href="/forms"
+          description="Configurable and dynamic"
+          href="/checklists"
         />
       </div>
     </div>

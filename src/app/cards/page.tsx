@@ -21,7 +21,7 @@ export default function Cards() {
           <Frigade.Banner
             flowId={BANNER_FLOW_ID}
             dismissible={false}
-            className="rounded-xl border bg-card text-card-foreground shadow col-span-4"
+            className="!rounded-xl border bg-card text-card-foreground shadow col-span-4"
           />
           <DemoCard
             title="Demo Card"
@@ -31,10 +31,14 @@ export default function Cards() {
           <Frigade.Card
             flowId={CARD_FLOW_ID}
             dismissible={true}
-            className="rounded-xl border bg-card text-card-foreground shadow w-[200px] col-span-1"
+            className="!rounded-xl border bg-card text-card-foreground shadow w-[200px] col-span-1"
             css={{
               '.fr-card-footer:not(:has(button))': {
                 display: 'none',
+              },
+              '.fr-title': {
+                fontSize: '14px',
+                fontWeight: 500,
               },
             }}
           />
@@ -72,7 +76,7 @@ export function DemoCard(props: {
   subtitle: string;
 }) {
   return (
-    <Card className="col-span-1 w-[200px] border-muted">
+    <Card className="col-span-1 w-[200px] border-muted rounded-xl">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{props.title}</CardTitle>
         <DollarSign className="h-4 w-4 text-muted-foreground" />

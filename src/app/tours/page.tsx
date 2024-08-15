@@ -2,14 +2,12 @@
 
 import * as Frigade from '@frigade/react';
 import { useFlow } from '@frigade/react';
-import { PlusCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -26,13 +24,16 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 const TOUR_FLOW_ID = 'flow_F0MP8vnI';
+const BANNER_FLOW_ID = 'flow_LrVN8xha';
 
 export default function Tours() {
   return (
-    <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0 overflow-y-scroll">
+    <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0">
       <div className="col-span-4">
         <Frigade.Tour
           flowId={TOUR_FLOW_ID}
+          align="before"
+          dismissible={false}
           css={{
             '.fr-progress': {
               display: 'none',
@@ -53,14 +54,19 @@ export default function Tours() {
 }
 
 export function Component() {
-  const { flow } = useFlow(TOUR_FLOW_ID);
-
+  const { flow: flowOne } = useFlow(TOUR_FLOW_ID);
+  const { flow: flowTwo } = useFlow(BANNER_FLOW_ID);
   return (
     <div className="relative hidden flex-col items-start gap-6 md:flex">
-      <Card>
+      <Frigade.Banner
+        flowId={BANNER_FLOW_ID}
+        dismissible={true}
+        className="flex flex-row gap-4 w-full rounded-xl border border-muted bg-card text-card-foreground shadow"
+      />
+      <Card className="border-muted">
         <CardHeader>
-          <CardTitle id="demo-card-title">Stock</CardTitle>
-          <CardDescription>
+          <CardTitle>Demo card</CardTitle>
+          <CardDescription id="demo-card-subtitle">
             Lipsum dolor sit amet, consectetur adipiscing elit
           </CardDescription>
         </CardHeader>
@@ -68,15 +74,15 @@ export function Component() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">SKU</TableHead>
-                <TableHead>Stock</TableHead>
+                <TableHead className="w-[100px]">Item</TableHead>
+                <TableHead>Quantity</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead className="w-[100px]">Size</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="font-semibold">Item One</TableCell>
+                <TableCell className="font-semibold">One</TableCell>
                 <TableCell>
                   <Label htmlFor="stock-1" className="sr-only">
                     Stock
@@ -90,9 +96,9 @@ export function Component() {
                       (e) => {
                         if (
                           parseInt(e.target.value) > 100 &&
-                          flow.getCurrentStep()?.id === 'tour-step-two'
+                          flowOne.getCurrentStep()?.id === 'tour-step-two'
                         ) {
-                          flow.getCurrentStep()?.complete();
+                          flowOne.getCurrentStep()?.complete();
                         }
                       }
                     }
@@ -113,7 +119,7 @@ export function Component() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-semibold">Item Two</TableCell>
+                <TableCell className="font-semibold">Two</TableCell>
                 <TableCell>
                   <Label htmlFor="stock-2" className="sr-only">
                     Stock
@@ -135,7 +141,7 @@ export function Component() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-semibold">Item Three</TableCell>
+                <TableCell className="font-semibold">Three</TableCell>
                 <TableCell>
                   <Label htmlFor="stock-3" className="sr-only">
                     Stock
@@ -157,7 +163,7 @@ export function Component() {
                   >
                     <ToggleGroupItem value="s">S</ToggleGroupItem>
                     <ToggleGroupItem
-                      onClick={() => flow.getCurrentStep()?.complete()}
+                      onClick={() => flowOne.getCurrentStep()?.complete()}
                       value="m"
                     >
                       M
@@ -169,16 +175,16 @@ export function Component() {
             </TableBody>
           </Table>
         </CardContent>
-        <CardFooter className="justify-center border-t p-4">
-          <Button size="sm" variant="ghost" className="gap-1">
-            <PlusCircle className="h-3.5 w-3.5" />
-            Add Variant
-          </Button>
-        </CardFooter>
       </Card>
       <div className="flex flex-row gap-4 w-full">
-        <Button className="flex w-full" onClick={() => flow?.restart()}>
-          Start tour
+        <Button
+          className="flex w-full"
+          onClick={() => {
+            flowOne?.restart();
+            flowTwo?.restart();
+          }}
+        >
+          Launch Tour
         </Button>
       </div>
     </div>
