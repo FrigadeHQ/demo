@@ -4,6 +4,7 @@ import { useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { ANNOUNCEMENT_CSS } from '@/lib/frigade-styles';
+import { SanityAnnouncement } from '@/components/Sanity/sanity-announcement';
 
 const ANNOUNCEMENT_ONE_FLOW_ID = 'flow_OMJL2QzR';
 const ANNOUNCEMENT_TWO_FLOW_ID = 'flow_Uynd2FX0';
@@ -16,10 +17,13 @@ export default function Modals() {
   // set two constants for two different Frigade Flows
   const { flow: announcementOne } = useFlow(ANNOUNCEMENT_ONE_FLOW_ID);
   const { flow: announcementTwo } = useFlow(ANNOUNCEMENT_TWO_FLOW_ID);
+  const { flow: announcementFour } = useFlow(ANNOUNCEMENT_FOUR_FLOW_ID);
 
   const [isAnnouncementOneVisible, setIsAnnouncementOneVisible] =
     useState(false);
   const [isAnnouncementTwoVisible, setIsAnnouncementTwoVisible] =
+    useState(false);
+  const [isAnnouncementFourVisible, setIsAnnouncementFourVisible] =
     useState(false);
 
   return (
@@ -46,7 +50,14 @@ export default function Modals() {
           >
             Styled Modal
           </Button>
-          <Button size="sm" variant="outline">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              announcementFour.restart();
+              setIsAnnouncementFourVisible(true);
+            }}
+          >
             Custom Modal
           </Button>
           <Button size="sm" variant="outline">
@@ -80,7 +91,9 @@ export default function Modals() {
         dismissible={true}
         border="1px solid #FFFFFF20"
       />
-      {/*TODO: Add the Custom Announcement*/}
+      {isAnnouncementFourVisible && (
+        <SanityAnnouncement flowId={ANNOUNCEMENT_FOUR_FLOW_ID} />
+      )}
       <Frigade.Survey.NPS flowId={NPS_FLOW_ID} dismissible={true} />
       {/*<Frigade.Form flowId={FORM_FLOW_ID} dismissible={true} />*/}
     </>

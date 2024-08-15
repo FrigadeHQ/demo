@@ -1,12 +1,9 @@
-"use client";
-import { Button, Card, Dialog, Flex, ThemeProvider } from "@sanity/ui";
-import { buildTheme } from "@sanity/ui/theme";
-import { AnnouncementProps, Flow, Progress, Text } from "@frigade/react";
+'use client';
+import { Button, Card, Dialog, Flex, ThemeProvider } from '@sanity/ui';
+import { buildTheme } from '@sanity/ui/theme';
+import { AnnouncementProps, Flow, Progress, Text } from '@frigade/react';
 
-export function AnnouncementWithFrigade({
-  flowId,
-  ...props
-}: AnnouncementProps) {
+export function SanityAnnouncement({ flowId, ...props }: AnnouncementProps) {
   return (
     <ThemeProvider theme={buildTheme()}>
       <Flow as={null} flowId={flowId} {...props}>
