@@ -2,15 +2,11 @@
 
 import React from 'react';
 import { ThemeDropdown } from '@/components/theme';
-import { getUserId } from '@/lib/utils';
 import { Box } from '@frigade/react';
 
 export function Main({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <div className="hidden" data-frigade-user-id>
-        Frigade userId: {getUserId()}
-      </div>
       <div className="flex w-full grow px-6 xl:px-0">
         <Box className="bg-grid -z-1"></Box>
         <div className="relative max-w-7xl shadow-sm bg-background rounded-lg w-full justify-center items-center border flex mx-auto p-6">
