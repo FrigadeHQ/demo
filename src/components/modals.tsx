@@ -38,7 +38,7 @@ export function Modals() {
         variant="outline"
         onClick={async () => {
           setIsAnnouncementOneVisible(true);
-          if (!announcementOne.isVisible) {
+          if (!announcementOne?.isVisible) {
             announcementOne?.restart();
           }
         }}
@@ -50,7 +50,7 @@ export function Modals() {
         variant="outline"
         onClick={async () => {
           setIsAnnouncementTwoVisible(true);
-          if (!announcementTwo.isVisible) {
+          if (!announcementTwo?.isVisible) {
             announcementTwo?.restart();
           }
         }}
@@ -62,7 +62,7 @@ export function Modals() {
         variant="outline"
         onClick={async () => {
           setIsAnnouncementFourVisible(true);
-          if (!announcementFour.isVisible) {
+          if (!announcementFour?.isVisible) {
             announcementFour?.restart();
           }
         }}
@@ -77,7 +77,7 @@ export function Modals() {
         variant="outline"
         onClick={async () => {
           setIsNPSVisible(true);
-          if (!npsModal.isVisible) {
+          if (!npsModal?.isVisible) {
             npsModal?.restart();
           }
         }}
@@ -89,7 +89,7 @@ export function Modals() {
         variant="outline"
         onClick={() => {
           setIsUserFeedbackVisible(true);
-          if (!userFeedBackModal.isVisible) {
+          if (!userFeedBackModal?.isVisible) {
             userFeedBackModal?.restart();
           }
         }}
