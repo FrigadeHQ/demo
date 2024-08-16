@@ -7,12 +7,15 @@ export function Header() {
   return (
     <div className="w-full bg-white border-b border-[#E5E5E5] flex justify-center z-10">
       <div className="z-10 w-full max-w-7xl items-center justify-between p-6 xl:px-0 text-sm flex">
-        <div className="flex items-center dark:via-black static size-auto gap-2">
-          <img src="/images/frigade.svg"></img>
+        <Link
+          href="/"
+          className="flex gap-2 flex items-center dark:via-black static size-auto"
+        >
+          <img src="/images/frigade.svg" />
           <Badge className="px-2 py-0.5 mt-0.5 bg-blue-600 hover:bg-blue-600 border-none text-white">
             <span className="text-[10px]">Demo</span>
           </Badge>
-        </div>
+        </Link>
 
         <div className="flex items-center dark:via-black static size-auto gap-6">
           <HeaderLink href={'https://frigade.com?ref=demo'}>Website</HeaderLink>
@@ -29,7 +32,7 @@ export function Header() {
               href="https://app.frigade.com/sign-up?ref=demo"
               target="_blank"
             >
-              Get Started
+              Get started
             </Link>
           </Button>
         </div>
