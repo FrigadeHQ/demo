@@ -41,6 +41,6 @@ function generateNewUserId() {
   localStorage.setItem(localStorageFieldUserId, getRandomString());
 }
 
-function getRandomString() {
+export function getRandomString() {
   return lowerCaseName;
 }
