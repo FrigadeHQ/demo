@@ -4,7 +4,7 @@ import Link from 'next/link';
 export function Footer() {
   return (
     <div className="w-full bg-white border-t border-[#E5E5E5] flex justify-center px-6 xl:px-0 z-10">
-      <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-3 xl:grid-cols-5 text-left py-8 gap-6">
+      <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-2 md:grid-cols-3 lg:grid-cols-5 text-left py-8 gap-6">
         <LinkButton
           title="Forms"
           description="Like Typeform, but native"
