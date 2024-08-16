@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -51,9 +52,11 @@ function LinkButton({
     >
       <h2 className="mb-1 text-base font-semibold text-black">
         {title}{' '}
-        <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-          -&gt;
-        </span>
+        <ArrowRight
+          size={16}
+          className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none mb-[2px]"
+          stroke="currentColor"
+        />
       </h2>
       <p className="m-0 max-w-[30ch] text-xs opacity-50 text-gray-600">
         {description}

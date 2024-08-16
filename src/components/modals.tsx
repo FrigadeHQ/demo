@@ -31,7 +31,7 @@ export function Modals() {
 
   async function resetModals() {
     setIsResetting(true);
-    await Promise.all([
+    Promise.all([
       modalFlow.restart(),
       styledModal.restart(),
       customModal.restart(),

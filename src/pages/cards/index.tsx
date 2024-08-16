@@ -1,5 +1,3 @@
-'use client';
-
 import * as Frigade from '@frigade/react';
 import { useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
