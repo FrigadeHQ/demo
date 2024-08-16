@@ -27,12 +27,24 @@ export function Modals() {
   const [isUserFeedbackVisible, setIsUserFeedbackVisible] = useState(false);
   const [isNPSVisible, setIsNPSVisible] = useState(false);
 
-  function resetModals() {
+  const [isResetting, setIsResetting] = useState(false);
+
+  async function resetModals() {
+    setIsResetting(true);
+    await Promise.all([
+      modalFlow.restart(),
+      styledModal.restart(),
+      customModal.restart(),
+      npsModal.restart(),
+      userFeedBackModal.restart(),
+    ]);
+
     setModalFlowVisible(false);
     setStyledModalVisible(false);
     setCustomModalVisible(false);
     setIsUserFeedbackVisible(false);
     setIsNPSVisible(false);
+    setIsResetting(false);
   }
 
   return (
@@ -41,10 +53,10 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          resetModals();
+          await resetModals();
           setModalFlowVisible(true);
-          modalFlow?.restart();
         }}
+        disabled={isResetting}
       >
         Modal
       </Button>
@@ -52,10 +64,10 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          resetModals();
+          await resetModals();
           setStyledModalVisible(true);
-          styledModal.restart();
         }}
+        disabled={isResetting}
       >
         Styled Modal
       </Button>
@@ -63,37 +75,34 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          resetModals();
+          await resetModals();
           setCustomModalVisible(true);
-          customModal?.restart();
         }}
+        disabled={isResetting}
       >
         Custom Modal
       </Button>
-      {/*<Button size="sm" variant="outline">*/}
-      {/*  Corner Modal*/}
-      {/*</Button>*/}
       <Button
         size="sm"
         variant="outline"
         onClick={async () => {
-          resetModals();
-          setIsNPSVisible(true);
-          npsModal?.restart();
+          await resetModals();
+          setIsUserFeedbackVisible(true);
         }}
+        disabled={isResetting}
       >
-        NPS Survey
+        User Feedback
       </Button>
       <Button
         size="sm"
         variant="outline"
-        onClick={() => {
-          resetModals();
-          setIsUserFeedbackVisible(true);
-          userFeedBackModal?.restart();
+        onClick={async () => {
+          await resetModals();
+          setIsNPSVisible(true);
         }}
+        disabled={isResetting}
       >
-        User Feedback
+        NPS Survey
       </Button>
       {modalFlowVisible && (
         <Frigade.Announcement
@@ -110,11 +119,6 @@ export function Modals() {
           border="1px solid #FFFFFF20"
         />
       )}
-      {/*<Frigade.Announcement*/}
-      {/*  flowId={ANNOUNCEMENT_THREE_FLOW_ID}*/}
-      {/*  dismissible={true}*/}
-      {/*  border="1px solid #FFFFFF20"*/}
-      {/*/>*/}
       {customModalVisible && (
         <SanityAnnouncement flowId={CUSTOM_MODAL_FLOW_ID} />
       )}
