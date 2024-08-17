@@ -2,11 +2,14 @@ import * as Frigade from '@frigade/react';
 import { useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { DemoCard } from '@/components/demo-card';
+import { useState } from 'react';
 
 const CARD_FLOW_ID = 'flow_89rqfLTS';
 const BANNER_FLOW_ID = 'flow_yupOQHJs';
 
 export default function Cards() {
+  const [isResetting, setIsResetting] = useState(false);
+
   // set two constants for two different Frigade Flows
   const { flow: flowOne } = useFlow(CARD_FLOW_ID);
   const { flow: flowTwo } = useFlow(BANNER_FLOW_ID);
@@ -60,10 +63,13 @@ export default function Cards() {
           <Button
             className="flex"
             variant="outline"
-            onClick={() => {
-              flowOne?.restart();
-              flowTwo?.restart();
+            onClick={async () => {
+              setIsResetting(true);
+              await flowOne?.restart();
+              await flowTwo?.restart();
+              setIsResetting(false);
             }}
+            disabled={isResetting}
           >
             Reset demo
           </Button>
