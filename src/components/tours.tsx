@@ -32,7 +32,7 @@ export function Tours() {
   const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
   const [isResetting, setIsResetting] = useState(false);
 
-  const [isTourVisible, setIsTourVisible] = useState(false);
+  const [isTourVisible, setIsTourVisible] = useState(true);
 
   return (
     <div className="relative hidden flex-col items-start gap-6 md:flex">
@@ -57,7 +57,6 @@ export function Tours() {
               display: 'none',
             },
           }}
-          onComplete={() => setIsTourVisible(false)}
         />
       )}
       <Frigade.Banner
@@ -184,7 +183,8 @@ export function Tours() {
           disabled={isResetting}
           onClick={async () => {
             setIsResetting(true);
-            bannerFlow?.restart();
+            setIsTourVisible(false);
+            await bannerFlow?.restart();
             await tourFlow?.restart();
             setIsResetting(false);
             setIsTourVisible(true);

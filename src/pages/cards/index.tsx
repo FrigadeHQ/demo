@@ -9,6 +9,8 @@ const BANNER_FLOW_ID = 'flow_yupOQHJs';
 
 export default function Cards() {
   const [isResetting, setIsResetting] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+  const [showCard, setShowCard] = useState(true);
 
   // set two constants for two different Frigade Flows
   const { flow: flowOne } = useFlow(CARD_FLOW_ID);
@@ -18,16 +20,20 @@ export default function Cards() {
     <>
       <div className="flex flex-col items-center justify-center gap-8">
         <div className="grid grid-cols-4 gap-4">
-          <Frigade.Banner
-            flowId={BANNER_FLOW_ID}
-            dismissible={false}
-            className="!rounded-xl border !border-muted bg-card text-card-foreground shadow col-span-4"
-          />
-          <DemoCard
-            title="Demo Card"
-            value="$10,000"
-            subtitle="Lorem ipsum dolor"
-          />
+          {showBanner && (
+            <Frigade.Banner
+              flowId={BANNER_FLOW_ID}
+              dismissible={false}
+              className="!rounded-xl border !border-muted bg-card text-card-foreground shadow col-span-4"
+            />
+          )}
+          {showCard && (
+            <DemoCard
+              title="Demo Card"
+              value="$10,000"
+              subtitle="Lorem ipsum dolor"
+            />
+          )}
           <Frigade.Card
             flowId={CARD_FLOW_ID}
             dismissible={true}
@@ -64,10 +70,14 @@ export default function Cards() {
             className="flex"
             variant="outline"
             onClick={async () => {
+              setShowBanner(false);
+              setShowCard(false);
               setIsResetting(true);
               await flowOne?.restart();
               await flowTwo?.restart();
               setIsResetting(false);
+              setShowBanner(true);
+              setShowCard(true);
             }}
             disabled={isResetting}
           >
