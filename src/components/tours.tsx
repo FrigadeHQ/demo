@@ -1,7 +1,7 @@
 'use client';
 
 import * as Frigade from '@frigade/react';
-import { useFlow, useFrigade } from '@frigade/react';
+import { useFlow } from '@frigade/react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,6 @@ const TOUR_FLOW_ID = 'flow_F0MP8vnI';
 const BANNER_FLOW_ID = 'flow_LrVN8xha';
 
 export function Tours() {
-  const { frigade } = useFrigade();
   const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);
   const { flow: bannerFlow } = useFlow(BANNER_FLOW_ID);
   const [isResetting, setIsResetting] = useState(false);
@@ -58,6 +57,7 @@ export function Tours() {
               display: 'none',
             },
           }}
+          onComplete={() => setIsTourVisible(false)}
         />
       )}
       <Frigade.Banner

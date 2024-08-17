@@ -29,16 +29,7 @@ export function Modals() {
 
   const [isResetting, setIsResetting] = useState(false);
 
-  async function resetModals() {
-    setIsResetting(true);
-    Promise.all([
-      modalFlow.restart(),
-      styledModal.restart(),
-      customModal.restart(),
-      npsModal.restart(),
-      userFeedBackModal.restart(),
-    ]);
-
+  function resetModals() {
     setModalFlowVisible(false);
     setStyledModalVisible(false);
     setCustomModalVisible(false);
@@ -53,8 +44,11 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          await resetModals();
+          setIsResetting(true);
+          resetModals();
+          await modalFlow.restart();
           setModalFlowVisible(true);
+          setIsResetting(false);
         }}
         disabled={isResetting}
       >
@@ -64,8 +58,11 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          await resetModals();
+          setIsResetting(true);
+          resetModals();
+          await styledModal.restart();
           setStyledModalVisible(true);
+          setIsResetting(false);
         }}
         disabled={isResetting}
       >
@@ -75,8 +72,11 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          await resetModals();
+          setIsResetting(true);
+          resetModals();
+          await customModal.restart();
           setCustomModalVisible(true);
+          setIsResetting(false);
         }}
         disabled={isResetting}
       >
@@ -86,8 +86,11 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          await resetModals();
+          setIsResetting(true);
+          resetModals();
+          await userFeedBackModal.restart();
           setIsUserFeedbackVisible(true);
+          setIsResetting(false);
         }}
         disabled={isResetting}
       >
@@ -97,8 +100,11 @@ export function Modals() {
         size="sm"
         variant="outline"
         onClick={async () => {
-          await resetModals();
+          setIsResetting(true);
+          resetModals();
+          await npsModal.restart();
           setIsNPSVisible(true);
+          setIsResetting(false);
         }}
         disabled={isResetting}
       >
@@ -131,7 +137,6 @@ export function Modals() {
           flowId={FORM_FLOW_ID}
           dismissible={true}
           width="500px"
-          repeatable={true}
           border="1px solid #FFFFFF20"
           css={{
             '.fr-field-label-required': {
