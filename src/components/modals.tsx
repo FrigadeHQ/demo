@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { ANNOUNCEMENT_CSS } from '@/lib/frigade-styles';
 import { SanityAnnouncement } from '@/components/Sanity/sanity-announcement';
-
-const MODAL_FLOW_ID = 'flow_OMJL2QzR';
-const STYLED_MODAL_FLOW_ID = 'flow_Uynd2FX0';
-const CUSTOM_MODAL_FLOW_ID = 'flow_HL3Hq1KH';
-const NPS_FLOW_ID = 'flow_Gd8oTupY';
-const FORM_FLOW_ID = 'flow_aI9TTbI6';
+import {
+  CUSTOM_MODAL_FLOW_ID,
+  MODAL_FLOW_ID,
+  NPS_FLOW_ID,
+  STYLED_MODAL_FLOW_ID,
+  USER_FEEDBACK_MODAL_FLOW_ID,
+} from '@/lib/flow-details';
 
 export function Modals() {
   // set two constants for two different Frigade Flows
@@ -19,7 +20,7 @@ export function Modals() {
   const { flow: styledModal } = useFlow(STYLED_MODAL_FLOW_ID);
   const { flow: customModal } = useFlow(CUSTOM_MODAL_FLOW_ID);
   const { flow: npsModal } = useFlow(NPS_FLOW_ID);
-  const { flow: userFeedBackModal } = useFlow(FORM_FLOW_ID);
+  const { flow: userFeedBackModal } = useFlow(USER_FEEDBACK_MODAL_FLOW_ID);
 
   const [modalFlowVisible, setModalFlowVisible] = useState(false);
   const [styledModalVisible, setStyledModalVisible] = useState(false);
@@ -134,7 +135,7 @@ export function Modals() {
       {isUserFeedbackVisible && (
         <Frigade.Form
           as={Dialog}
-          flowId={FORM_FLOW_ID}
+          flowId={USER_FEEDBACK_MODAL_FLOW_ID}
           dismissible={true}
           width="500px"
           border="1px solid #FFFFFF20"

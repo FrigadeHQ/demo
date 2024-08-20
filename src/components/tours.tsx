@@ -23,9 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-
-const TOUR_FLOW_ID = 'flow_F0MP8vnI';
-const BANNER_FLOW_ID = 'flow_LrVN8xha';
+import { BANNER_FLOW_ID, TOUR_FLOW_ID } from '@/lib/flow-details';
 
 export function Tours() {
   const { flow: tourFlow } = useFlow(TOUR_FLOW_ID);

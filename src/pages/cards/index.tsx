@@ -3,9 +3,7 @@ import { useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { DemoCard } from '@/components/demo-card';
 import { useState } from 'react';
-
-const CARD_FLOW_ID = 'flow_89rqfLTS';
-const BANNER_FLOW_ID = 'flow_yupOQHJs';
+import { BANNER_CARD_FLOW_ID, CARD_FLOW_ID } from '@/lib/flow-details';
 
 export default function Cards() {
   const [isResetting, setIsResetting] = useState(false);
@@ -14,7 +12,7 @@ export default function Cards() {
 
   // set two constants for two different Frigade Flows
   const { flow: flowOne } = useFlow(CARD_FLOW_ID);
-  const { flow: flowTwo } = useFlow(BANNER_FLOW_ID);
+  const { flow: flowTwo } = useFlow(BANNER_CARD_FLOW_ID);
 
   return (
     <>
@@ -22,7 +20,7 @@ export default function Cards() {
         <div className="grid grid-cols-4 gap-4">
           {showBanner && (
             <Frigade.Banner
-              flowId={BANNER_FLOW_ID}
+              flowId={BANNER_CARD_FLOW_ID}
               dismissible={false}
               className="!rounded-xl border !border-muted bg-card text-card-foreground shadow col-span-4"
             />

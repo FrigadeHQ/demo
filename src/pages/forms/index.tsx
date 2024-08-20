@@ -9,8 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { MovieTypeaheadField } from '@/components/custom-form-fields/movie-typeahead-field';
 import { MandatoryVideoFormField } from '@/components/custom-form-fields/mandatory-video-form-field';
-
-const FORM_FLOW_ID = 'flow_kTB2fci9';
+import { FORM_FLOW_ID } from '@/lib/flow-details';
 
 export default function Forms() {
   const { flow } = useFlow(FORM_FLOW_ID);

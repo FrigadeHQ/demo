@@ -5,9 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@frigade/js':
+    specifier: ^0.7.4
+    version: 0.7.4
   '@frigade/react':
-    specifier: 2.4.23-canary.1
-    version: 2.4.23-canary.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.4.23
+    version: 2.4.23(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -88,6 +91,9 @@ devDependencies:
   '@types/react-dom':
     specifier: ^18
     version: 18.0.0
+  dotenv:
+    specifier: ^16.4.5
+    version: 16.4.5
   eslint:
     specifier: ^8
     version: 8.0.0
@@ -112,6 +118,9 @@ devDependencies:
   typescript:
     specifier: ^5
     version: 5.0.2
+  yaml:
+    specifier: ^2.5.0
+    version: 2.5.0
 
 packages:
 
@@ -429,8 +438,8 @@ packages:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.4.23-canary.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-ygdXOPyWjdiPMAmdCzidRhKnKzCF9sfk43qAxN78eHkWKtlf2G2tv1YFKj9aPbAkaFUvbQq0bV4IEHviL6j1iw==}
+  /@frigade/react@2.4.23(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-pmu9x9TR3PkyMXbLAEdJQVo6jNFyHPcvl6IrimIexqGQQBdWHFr+9G5Hdf2s1+I6I9A402bVf/eaJX0oyzYbvw==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18
@@ -5235,6 +5244,11 @@ packages:
   /dompurify@3.1.6:
     resolution: {integrity: sha512-cTOAhc36AalkjtBpfG6O8JimdTMWNXjiePT2xQH/ppBGi/4uIpmj8eKyIkMJErXWARyINV/sB38yf8JCLF5pbQ==}
     dev: false
+
+  /dotenv@16.4.5:
+    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+    engines: {node: '>=12'}
+    dev: true
 
   /eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}

@@ -3,8 +3,7 @@ import * as Frigade from '@frigade/react';
 import { useFlow, useUser } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-const CHECKLIST_FLOW_ID = 'flow_lSjFTcXz';
+import { CHECKLIST_FLOW_ID } from '@/lib/flow-details';
 
 export default function Checklists() {
   // set two constants for two different Frigade Flows
