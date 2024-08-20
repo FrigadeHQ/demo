@@ -24,7 +24,7 @@ This repo contains the source code for [demo.frigade.com](https://demo.frigade.c
 First, copy the sample environment file:
 
 ```bash
-cp .env.sample .env.local
+cp .env.example .env.local
 ```
 Then, install the dependencies:
 
