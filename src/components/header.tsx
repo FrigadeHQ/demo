@@ -25,8 +25,9 @@ export function Header() {
           <HeaderLink href={'https://docs.frigade.com?ref=demo'}>
             Docs
           </HeaderLink>
-          {/*TODO Add Github link*/}
-          {/*<HeaderLink href={'https://github.com'}>Github</HeaderLink>*/}
+          <HeaderLink href={'https://github.com/FrigadeHQ/demo'}>
+            Source code
+          </HeaderLink>
           <Button
             size="sm"
             className="bg-blue-600 hover:bg-blue-700 text-white hover:border-blue-700"

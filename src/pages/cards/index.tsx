@@ -46,7 +46,6 @@ export default function Cards() {
               },
               '.fr-subtitle': {
                 fontSize: '12px',
-                // TODO: Make it the same as the other cards
                 color: 'muted-foreground',
               },
             }}
