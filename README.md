@@ -26,6 +26,7 @@ First, copy the sample environment file:
 ```bash
 cp .env.example .env.local
 ```
+
 Then, install the dependencies:
 
 ```bash
@@ -42,7 +43,10 @@ Now, open [http://localhost:3000](http://localhost:3000) with your browser to se
 
 ## Using your own API key and Flows
 
-If you wish to use your own API key, you can replace the `NEXT_PUBLIC_FRIGADE_API_KEY` in the `.env.local` file with your own API key. 
-You will also need to update the Flow IDs found in [src/lib/flow-details.ts](src/lib/flow-details.ts) to match the Flow IDs in your Frigade account.
+If you wish to use your own API key, you can replace the `NEXT_PUBLIC_FRIGADE_API_KEY` in the `.env.local` file with
+your own API key.
+You will also need to update the Flow IDs found in [src/lib/flow-details.ts](src/lib/flow-details.ts) to match the Flow
+IDs in your Frigade account.
 
-All the Flow configurations (i.e. YAML configs) are available in this as well file.
+All the Flow configurations (i.e. YAML) are available in [src/lib/flow-details.ts](src/lib/flow-details.ts), as well.
+You can paste the a configuration into your own Flow via the advanced Flow editor in the web app.

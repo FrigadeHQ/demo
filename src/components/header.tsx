@@ -18,9 +18,6 @@ export function Header() {
         </Link>
 
         <div className="flex items-center dark:via-black static size-auto gap-6">
-          {/*<HeaderLink href={'https://github.com/FrigadeHQ/demo-v2'}>*/}
-          {/*  Source Code*/}
-          {/*</HeaderLink>*/}
           <HeaderLink href={'https://frigade.com?ref=demo'}>Website</HeaderLink>
           <HeaderLink href={'https://docs.frigade.com?ref=demo'}>
             Docs
