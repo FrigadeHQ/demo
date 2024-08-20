@@ -21,10 +21,15 @@ This repo contains the source code for [demo.frigade.com](https://demo.frigade.c
 
 ## Getting Started
 
-First, run the following command:
+First, copy the sample environment file:
 
 ```bash
-...
+cp .env.sample .env.local
+```
+Then, install the dependencies:
+
+```bash
+pnpm install
 ```
 
 Next, run the development server:
@@ -34,3 +39,10 @@ pnpm dev
 ```
 
 Now, open [http://localhost:3000](http://localhost:3000) with your browser to see the demo.
+
+## Using your own API key and Flows
+
+If you wish to use your own API key, you can replace the `NEXT_PUBLIC_FRIGADE_API_KEY` in the `.env.local` file with your own API key. 
+You will also need to update the Flow IDs found in [src/lib/flow-details.ts](src/lib/flow-details.ts) to match the Flow IDs in your Frigade account.
+
+All the Flow configurations (i.e. YAML configs) are available in this as well file.
