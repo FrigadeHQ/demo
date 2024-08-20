@@ -16,64 +16,54 @@ interface VideoFieldProps extends FormFieldProps {
   [key: string]: any;
 }
 
-function VideoField(props: VideoFieldProps) {
-  const [isVideoWatched, setIsVideoWatched] = useState<null | boolean>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const field = props.field;
+const VideoField = React.forwardRef<HTMLVideoElement, VideoFieldProps>(
+  (props, forwardedRef) => {
+    const [isVideoWatched, setIsVideoWatched] = useState<null | boolean>(null);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const field = props.field;
 
-  useEffect(() => {
-    const videoElement = videoRef.current;
+    useEffect(() => {
+      const videoElement = videoRef.current;
 
-    if (videoElement) {
-      const handleTimeUpdate = () => {
-        if (
-          videoElement.currentTime === videoElement.duration &&
-          !isVideoWatched
-        ) {
-          setIsVideoWatched(true);
-          field.onChange({ videoWatched: true });
-          props.formContext?.clearErrors();
-        }
-      };
+      if (videoElement) {
+        const handleTimeUpdate = () => {
+          if (
+            Math.floor(videoElement.currentTime) ===
+              Math.floor(videoElement.duration) &&
+            !isVideoWatched
+          ) {
+            setIsVideoWatched(true);
+            field.onChange({ videoWatched: true });
+            props.formContext?.clearErrors();
+          }
+        };
 
-      videoElement.addEventListener('timeupdate', handleTimeUpdate);
-      return () => {
-        videoElement.removeEventListener('timeupdate', handleTimeUpdate);
-      };
-    }
-  }, []);
+        videoElement.addEventListener('timeupdate', handleTimeUpdate);
+        return () => {
+          videoElement.removeEventListener('timeupdate', handleTimeUpdate);
+        };
+      }
+    }, [field, isVideoWatched, props.formContext]);
 
-  useEffect(() => {
-    if (isVideoWatched) {
-      props.formContext.clearErrors();
-    }
-  }, [isVideoWatched, props.formContext, field.id]);
-
-  useEffect(() => {
-    if (isVideoWatched === null) {
+    useEffect(() => {
       props.formContext?.setError(field.id, {
         type: 'manual',
         message: 'You must watch the entire video to proceed.',
       });
-    } else {
-      props.formContext?.clearErrors();
-    }
-  }, [props.formContext, isVideoWatched, field.id]);
+    }, []);
 
-  return (
-    <div>
-      <video ref={videoRef} width="600" controls className="mb-4">
-        <source
-          src="https://cdn.frigade.com/59e1ae3b-54f6-430f-9dec-7ab0d308924b.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
-      {/*{isVideoWatched === false && (*/}
-      {/*  <p className="text-red-500 text-xs">*/}
-      {/*    Please watch the video to proceed.*/}
-      {/*  </p>*/}
-      {/*)}*/}
-    </div>
-  );
-}
+    return (
+      <div>
+        <video ref={videoRef} width="600" controls className="mb-4">
+          <source
+            src="https://cdn.frigade.com/59e1ae3b-54f6-430f-9dec-7ab0d308924b.mp4"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    );
+  },
+);
+
+VideoField.displayName = 'VideoField';
