@@ -5,15 +5,21 @@ export default function HeadContent() {
     <>
       <Head>
         <title>Frigade Demo</title>
-        <meta content="Frigade Demo" name="description" />
+        <meta
+          content="This demo contains a collection of Frigade pre-built UI components and common onboarding patterns in action."
+          name="description"
+        />
         {/* Open Graph */}
-        <meta property="og:site_name" content="Frigade" />
-        {/*<meta property="og:description" content={description} />*/}
-        <meta property="og:title" content="Frigade" />
-        {/*<meta*/}
-        {/*  property="og:image"*/}
-        {/*  content="https://frigade.com/images/common/og.png"*/}
-        {/*/>*/}
+        <meta property="og:site_name" content="Frigade Demo" />
+        <meta
+          property="og:description"
+          content="This demo contains a collection of Frigade pre-built UI components and common onboarding patterns in action."
+        />
+        <meta property="og:title" content="Frigade Demo" />
+        <meta
+          property="og:image"
+          content="https://demo.frigade.com/images/og.png"
+        />
         <meta name="theme-color" content="#ffffff" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
