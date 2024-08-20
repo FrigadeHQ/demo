@@ -10,7 +10,7 @@ export default function HeadContent() {
           name="description"
         />
         {/* Open Graph */}
-        <meta property="og:site_name" content="Frigade Demo" />
+        <meta property="og:site_name" content="Frigade" />
         <meta
           property="og:description"
           content="This demo contains a collection of Frigade pre-built UI components and common onboarding patterns in action."
