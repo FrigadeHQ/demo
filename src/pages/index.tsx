@@ -7,8 +7,8 @@ export default function Home() {
     <div className="flex flex-col justify-center text-center gap-2">
       <h2 className="font-medium">Welcome to the Frigade demo</h2>
       <p className="text-sm text-muted-foreground max-w-[400px]">
-        We put together a collection of our UI components and patterns to give
-        you a sense of what&apos;s possible.
+        This demo contains a collection of Frigade pre-built UI components and
+        common onboarding patterns in action.
       </p>
       <div className="flex flex-row gap-4 justify-center mt-6">
         <Button asChild>
