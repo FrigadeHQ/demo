@@ -5,7 +5,7 @@ import { Dialog, useFlow } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { ANNOUNCEMENT_CSS } from '@/lib/frigade-styles';
-import { SanityAnnouncement } from '@/components/Sanity/sanity-announcement';
+import { SanityAnnouncement } from '@/components/sanity/sanity-announcement';
 import {
   CUSTOM_MODAL_FLOW_ID,
   MODAL_FLOW_ID,

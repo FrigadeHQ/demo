@@ -309,6 +309,15 @@ steps:
     fields:
       - id: movie-typeahead
         type: movie-typeahead
+  - id: custom-components-video
+    title: Mandatory video
+    subtitle: Please watch the following video to continue
+    primaryButton:
+      title: Continue
+    fields:
+      - id: mandatory-video
+        required: true
+        type: mandatory-video
   - id: contact-us
     title: Learn more
     subtitle: Visit our developer docs to see all Form options, or feel free to grab
