@@ -180,7 +180,7 @@ export function Tours() {
           onClick={async () => {
             setIsResetting(true);
             setIsTourVisible(false);
-            await bannerFlow?.restart();
+            bannerFlow?.restart();
             await tourFlow?.restart();
             setIsResetting(false);
             setIsTourVisible(true);
