@@ -12,12 +12,15 @@ import { MandatoryVideoFormField } from '@/components/custom-form-fields/mandato
 import { FORM_FLOW_ID } from '@/lib/flow-details';
 
 export default function Forms() {
-  const { flow } = useFlow(FORM_FLOW_ID);
+  const { flow, isLoading } = useFlow(FORM_FLOW_ID);
   const [isPaused, setIsPaused] = useState(false);
   const progress =
     (Math.max(flow?.getCurrentStepOrder() || 0, 0.15) /
       (flow?.getNumberOfAvailableSteps() || 1)) *
     100;
+
+  console.log('flow:', flow);
+  console.log('isLoading:', isLoading);
 
   if (!flow) {
     return (
