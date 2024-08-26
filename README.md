@@ -50,3 +50,5 @@ IDs in your Frigade account.
 
 All the Flow configurations (i.e. YAML) are available in [src/lib/flow-details.ts](src/lib/flow-details.ts), as well.
 You can paste the a configuration into your own Flow via the advanced Flow editor in the web app.
+
+
