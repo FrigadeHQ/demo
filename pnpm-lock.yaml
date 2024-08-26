@@ -9,8 +9,8 @@ dependencies:
     specifier: ^0.7.5
     version: 0.7.5
   '@frigade/react':
-    specifier: ^2.4.24
-    version: 2.4.24(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.4.27
+    version: 2.4.27(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -438,14 +438,20 @@ packages:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.4.24(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-PBoNV6yURHc7fvEFiYh7h7rU6zGfW4rjwGm5PI/tn1p4Vtkzie5eBUgaxtYKw4THUvBB5xt1K/3NA1vi/c1/XQ==}
+  /@frigade/js@0.7.7:
+    resolution: {integrity: sha512-4RBISAvjI/785H0+/VYPcon5n5jUT5I2X7JBbLXSAC/TsVLnoI9Nr/QoAf8nK8WOiM88UyfnJjYp+reYNXcIfw==}
+    dependencies:
+      uuid: 9.0.1
+    dev: false
+
+  /@frigade/react@2.4.27(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-Gc8AvoNXKfxaKPFn0VnU65YBg907Pp33yMEuY178WeFyHhKxiemcbfaYd3AoJjHMl5wbt6ldoecksH6O9MzJvg==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.0.0)(react@18.0.0)
-      '@frigade/js': 0.7.5
+      '@frigade/js': 0.7.7
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-collapsible': 1.1.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
