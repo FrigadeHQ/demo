@@ -30,7 +30,6 @@ export default function Forms() {
   if (flow?.isCompleted) {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
-        {/*<h1>Form completed</h1>*/}
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => flow?.restart()}>
             Restart form
@@ -85,6 +84,9 @@ export default function Forms() {
                   <Frigade.Form
                     flowId={FORM_FLOW_ID}
                     className="onboarding-form pt-12"
+                    onComplete={() => {
+                      console.log('Form completed');
+                    }}
                     fieldTypes={{
                       'movie-typeahead': MovieTypeaheadField,
                       'mandatory-video': MandatoryVideoFormField,
