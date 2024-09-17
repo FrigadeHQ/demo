@@ -1,3 +1,49 @@
+export const HINT_FLOW_ID = 'flow_QoSHPAnV';
+//This Flow's config is:
+/**
+steps:
+  - id: new-step-1
+    title: Use Hints to drive adoption
+    subtitle: Hints can be used to call attention to specific UI elements on the page.
+    selector: "#model-card"
+    primaryButton:
+      title: Got it
+      action: step.complete
+    props:
+      align: start
+      side: left
+    secondaryButton:
+      title: View docs
+      action: false
+      uri: https://docs.frigade.com/v2/component/hint
+      target: _blank
+  - id: new-step-2
+    title: Create subtle callouts
+    subtitle: Hints are closed by default. They provide less intrusive user
+      education than pop-ups.
+    selector: "#model"
+    props:
+      align: after
+      side: top
+  - id: new-step-3
+    title: Complete in any order
+    subtitle: Hints tend to be non-sequential, and they can be fully customized and
+      styled.
+    selector: "#top-p"
+    imageUri: https://cdn.frigade.com/bde697dd-445e-4d70-a395-340096a97a29.png
+    props:
+      align: before
+      side: left
+    primaryButton:
+      title: Cool
+      action: step.complete
+    secondaryButton:
+      title: Visit Frigade
+      action: false
+      target: _blank
+      uri: https://frigade.com
+**/
+
 export const USER_FEEDBACK_MODAL_FLOW_ID = 'flow_aI9TTbI6';
 //This Flow's config is:
 /**
@@ -298,9 +344,9 @@ steps:
             value: three
   - id: custom-components
     title: Custom components
-    subtitle: Frigade supports embedding components within forms. The below is a
-      custom component that talks to an external movie API and populates the
-      dropdown list dynamically.
+    subtitle: Frigade supports embedding components within forms. This page of the
+      form is a custom component that talks to an external movie API and
+      populates the dropdown list dynamically.
     secondaryButton:
       title: Back
       action: flow.back

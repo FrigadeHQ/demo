@@ -9,8 +9,8 @@ dependencies:
     specifier: latest
     version: 0.7.9
   '@frigade/react':
-    specifier: ^2.5.5
-    version: 2.5.5(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.5.8
+    version: 2.5.8(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -451,8 +451,8 @@ packages:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.5.5(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-W4/obAUYWooE1hqdiZwB5LvzmdLxHyFN2wPA6U0FzAcCf6zXOuzlLbN1+u1IkbXjB8xVcGtXSZfYA+w9XRK+tA==}
+  /@frigade/react@2.5.8(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-VGEBXF1qNY6PETjRm1SPGoa+48XOkm9pEhSOHkZxJ6asEdVZ3AcVPugimsf1Pz0iZ+DQBYqYY7p7vbjE4rwanw==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18

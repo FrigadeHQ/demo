@@ -4,7 +4,7 @@ import {stringify} from 'yaml';
 import fs from 'fs';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: '.env.local' });
+dotenv.config({path: '.env.local'});
 
 if (!process.env.NEXT_PUBLIC_FRIGADE_API_KEY) {
   throw new Error('Missing NEXT_PUBLIC_FRIGADE_API_KEY');
@@ -14,6 +14,7 @@ const frigade = new Frigade(process.env.NEXT_PUBLIC_FRIGADE_API_KEY);
 
 const demoFlowIds = {
   "flow_F0MP8vnI": "TOUR_FLOW_ID",
+  "flow_QoSHPAnV": "HINT_FLOW_ID",
   "flow_LrVN8xha": "BANNER_FLOW_ID",
   "flow_kTB2fci9": "FORM_FLOW_ID",
   "flow_lSjFTcXz": "CHECKLIST_FLOW_ID",
