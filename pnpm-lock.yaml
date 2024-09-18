@@ -7,10 +7,10 @@ settings:
 dependencies:
   '@frigade/js':
     specifier: latest
-    version: 0.7.9
+    version: 0.7.10
   '@frigade/react':
-    specifier: ^2.5.9
-    version: 2.5.9(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.5.10
+    version: 2.5.10(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -451,14 +451,8 @@ packages:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/js@0.7.9:
-    resolution: {integrity: sha512-nj/i/FDhHIIoKaArQ1PTa4cDTQLzrmY7CnE7b+MLwqkrygzZgxwXIiuRsEHYqJ8oDyymx+gJHodIaCT2iN/8/A==}
-    dependencies:
-      uuid: 9.0.1
-    dev: false
-
-  /@frigade/react@2.5.9(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-QCVaquFDfOcDIjNsnOEL2+mK8hcUg6yfqFEwAv7Ozf7efSUG3khwffJidH+UDTUtd/kXv4FV86RdqqXD6LUjwg==}
+  /@frigade/react@2.5.10(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-YT9T6HqnskDhbzOAgykoOZBksNzTbhkjDe/JsXUB1DJJO0hZHWW79EpaqcgI3i0AFe0U1RaYx0hYFHXyUsLprA==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18

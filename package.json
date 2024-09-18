@@ -11,7 +11,7 @@
     "format:fix": "prettier --write --ignore-path .gitignore ."
   },
   "dependencies": {
-    "@frigade/react": "^2.5.9",
+    "@frigade/react": "^2.5.10",
     "@frigade/js": "latest",
     "@nextui-org/react": "^2.4.6",
     "@radix-ui/react-dialog": "^1.1.1",
