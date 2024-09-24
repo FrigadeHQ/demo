@@ -160,8 +160,14 @@ export function Tours() {
                   >
                     <ToggleGroupItem value="s">S</ToggleGroupItem>
                     <ToggleGroupItem
-                      onClick={() => tourFlow.getCurrentStep()?.complete()}
                       value="m"
+                      onClick={() => {
+                        if (
+                          tourFlow.getCurrentStep()?.id === 'tour-step-three'
+                        ) {
+                          tourFlow.getCurrentStep()?.complete();
+                        }
+                      }}
                     >
                       M
                     </ToggleGroupItem>
