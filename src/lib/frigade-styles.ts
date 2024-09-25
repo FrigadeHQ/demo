@@ -18,20 +18,20 @@ const frigadePromoCardStyles = {
 };
 
 export const ANNOUNCEMENT_CSS = {
-  '.fr-dialog:not(.sdk-preview):not(.sdk-preview *)': {
+  '.fr-dialog': {
     overflow: 'hidden',
     borderRadius: '8px',
     outline: 'none',
 
-    '&:after:not(.sdk-preview):not(.sdk-preview *)': {
+    '&:after': {
       content: '"<Frigade.Announcement />"',
       ...frigadePromoCardStyles,
     },
   },
-  '.fr-announcement-header:not(.sdk-preview):not(.sdk-preview *)': {
+  '.fr-announcement-header': {
     order: 2,
   },
-  '.fr-image:not(.sdk-preview):not(.sdk-preview *)': {
+  '.fr-image': {
     order: 0,
     borderBottom: '1px solid var(--fr-colors-neutral-border)',
     borderRadius: '8px 8px 0 0',
@@ -40,10 +40,10 @@ export const ANNOUNCEMENT_CSS = {
     width: 'calc(100% + 64px)',
     maxWidth: 'calc(100% + 64px)',
   },
-  '.fr-progress:not(.sdk-preview):not(.sdk-preview *)': {
+  '.fr-progress': {
     order: 1,
   },
-  '.fr-announcement-footer:not(.sdk-preview):not(.sdk-preview *)': {
+  '.fr-announcement-footer': {
     order: 3,
   },
   '.fr-button-primary': {

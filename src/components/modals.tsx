@@ -47,7 +47,7 @@ export function Modals() {
         onClick={async () => {
           setIsResetting(true);
           resetModals();
-          await modalFlow.restart();
+          await modalFlow?.restart();
           setModalFlowVisible(true);
           setIsResetting(false);
         }}
@@ -61,7 +61,7 @@ export function Modals() {
         onClick={async () => {
           setIsResetting(true);
           resetModals();
-          await styledModal.restart();
+          await styledModal?.restart();
           setStyledModalVisible(true);
           setIsResetting(false);
         }}
@@ -75,7 +75,7 @@ export function Modals() {
         onClick={async () => {
           setIsResetting(true);
           resetModals();
-          await customModal.restart();
+          await customModal?.restart();
           setCustomModalVisible(true);
           setIsResetting(false);
         }}
@@ -89,7 +89,7 @@ export function Modals() {
         onClick={async () => {
           setIsResetting(true);
           resetModals();
-          await userFeedBackModal.restart();
+          await userFeedBackModal?.restart();
           setIsUserFeedbackVisible(true);
           setIsResetting(false);
         }}
@@ -103,7 +103,7 @@ export function Modals() {
         onClick={async () => {
           setIsResetting(true);
           resetModals();
-          await npsModal.restart();
+          await npsModal?.restart();
           setIsNPSVisible(true);
           setIsResetting(false);
         }}

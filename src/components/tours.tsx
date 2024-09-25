@@ -93,9 +93,9 @@ export function Tours() {
                       (e) => {
                         if (
                           parseInt(e.target.value) > 100 &&
-                          tourFlow.getCurrentStep()?.id === 'tour-step-two'
+                          tourFlow?.getCurrentStep()?.id === 'tour-step-two'
                         ) {
-                          tourFlow.getCurrentStep()?.complete();
+                          tourFlow?.getCurrentStep()?.complete();
                         }
                       }
                     }
@@ -163,9 +163,9 @@ export function Tours() {
                       value="m"
                       onClick={() => {
                         if (
-                          tourFlow.getCurrentStep()?.id === 'tour-step-three'
+                          tourFlow?.getCurrentStep()?.id === 'tour-step-three'
                         ) {
-                          tourFlow.getCurrentStep()?.complete();
+                          tourFlow?.getCurrentStep()?.complete();
                         }
                       }}
                     >
