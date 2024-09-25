@@ -7,10 +7,10 @@ settings:
 dependencies:
   '@frigade/js':
     specifier: latest
-    version: 0.7.10
+    version: 0.7.14
   '@frigade/react':
-    specifier: ^2.5.10
-    version: 2.5.10(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.5.15
+    version: 2.5.15(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -445,21 +445,21 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /@frigade/js@0.7.10:
-    resolution: {integrity: sha512-re7MXUxgF1e4PB3J/fOdu1C+7R3H7r9KX8BLUcfrcH/jezY11AKlSZJ2wj3eVb8avOEaakHj5NH5DtAKwe56ZQ==}
+  /@frigade/js@0.7.14:
+    resolution: {integrity: sha512-kjWWKaJZ9zUBD+o6TbjE9DQLfWSULjjEjp/C5GiCdyNh2DXjL+bV8L3DkGlK9ul1jClp1srG1ZntSQPJijmjoQ==}
     dependencies:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.5.10(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-YT9T6HqnskDhbzOAgykoOZBksNzTbhkjDe/JsXUB1DJJO0hZHWW79EpaqcgI3i0AFe0U1RaYx0hYFHXyUsLprA==}
+  /@frigade/react@2.5.15(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-R/ozkeYEmXEakn2aUXU+saFOjxQBrRN8DQxQdtI4MrYs6HiY9nSw/y17Y2NT/M0YGwNReU++tYgOjaVxbKMAcA==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.0.0)(react@18.0.0)
       '@floating-ui/react': 0.26.23(react-dom@18.0.0)(react@18.0.0)
-      '@frigade/js': 0.7.10
+      '@frigade/js': 0.7.14
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-collapsible': 1.1.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
@@ -467,7 +467,6 @@ packages:
       '@radix-ui/react-radio-group': 1.2.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-select': 2.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       clsx: 2.1.1
-      core-js-pure: 3.38.0
       dompurify: 3.1.6
       embla-carousel-react: 8.1.8(react@18.0.0)
       jsdom: 23.2.0
@@ -5042,11 +5041,6 @@ packages:
 
   /convert-source-map@1.9.0:
     resolution: {integrity: sha512-ASFBup0Mz1uyiIjANan1jzLQami9z1PoYSZCiiYW2FczPbenXc45FZdBZLzOT+r6+iciuEModtmCti+hjaAk0A==}
-    dev: false
-
-  /core-js-pure@3.38.0:
-    resolution: {integrity: sha512-8balb/HAXo06aHP58mZMtXgD8vcnXz9tUDePgqBgJgKdmTlMt+jw3ujqniuBDQXMvTzxnMpxHFeuSM3g1jWQuQ==}
-    requiresBuild: true
     dev: false
 
   /cosmiconfig@7.1.0:
