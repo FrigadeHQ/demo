@@ -8,7 +8,7 @@ import { CHECKLIST_FLOW_ID } from '@/lib/flow-details';
 export default function Checklists() {
   // set two constants for two different Frigade Flows
   const { flow } = useFlow(CHECKLIST_FLOW_ID);
-  const { addProperties } = useUser();
+  const { addProperties, track } = useUser();
 
   return (
     <div className="items-center justify-center flex flex-col w-full mt-4">
@@ -33,7 +33,9 @@ export default function Checklists() {
           variant="default"
           className="flex"
           onClick={async () => {
-            flow?.steps.get('checklist-step-two')?.complete();
+            // this step is completed via a tracking event using completionCriteria
+            // https://docs.frigade.com/v2/sdk/advanced/completing-a-step#automatically-marking-steps-complete
+            track('My Custom Event');
           }}
         >
           User action
