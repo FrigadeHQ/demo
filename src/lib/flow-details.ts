@@ -19,8 +19,8 @@ steps:
       target: _blank
   - id: new-step-2
     title: Create subtle callouts
-    subtitle: Hints are closed by default. They provide less intrusive user
-      education than pop-ups.
+    subtitle: Hints are closed by default. They provide user education in a less
+      intrusive way than pop-ups.
     selector: "#model"
     props:
       align: after
@@ -173,11 +173,18 @@ steps:
       tab in your browser.
     primaryButton:
       title: Mark complete
+      action: step.complete
+    secondaryButton:
+      title: Learn more
+      action: false
+      uri: https://frigade.com
+      target: _blank
   - id: checklist-step-two
     title: Dynamic Completion
     subtitle: Sometimes you want to mark a step complete after the user completes a
       specific action. Frigade makes this easy. Complete this step by selecting
       <strong>`User action`</strong> below.
+    completionCriteria: user.event('My Custom Event').count > 0
     secondaryButton:
       title: Learn more
       action: false
@@ -281,7 +288,7 @@ steps:
         type: radio
         required: true
         options:
-          - label: Show me a dropdown
+          - label: "Show me a dropdown "
             value: dropdown
           - label: Show me a text input
             value: text
