@@ -37,7 +37,7 @@ export function resetAllIds() {
   window.location.href = '/';
 }
 
-function generateNewUserId() {
+export function generateNewUserId() {
   localStorage.setItem(localStorageFieldUserId, getRandomString());
 }
 
