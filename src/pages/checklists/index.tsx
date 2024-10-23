@@ -4,18 +4,14 @@ import { useFlow, useUser } from '@frigade/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CHECKLIST_FLOW_ID } from '@/lib/flow-details';
-import { useEffect, useState } from 'react';
-import { generateNewUserId } from '../../lib/utils';
-import { useRouter } from 'next/router';
 
 export default function Checklists() {
   // set two constants for two different Frigade Flows
   const { flow } = useFlow(CHECKLIST_FLOW_ID);
-  const { addProperties, track } = useUser();
-  const router = useRouter();
+  const { addProperties } = useUser();
 
   return (
-    <div className="items-center justify-center flex flex-col w-full mt-16">
+    <div className="items-center justify-center flex flex-col w-full mt-4">
       <Frigade.Checklist.Carousel
         flowId={CHECKLIST_FLOW_ID}
         forceMount={true}
@@ -37,9 +33,7 @@ export default function Checklists() {
           variant="default"
           className="flex"
           onClick={async () => {
-            // this step is completed via a tracking event using completionCriteria
-            // https://docs.frigade.com/v2/sdk/advanced/completing-a-step#automatically-marking-steps-complete
-            track('My Custom Event');
+            flow?.steps.get('checklist-step-two')?.complete();
           }}
         >
           User action
@@ -59,10 +53,9 @@ export default function Checklists() {
           variant="ghost"
           className="flex"
           onClick={async () => {
-            // We need to reset the user ID because tracking events are associated with the user ID
-            localStorage.clear();
-            // Refresh the page to reset the component
-            router.reload();
+            await addProperties({ hasFinishedStepFour: false });
+            await flow?.restart();
+            document.querySelector('input')!.value = '';
           }}
         >
           Reset checklist
