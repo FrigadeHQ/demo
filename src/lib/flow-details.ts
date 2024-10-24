@@ -184,7 +184,6 @@ steps:
     subtitle: Sometimes you want to mark a step complete after the user completes a
       specific action. Frigade makes this easy. Complete this step by selecting
       <strong>`User action`</strong> below.
-    completionCriteria: user.event('My Custom Event').count > 0
     secondaryButton:
       title: Learn more
       action: false

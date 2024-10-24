@@ -11,7 +11,7 @@ export default function Checklists() {
   const { addProperties } = useUser();
 
   return (
-    <div className="items-center justify-center flex flex-col w-full mt-4">
+    <div className="items-center justify-center flex flex-col w-full mt-16">
       <Frigade.Checklist.Carousel
         flowId={CHECKLIST_FLOW_ID}
         forceMount={true}
