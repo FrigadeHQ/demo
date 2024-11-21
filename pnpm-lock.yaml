@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@frigade/react':
-    specifier: ^2.5.25
-    version: 2.5.25(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.6.0
+    version: 2.6.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -442,21 +442,21 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /@frigade/js@0.7.21:
-    resolution: {integrity: sha512-GdqBQUyrDLjLxD2D++VBCqG/7CFGIxJGLj8SO3xDNsQ4HVEEU0DjKXeN+Y/xL+DddvCrXgyub7Nk01nRwr1H2w==}
+  /@frigade/js@0.7.22:
+    resolution: {integrity: sha512-Ij0KVpsOyAShQ3re4pFUT58JkLFhFFSFc1XPFUyZnrO1nVfriVw00D87W/RX1kYi9hKfrMABRQKwtgKzRYtEvw==}
     dependencies:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.5.25(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-WY2RNA3tZruOmSLO7GBEEvcYxYCzkbhiEDj8onCZm1geHttSy9fJiNN+0Zs+6AsS0Dtsvc7YjRBnWsiK39Ygng==}
+  /@frigade/react@2.6.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-duceUhFrCQiQavOCb/cHw0u9NowBNr+ylT4pTTQUumk3NQFya/MiOSUSQJvt23j2HrUMVIAEtvmvyRjS424bbw==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.0.0)(react@18.0.0)
       '@floating-ui/react': 0.26.23(react-dom@18.0.0)(react@18.0.0)
-      '@frigade/js': 0.7.21
+      '@frigade/js': 0.7.22
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-collapsible': 1.1.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
@@ -1264,7 +1264,7 @@ packages:
       framer-motion: 11.3.24(react-dom@18.0.0)(react@18.0.0)
       react: 18.0.0
       react-dom: 18.0.0(react@18.0.0)
-      react-remove-scroll: 2.5.7(@types/react@18.0.0)(react@18.0.0)
+      react-remove-scroll: 2.6.0(@types/react@18.0.0)(react@18.0.0)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
@@ -1321,7 +1321,7 @@ packages:
       framer-motion: 11.3.24(react-dom@18.0.0)(react@18.0.0)
       react: 18.0.0
       react-dom: 18.0.0(react@18.0.0)
-      react-remove-scroll: 2.5.7(@types/react@18.0.0)(react@18.0.0)
+      react-remove-scroll: 2.6.0(@types/react@18.0.0)(react@18.0.0)
     transitivePeerDependencies:
       - '@types/react'
     dev: false
