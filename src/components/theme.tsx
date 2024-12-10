@@ -34,16 +34,16 @@ const frameworks = [
     label: 'Windows',
   },
   {
+    value: 'spotify',
+    label: 'Spotify',
+  },
+  {
     value: 'vaporwave',
     label: 'Vaporwave',
   },
   {
     value: 'linear',
     label: 'Linear',
-  },
-  {
-    value: 'spotify',
-    label: 'Spotify',
   },
 ];
 
