@@ -11,10 +11,10 @@ export default function Home() {
         common onboarding patterns in action.
       </p>
       <div className="flex flex-row gap-4 justify-center mt-6">
-        <Button asChild>
+        <Button asChild className="fr-button-primary">
           <Link href="/forms">Begin</Link>
         </Button>
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild className="fr-button-secondary">
           <Link
             href="https://cal.com/team/frigade/frigade-demo"
             target="_blank"
