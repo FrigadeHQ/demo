@@ -60,7 +60,7 @@ export function Tours() {
         dismissible={true}
         className="flex flex-row gap-4 w-full rounded-xl border border-muted bg-card text-card-foreground shadow"
       />
-      <Card className="border-muted">
+      <Card className="border-muted fr-card">
         <CardHeader>
           <CardTitle>Demo card</CardTitle>
           <CardDescription id="demo-card-subtitle">
@@ -181,7 +181,7 @@ export function Tours() {
       </Card>
       <div className="flex flex-row gap-4 w-full">
         <Button
-          className="flex w-full"
+          className="flex w-full fr-button-secondary"
           disabled={isResetting}
           onClick={async () => {
             setIsResetting(true);

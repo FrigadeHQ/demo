@@ -22,7 +22,7 @@ export default function Cards() {
             <Frigade.Banner
               flowId={BANNER_CARD_FLOW_ID}
               dismissible={false}
-              className="!rounded-xl border !border-muted bg-card text-card-foreground shadow col-span-4"
+              className="rounded-xl border !border-muted bg-card text-card-foreground shadow col-span-4"
             />
           )}
           {showCard && (
@@ -35,7 +35,7 @@ export default function Cards() {
           <Frigade.Card
             flowId={CARD_FLOW_ID}
             dismissible={true}
-            className="!rounded-xl border !border-muted bg-card text-card-foreground shadow w-[200px] col-span-1"
+            className="rounded-xl border !border-muted bg-card text-card-foreground shadow w-[200px] col-span-1"
             css={{
               '.fr-card-footer:not(:has(button))': {
                 display: 'none',
@@ -64,7 +64,7 @@ export default function Cards() {
         <div className="flex flex-row w-full justify-center">
           {/*on click, reset flowOne and flowTwo*/}
           <Button
-            className="flex"
+            className="flex fr-button-secondary"
             variant="outline"
             onClick={async () => {
               setShowBanner(false);

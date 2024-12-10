@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <NextThemesProvider
         attribute="class"
         defaultTheme="light"
-        themes={['light', 'dark', 'vaporwave']}
+        themes={['light', 'dark', 'windows', 'vaporwave', 'linear', 'spotify']}
       >
         <Frigade.Provider
           apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}

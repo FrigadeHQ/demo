@@ -71,7 +71,7 @@ export function MovieTypeaheadField({ field }: FormFieldProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between fr-field-select"
         >
           {movies.find((movie) => movie.title === field.value)?.title ??
             'Search for your favorite movie...'}
@@ -79,7 +79,7 @@ export function MovieTypeaheadField({ field }: FormFieldProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
-        <Command>
+        <Command className="fr-card">
           <CommandInput
             placeholder="Search for a movie..."
             value={field.value || ''}
@@ -87,7 +87,7 @@ export function MovieTypeaheadField({ field }: FormFieldProps) {
               field.onChange(value);
               setOpen(true);
             }}
-            className="w-[410px]"
+            className="w-[410px] fr-field-text"
           />
           <CommandList>
             {loading ? (

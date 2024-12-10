@@ -30,8 +30,20 @@ const frameworks = [
     label: 'Dark',
   },
   {
+    value: 'windows',
+    label: 'Windows',
+  },
+  {
     value: 'vaporwave',
     label: 'Vaporwave',
+  },
+  {
+    value: 'linear',
+    label: 'Linear',
+  },
+  {
+    value: 'spotify',
+    label: 'Spotify',
   },
 ];
 
@@ -58,7 +70,7 @@ export function ThemeDropdown() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[160px] justify-between"
+          className="w-[160px] justify-between fr-button-secondary"
         >
           {value
             ? frameworks.find((framework) => framework.value === value)?.label
@@ -67,7 +79,7 @@ export function ThemeDropdown() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <Command>
+        <Command className="fr-dropdown">
           <CommandList>
             <CommandEmpty>No framework found.</CommandEmpty>
             <CommandGroup>

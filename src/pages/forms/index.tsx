@@ -31,7 +31,11 @@ export default function Forms() {
     return (
       <div className="flex items-center justify-center w-full h-full flex-col gap-4">
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => flow?.restart()}>
+          <Button
+            variant="outline"
+            onClick={() => flow?.restart()}
+            className="fr-button-secondary"
+          >
             Restart form
           </Button>
           <Button
@@ -41,6 +45,7 @@ export default function Forms() {
                 '_blank',
               )
             }
+            className="fr-button-primary"
           >
             Start building
           </Button>
@@ -52,7 +57,7 @@ export default function Forms() {
   if (isPaused) {
     return (
       <div className="flex items-center justify-center w-full h-full">
-        <div className="w-[200px] text-sm flex flex-col gap-4 border rounded-md overflow-hidden p-4">
+        <div className="w-[200px] text-sm flex flex-col gap-4 border rounded-md overflow-hidden p-4 fr-card">
           <div className="text-xs">
             <strong>{flow?.getCurrentStepOrder()}</strong> of{' '}
             <strong>{flow?.getNumberOfAvailableSteps()}</strong> steps completed
@@ -60,7 +65,11 @@ export default function Forms() {
 
           {/*<Progress value={progress} />*/}
 
-          <Button onClick={() => setIsPaused(false)} size="sm">
+          <Button
+            onClick={() => setIsPaused(false)}
+            size="sm"
+            className="fr-button-primary"
+          >
             Resume form
           </Button>
         </div>
@@ -72,8 +81,11 @@ export default function Forms() {
     <>
       <div className="relative flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-4 lg:px-0">
         <div className="col-span-4">
-          <Card className="md:w-[500px] bg-card w-full flex flex-col justify-center mx-auto shadow-sm pb-5 overflow-hidden">
-            <Progress value={progress} className="rounded-none" />
+          <Card className="md:w-[500px] bg-card w-full flex flex-col justify-center mx-auto shadow-sm pb-5 overflow-hidden fr-card">
+            <Progress
+              value={progress}
+              className="rounded-none fr-progress-bar"
+            />
             <div className="flex flex-col justify-center space-y-6 w-full px-5">
               {flow?.isCompleted || !flow ? (
                 <div className="flex items-center justify-center w-full h-full">
@@ -132,6 +144,7 @@ export default function Forms() {
                       onClick={() => {
                         setIsPaused(true);
                       }}
+                      className="fr-button-secondary"
                     >
                       <p className="text-muted-foreground text-sm">Do later</p>
                     </Frigade.Button.Link>

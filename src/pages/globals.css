@@ -36,11 +36,15 @@
       height: 100%;
       width: 100%;
       background-image: linear-gradient(
-        to right,
-        rgba(161, 161, 161, 0.07) 1px,
-        transparent 1px
-      ),
-      linear-gradient(to bottom, rgba(161, 161, 161, 0.07) 1px, transparent 1px);
+          to right,
+          rgba(161, 161, 161, 0.07) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          to bottom,
+          rgba(161, 161, 161, 0.07) 1px,
+          transparent 1px
+        );
       background-size: 32px 32px;
       -webkit-mask-image: linear-gradient(0deg, #fff, hsla(0, 0%, 100%, 0.6));
       mask-image: linear-gradient(0deg, #fff, hsla(0, 0%, 100%, 0.6));
@@ -75,30 +79,1108 @@
   }
 
   .vaporwave {
-    --background: 255 0% 10%; /* Dark purple */
-    --foreground: 330 100% 90%; /* Neon pink */
-    --card: 255 0% 10%; /* Dark purple */
-    --card-foreground: 330 100% 90%; /* Neon pink */
-    --popover: 255 0% 10%; /* Dark purple */
-    --popover-foreground: 330 100% 90%; /* Neon pink */
-    --primary: 330 100% 90%; /* Neon pink */
-    --primary-foreground: 255 0% 10%; /* Dark purple */
-    --secondary: 200 100% 50%; /* Bright cyan */
-    --secondary-foreground: 330 100% 90%; /* Neon pink */
-    --muted: 200 100% 50%; /* Bright cyan */
-    --muted-foreground: 330 100% 90%; /* Neon pink */
-    --accent: 280 100% 50%; /* Bright blue */
-    --accent-foreground: 330 100% 90%; /* Neon pink */
+    --background: 300 100% 95%; /* Soft pink */
+    --foreground: 315 80% 40%; /* Deep magenta */
+    --card: 270 100% 97%; /* Light purple */
+    --card-foreground: 315 80% 40%; /* Deep magenta */
+    --popover: 270 100% 97%; /* Light purple */
+    --popover-foreground: 315 80% 40%; /* Deep magenta */
+    --primary: 315 100% 60%; /* Hot pink */
+    --primary-foreground: 180 100% 95%; /* Cyan */
+    --secondary: 180 100% 50%; /* Bright cyan */
+    --secondary-foreground: 315 80% 40%; /* Deep magenta */
+    --muted: 270 30% 90%; /* Muted purple */
+    --muted-foreground: 315 40% 60%; /* Muted pink */
+    --accent: 225 100% 70%; /* Bright purple */
+    --accent-foreground: 180 100% 95%; /* Cyan */
+    --destructive: 0 100% 65%; /* Coral red */
+    --destructive-foreground: 180 100% 95%; /* Cyan */
+    --border: 315 50% 85%; /* Light pink border */
+    --input: 270 100% 97%; /* Light purple */
+    --ring: 315 100% 60%; /* Hot pink */
+    --chart-1: 315 100% 60%; /* Hot pink */
+    --chart-2: 180 100% 50%; /* Bright cyan */
+    --chart-3: 270 100% 70%; /* Bright purple */
+    --chart-4: 45 100% 75%; /* Pastel yellow */
+    --chart-5: 195 100% 65%; /* Ocean blue */
+
+    font-family: 'VT323', 'Helvetica', monospace;
+
+    .fr-button-primary {
+      background: linear-gradient(
+        180deg,
+        #ff6ad5 0%,
+        #c774e8 50%,
+        #ad8cff 100%
+      );
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #0ff;
+      color: #fff;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 8px 16px;
+      text-shadow: 2px 2px 0 #ff71ce;
+    }
+
+    .fr-button-secondary {
+      background: linear-gradient(
+        180deg,
+        #05ffa1 0%,
+        #00ffff 50%,
+        #00b3ff 100%
+      );
+      border: 2px solid #0ff;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #ff71ce;
+      color: #fff;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 8px 16px;
+      text-shadow: 2px 2px 0 #0ff;
+    }
+
+    .fr-button-secondary:hover {
+      color: #fff;
+    }
+
+    .fr-progress-bar {
+      background: #000;
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #0ff;
+      height: 24px;
+      overflow: hidden;
+    }
+
+    .fr-progress-bar-fill {
+      background: linear-gradient(90deg, #ff71ce 0%, #01cdfe 50%, #05ffa1 100%);
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 0;
+    }
+
+    .fr-button-plain {
+      background: #000;
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #0ff;
+      color: #fff;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 8px 16px;
+      text-shadow: 2px 2px 0 #ff71ce;
+    }
+
+    .fr-card {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      box-shadow:
+        4px 4px 0 #0ff,
+        inset 0 0 20px #ff71ce;
+      padding: 16px;
+      font-family: 'VT323', monospace;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .fr-dropdown {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      box-shadow:
+        4px 4px 0 #0ff,
+        inset 0 0 20px #ff71ce;
+      padding: 4px;
+      font-family: 'VT323', monospace;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .fr-carousel-prev-wrapper {
+      background: none !important;
+    }
+
+    .fr-carousel-next-wrapper {
+      background: none !important;
+    }
+
+    .fr-ping {
+      animation: ping 1s ease-in-out infinite;
+      background: linear-gradient(45deg, #ff71ce 0%, #01cdfe 50%, #05ffa1 100%);
+      border: 2px solid #fff;
+      border-radius: 0;
+      box-shadow: 4px 4px 0 #0ff;
+      color: #fff;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      padding: 8px 12px;
+      position: absolute;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .fr-ping-pulse {
+      display: none;
+    }
+
+    .fr-field-radio,
+    .fr-field-text,
+    .fr-field-select,
+    .fr-field-textarea,
+    .fr-field-check {
+      background: #000;
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      padding: 8px;
+      box-shadow: 4px 4px 0 #0ff;
+      font-family: 'VT323', monospace;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .fr-field-radio-value {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      background: #000;
+      box-shadow: 4px 4px 0 #0ff;
+      font-family: 'VT323', monospace;
+    }
+
+    .fr-field-radio-value[data-state='checked'] {
+      background: linear-gradient(45deg, #ff71ce 0%, #01cdfe 50%, #05ffa1 100%);
+      box-shadow:
+        4px 4px 0 #0ff,
+        inset 0 0 20px #ff71ce;
+      border-radius: 0;
+    }
+
+    .fr-field-radio-value[data-state='checked'],
+    .fr-field-radio-value[data-state='checked'] > * {
+      background: linear-gradient(45deg, #ff71ce 0%, #01cdfe 50%, #05ffa1 100%);
+      border-color: #ff71ce;
+      border-radius: 0;
+    }
+
+    .fr-check-indicator-checked {
+      background: linear-gradient(45deg, #ff71ce 0%, #01cdfe 50%, #05ffa1 100%);
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      box-shadow:
+        4px 4px 0 #0ff,
+        inset 0 0 20px #ff71ce;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .fr-check-indicator {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ff71ce;
+      border-radius: 0;
+      background: #000;
+      box-shadow: 4px 4px 0 #0ff;
+    }
+
+    @keyframes ping {
+      0% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+      50% {
+        opacity: 0.8;
+        transform: scale(1.1) rotate(5deg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+  }
+
+  .linear {
+    --background: 0 0% 7%; /* Linear dark background */
+    --foreground: 0 0% 98%; /* Off-white text */
+    --card: 0 0% 10%; /* Slightly lighter card background */
+    --card-foreground: 0 0% 98%; /* Off-white text */
+    --popover: 0 0% 10%; /* Slightly lighter popover background */
+    --popover-foreground: 0 0% 98%; /* Off-white text */
+    --primary: 220 90% 60%; /* Linear blue */
+    --primary-foreground: 0 0% 98%; /* Off-white text */
+    --secondary: 0 0% 15%; /* Dark gray secondary */
+    --secondary-foreground: 0 0% 98%; /* Off-white text */
+    --muted: 0 0% 15%; /* Dark gray muted */
+    --muted-foreground: 0 0% 60%; /* Light gray muted text */
+    --accent: 220 90% 60%; /* Linear blue */
+    --accent-foreground: 0 0% 98%; /* Off-white text */
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 98%; /* Off-white text */
+    --border: 0 0% 15%; /* Dark border */
+    --input: 0 0% 10%; /* Dark input */
+    --ring: 220 90% 60%; /* Linear blue */
+    --chart-1: 220 90% 60%; /* Linear blue */
+    --chart-2: 280 90% 60%; /* Purple */
+    --chart-3: 330 90% 60%; /* Pink */
+    --chart-4: 35 90% 60%; /* Orange */
+    --chart-5: 0 84% 60%; /* Red */
+
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkSpotifySystemFont,
+      sans-serif;
+
+    .fr-button-primary {
+      background: hsl(220, 90%, 60%);
+      border: none;
+      border-radius: 8px;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      text-shadow: none;
+      transition: all 0.2s ease;
+    }
+
+    .fr-button-secondary {
+      background: transparent;
+      border: 1px solid hsl(0, 0%, 20%);
+      border-radius: 8px;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      text-shadow: none;
+      transition: all 0.2s ease;
+    }
+
+    .fr-button-secondary:hover {
+      border-color: hsl(0, 0%, 30%);
+      background: hsl(0, 0%, 12%);
+    }
+
+    .fr-progress-bar {
+      background: hsl(0, 0%, 15%);
+      border: none;
+      border-radius: 4px;
+      box-shadow: none;
+      height: 4px;
+      overflow: hidden;
+    }
+
+    .fr-progress-bar-fill {
+      background: hsl(220, 90%, 60%);
+      height: 100%;
+      transition: width 0.2s ease;
+      border-radius: 4px;
+      box-shadow: none;
+    }
+
+    .fr-button-plain {
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 16px;
+      text-shadow: none;
+      transition: all 0.2s ease;
+    }
+
+    .fr-card {
+      background: hsl(0, 0%, 10%);
+      border: 1px solid hsl(0, 0%, 15%);
+      border-radius: 8px;
+      box-shadow: none;
+      padding: 16px;
+      font-family: inherit;
+      color: #fff;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .fr-dropdown {
+      background: hsl(0, 0%, 10%);
+      border: 1px solid hsl(0, 0%, 15%);
+      border-radius: 8px;
+      box-shadow: none;
+      padding: 4px;
+      font-family: inherit;
+      color: #fff;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .fr-carousel-prev-wrapper {
+      background: none !important;
+    }
+
+    .fr-carousel-next-wrapper {
+      background: none !important;
+    }
+
+    .fr-ping {
+      animation: ping 1s ease-in-out infinite;
+      background: hsl(220, 90%, 60%);
+      border: none;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      position: absolute;
+      text-shadow: none;
+    }
+
+    .fr-progress-dot-selected {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #5e6ad2;
+      margin: 0 4px;
+      transition: all 0.2s ease;
+    }
+
+    .fr-progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      fill: #2e3856;
+      margin: 0 4px;
+      transition: all 0.2s ease;
+    }
+
+    .fr-field-radio,
+    .fr-field-text,
+    .fr-field-select,
+    .fr-field-textarea,
+    .fr-field-check {
+      border: 1px solid hsl(0, 0%, 15%);
+      border-radius: 8px;
+      padding: 8px 12px;
+      background: hsl(0, 0%, 10%);
+      box-shadow: none;
+      font-family: inherit;
+      font-size: 14px;
+      color: #fff;
+      transition: all 0.2s ease;
+    }
+
+    .fr-check-indicator-checked {
+      background: hsl(220, 90%, 60%);
+      border: none;
+      border-radius: 4px;
+      box-shadow: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .fr-check-indicator {
+      width: 16px;
+      height: 16px;
+      border: 1px solid hsl(0, 0%, 15%);
+      border-radius: 4px;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .fr-field-check-value:checked {
+      background: hsl(220, 90%, 60%);
+      box-shadow: none;
+      border-radius: 4px;
+    }
+
+    .fr-field-radio-value {
+      width: 16px;
+      height: 16px;
+      border: 1px solid hsl(0, 0%, 15%);
+      border-radius: 50%;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .fr-field-radio-value[data-state='checked'] {
+      background: hsl(220, 90%, 60%);
+      box-shadow: none;
+      border-radius: 50%;
+    }
+
+    .fr-field-radio-value[data-state='checked'],
+    .fr-field-radio-value[data-state='checked'] > * {
+      background: hsl(220, 90%, 60%);
+      border-color: hsl(220, 90%, 60%);
+      border-radius: 50%;
+    }
+
+    @keyframes ping {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.8;
+        transform: scale(1.02);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  }
+
+  .spotify {
+    --background: 0 0% 0%; /* Spotify black */
+    --foreground: 0 0% 100%; /* White text */
+    --card: 0 0% 13%; /* Dark gray card */
+    --card-foreground: 0 0% 100%; /* White text */
+    --popover: 0 0% 13%; /* Dark gray popover */
+    --popover-foreground: 0 0% 100%; /* White text */
+    --primary: 142 72% 29%; /* Spotify green */
+    --primary-foreground: 0 0% 100%; /* White text */
+    --secondary: 0 0% 13%; /* Dark gray secondary */
+    --secondary-foreground: 0 0% 100%; /* White text */
+    --muted: 0 0% 13%; /* Dark gray muted */
+    --muted-foreground: 0 0% 45%; /* Gray muted text */
+    --accent: 142 72% 29%; /* Spotify green */
+    --accent-foreground: 0 0% 100%; /* White text */
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 100%; /* White text */
+    --border: 0 0% 20%; /* Dark border */
+    --input: 0 0% 13%; /* Dark input */
+    --ring: 142 72% 29%; /* Spotify green */
+    --chart-1: 142 72% 29%; /* Spotify green */
+    --chart-2: 208 100% 47%; /* Blue */
+    --chart-3: 329 100% 56%; /* Pink */
+    --chart-4: 35 100% 50%; /* Orange */
+    --chart-5: 269 97% 85%; /* Purple */
+
+    font-family: 'Circular Std', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+    .fr-button-primary {
+      background: #1db954;
+      border: none;
+      border-radius: 300px;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 19px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s ease;
+      width: auto !important;
+    }
+
+    .fr-button-secondary {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 300px;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 19px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s ease;
+      width: auto !important;
+    }
+
+    .fr-button-title {
+      font-size: 10px;
+    }
+
+    .fr-button-secondary:hover {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .fr-progress-bar {
+      background: #282828;
+      border: none;
+      border-radius: 2px;
+      box-shadow: none;
+      height: 4px;
+      overflow: hidden;
+    }
+
+    .fr-progress-bar-fill {
+      background: #1db954;
+      height: 100%;
+      transition: width 0.1s linear;
+      border-radius: 2px;
+    }
+
+    .fr-button-plain {
+      background: transparent;
+      border: none;
+      border-radius: 500px;
+      box-shadow: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .fr-card {
+      background: #282828;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      padding: 16px;
+      font-family: inherit;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .fr-dropdown {
+      background: #282828;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      padding: 4px;
+      font-family: inherit;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .fr-carousel-wrapper {
+      overflow: visible;
+    }
+
+    .fr-carousel-prev-wrapper {
+      background: none !important;
+    }
+
+    .fr-carousel-next-wrapper {
+      background: none !important;
+    }
+
+    .fr-progress-dot-selected {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #1db954;
+      margin: 0 4px;
+      transition: all 0.2s ease;
+    }
+
+    .fr-progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      fill: #404040;
+      margin: 0 4px;
+      transition: all 0.2s ease;
+    }
+
+    .fr-ping {
+      animation: ping 1s ease-in-out infinite;
+      background: #1db954;
+      border: none;
+      border-radius: 500px;
+      box-shadow: 0 8px 24px rgba(29, 185, 84, 0.3);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      position: absolute;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .fr-ping-pulse {
+      display: none;
+    }
+
+    .fr-field-radio {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px 12px;
+      background: #282828;
+      font-family: inherit;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .fr-field-text {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px 12px;
+      background: #282828;
+      font-family: inherit;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .fr-field-select {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px 12px;
+      background: #282828;
+      font-family: inherit;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .fr-field-textarea {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px 12px;
+      background: #282828;
+      font-family: inherit;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .fr-field-check {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 8px 12px;
+      background: #282828;
+      font-family: inherit;
+      font-size: 14px;
+      color: #fff;
+    }
+
+    .fr-check-indicator-checked {
+      background: #1db954;
+      border: none;
+      border-radius: 2px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .fr-check-indicator {
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      background: #282828;
+    }
+
+    .fr-field-check-value:checked {
+      background: #1db954;
+      box-shadow: none;
+      border-radius: 2px;
+    }
+
+    .fr-field-radio-value {
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      background: #282828;
+    }
+
+    .fr-field-radio-value[data-state='checked'] {
+      background: #1db954;
+      box-shadow: none;
+      border-radius: 50%;
+    }
+
+    .fr-field-radio-value[data-state='checked'],
+    .fr-field-radio-value[data-state='checked'] > * {
+      background: #1db954;
+      border-color: #1db954;
+      border-radius: 50%;
+    }
+
+    @keyframes ping {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  }
+
+  .windows {
+    --background: 195 100% 50%; /* Windows XP Blue */
+    --foreground: 0 0% 0%; /* Black text */
+    --card: 0 0% 95%; /* Light gray window */
+    --card-foreground: 0 0% 0%; /* Black text */
+    --popover: 0 0% 95%; /* Light gray window */
+    --popover-foreground: 0 0% 0%; /* Black text */
+    --primary: 207 100% 42%; /* Windows XP Button Blue */
+    --primary-foreground: 0 0% 100%; /* White text */
+    --secondary: 120 100% 25%; /* Windows XP Green */
+    --secondary-foreground: 0 0% 100%; /* White text */
+    --muted: 0 0% 85%; /* Muted gray */
+    --muted-foreground: 0 0% 45%; /* Darker gray text */
+    --accent: 207 100% 42%; /* Windows XP Blue */
+    --accent-foreground: 0 0% 100%; /* White text */
     --destructive: 0 100% 50%; /* Bright red */
-    --destructive-foreground: 330 100% 90%; /* Neon pink */
-    --border: 200 100% 50%; /* Bright cyan */
-    --input: 200 100% 50%; /* Bright cyan */
-    --ring: 330 100% 90%; /* Neon pink */
-    --chart-1: 330 100% 90%; /* Neon pink */
-    --chart-2: 200 100% 50%; /* Bright cyan */
-    --chart-3: 280 100% 50%; /* Bright blue */
-    --chart-4: 160 100% 50%; /* Bright green */
-    --chart-5: 0 100% 50%; /* Bright red */
+    --destructive-foreground: 0 0% 100%; /* White text */
+    --border: 0 0% 75%; /* Classic window border gray */
+    --input: 0 0% 95%; /* Light gray input */
+    --ring: 207 100% 42%; /* Windows XP Blue */
+    --chart-1: 207 100% 42%; /* Windows XP Blue */
+    --chart-2: 120 100% 25%; /* Windows XP Green */
+    --chart-3: 45 100% 50%; /* Windows XP Gold */
+    --chart-4: 0 100% 50%; /* Windows XP Red */
+    --chart-5: 270 100% 50%; /* Windows XP Purple */
+
+    font-family: 'Tahoma', sans-serif;
+
+    .fr-button-primary {
+      background: linear-gradient(
+        180deg,
+        #ebf4fa 0%,
+        #dce8f4 50%,
+        #ccdcf4 51%,
+        #bed2f4 100%
+      );
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset;
+      color: #000;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      padding: 2px 12px;
+      text-shadow: 1px 1px 0px #fff;
+    }
+
+    .fr-button-secondary {
+      background: linear-gradient(
+        180deg,
+        #e3ffe3 0%,
+        #c7f4c7 50%,
+        #a0e6a0 51%,
+        #7ad97a 100%
+      );
+      border: 1px solid #2d632f;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset;
+      color: #000;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      padding: 2px 12px;
+      text-shadow: 1px 1px 0px #fff;
+    }
+
+    .fr-button-secondary:hover {
+      color: #000;
+    }
+
+    .fr-progress-bar {
+      background: linear-gradient(
+        180deg,
+        #ebf4fa 0%,
+        #dce8f4 50%,
+        #ccdcf4 51%,
+        #bed2f4 100%
+      );
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset;
+      height: 16px;
+      overflow: hidden;
+    }
+
+    .fr-progress-bar-fill {
+      background: linear-gradient(
+        180deg,
+        #0a246a 0%,
+        #3a6ea5 50%,
+        #0a246a 100%
+      );
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.3) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.2) inset;
+    }
+
+    .fr-button-plain {
+      background: linear-gradient(
+        180deg,
+        #f5f5f5 0%,
+        #e6e6e6 50%,
+        #d6d6d6 51%,
+        #c7c7c7 100%
+      );
+      border: 1px solid #7a7a7a;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset;
+      color: #000;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      padding: 2px 12px;
+      text-shadow: 1px 1px 0px #fff;
+    }
+
+    .fr-card {
+      background: linear-gradient(
+        180deg,
+        #ebf4fa 0%,
+        #dce8f4 50%,
+        #ccdcf4 51%,
+        #bed2f4 100%
+      );
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset,
+        2px 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 8px;
+      font-family: 'Tahoma', sans-serif;
+      color: #000;
+      overflow: hidden;
+    }
+
+    .fr-carousel-prev-wrapper {
+      background: none !important;
+    }
+
+    .fr-carousel-next-wrapper {
+      background: none !important;
+    }
+
+    .fr-ping {
+      animation: ping 1s ease-in-out infinite;
+      background: linear-gradient(
+        180deg,
+        #fff9eb 0%,
+        #fff3c6 50%,
+        #ffe88c 51%,
+        #ffd939 100%
+      );
+      border: 1px solid #c0a73d;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset,
+        2px 2px 4px rgba(0, 0, 0, 0.2);
+      color: #000;
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      padding: 4px 8px;
+      position: absolute;
+      text-shadow: 1px 1px 0px #fff;
+    }
+
+    .fr-ping-pulse {
+      display: none;
+    }
+
+    .fr-progress-dot-selected {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(
+        180deg,
+        #ebf4fa 0%,
+        #dce8f4 50%,
+        #ccdcf4 51%,
+        #bed2f4 100%
+      );
+      border: 1px solid #003c74;
+      margin: 0 4px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset,
+        2px 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .fr-progress-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      fill: #dde8f4;
+      border: 1px solid #808080;
+      margin: 0 4px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset;
+      transition: all 0.2s ease;
+    }
+
+    .fr-field-radio {
+      border: 2px solid #003c74;
+      border-radius: 2px;
+      padding: 3px 4px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .fr-field-text {
+      border: 2px solid #003c74;
+      border-radius: 2px;
+      padding: 3px 4px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .fr-field-select {
+      border: 2px solid #003c74;
+      border-radius: 2px;
+      padding: 3px 4px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .fr-field-textarea {
+      border: 2px solid #003c74;
+      border-radius: 2px;
+      padding: 3px 4px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .fr-field-check {
+      border: 2px solid #003c74;
+      border-radius: 2px;
+      padding: 3px 4px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+      font-family: 'Tahoma', sans-serif;
+      font-size: 11px;
+      color: #000;
+    }
+
+    .fr-check-indicator-checked {
+      background: linear-gradient(
+        180deg,
+        #ebf4fa 0%,
+        #dce8f4 50%,
+        #ccdcf4 51%,
+        #bed2f4 100%
+      );
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      box-shadow:
+        1px 1px 0px rgba(255, 255, 255, 0.7) inset,
+        -1px -1px 0px rgba(0, 0, 0, 0.1) inset;
+      color: #003c74;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .fr-check-indicator {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .fr-field-check-value:checked {
+      background: linear-gradient(180deg, #fff 0%, #e3e3e3 100%);
+      box-shadow:
+        inset -1px -1px 0px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 3px #003c74;
+      border-radius: 0px;
+    }
+
+    .fr-field-radio-value {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #003c74;
+      border-radius: 3px;
+      background: #fff;
+      box-shadow:
+        inset -1px -1px 0 #fff,
+        inset 1px 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .fr-field-radio-value[data-state='checked'] {
+      background: linear-gradient(180deg, #fff 0%, #e3e3e3 100%);
+      box-shadow:
+        inset -1px -1px 0px rgba(0, 0, 0, 0.1),
+        inset 0 0 0 3px #003c74;
+      border-radius: 3px;
+    }
+
+    .fr-field-radio-value[data-state='checked'],
+    .fr-field-radio-value[data-state='checked'] > * {
+      background: #003c74;
+      border-color: #003c74;
+      border-radius: 3px;
+    }
+
+    @keyframes ping {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
   }
 }
 

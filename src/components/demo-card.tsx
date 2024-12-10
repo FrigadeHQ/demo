@@ -7,7 +7,7 @@ export function DemoCard(props: {
   subtitle: string;
 }) {
   return (
-    <Card className="col-span-1 w-[200px] border-muted rounded-xl">
+    <Card className="col-span-1 w-[200px] border-muted rounded-xl fr-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{props.title}</CardTitle>
         <DollarSign className="h-4 w-4 text-muted-foreground" />

@@ -59,7 +59,7 @@ export function Hints() {
           }}
         />
       )}
-      <Card className="border-muted" id="model-card">
+      <Card className="border-muted fr-card" id="model-card">
         <CardHeader>
           <CardTitle>Demo card</CardTitle>
           <CardDescription id="demo-card-subtitle">
@@ -155,7 +155,7 @@ export function Hints() {
       </Card>
       <div className="flex flex-row gap-4 w-full">
         <Button
-          className="flex w-full"
+          className="flex w-full fr-button-secondary"
           disabled={isResetting}
           onClick={async () => {
             setIsResetting(true);

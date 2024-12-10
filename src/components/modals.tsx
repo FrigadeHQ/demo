@@ -44,6 +44,7 @@ export function Modals() {
       <Button
         size="sm"
         variant="outline"
+        className="fr-button-secondary"
         onClick={async () => {
           setIsResetting(true);
           resetModals();
@@ -58,6 +59,7 @@ export function Modals() {
       <Button
         size="sm"
         variant="outline"
+        className="fr-button-secondary"
         onClick={async () => {
           setIsResetting(true);
           resetModals();
@@ -72,6 +74,7 @@ export function Modals() {
       <Button
         size="sm"
         variant="outline"
+        className="fr-button-secondary"
         onClick={async () => {
           setIsResetting(true);
           resetModals();
@@ -86,6 +89,7 @@ export function Modals() {
       <Button
         size="sm"
         variant="outline"
+        className="fr-button-secondary"
         onClick={async () => {
           setIsResetting(true);
           resetModals();
@@ -100,6 +104,7 @@ export function Modals() {
       <Button
         size="sm"
         variant="outline"
+        className="fr-button-secondary"
         onClick={async () => {
           setIsResetting(true);
           resetModals();

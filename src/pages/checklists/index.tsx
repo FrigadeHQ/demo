@@ -31,7 +31,7 @@ export default function Checklists() {
       <div className="flex flex-row justify-center mt-8 gap-6 items-center border border-muted w-auto p-6 rounded-md">
         <Button
           variant="default"
-          className="flex"
+          className="flex fr-button-primary"
           onClick={async () => {
             flow?.steps.get('checklist-step-two')?.complete();
           }}
@@ -40,7 +40,7 @@ export default function Checklists() {
         </Button>
         <Input
           placeholder="Write 'native'"
-          className="w-[130px]"
+          className="w-[130px] fr-field-text"
           onChange={async (e) => {
             if (e.target.value === 'native') {
               flow?.steps.get('checklist-step-four')?.complete();
@@ -51,7 +51,7 @@ export default function Checklists() {
         <div className="border-r border-muted h-6"></div>
         <Button
           variant="ghost"
-          className="flex"
+          className="flex fr-button-secondary"
           onClick={async () => {
             await addProperties({ hasFinishedStepFour: false });
             await flow?.restart();
