@@ -73,6 +73,33 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  .vaporwave {
+    --background: 255 0% 10%; /* Dark purple */
+    --foreground: 330 100% 90%; /* Neon pink */
+    --card: 255 0% 10%; /* Dark purple */
+    --card-foreground: 330 100% 90%; /* Neon pink */
+    --popover: 255 0% 10%; /* Dark purple */
+    --popover-foreground: 330 100% 90%; /* Neon pink */
+    --primary: 330 100% 90%; /* Neon pink */
+    --primary-foreground: 255 0% 10%; /* Dark purple */
+    --secondary: 200 100% 50%; /* Bright cyan */
+    --secondary-foreground: 330 100% 90%; /* Neon pink */
+    --muted: 200 100% 50%; /* Bright cyan */
+    --muted-foreground: 330 100% 90%; /* Neon pink */
+    --accent: 280 100% 50%; /* Bright blue */
+    --accent-foreground: 330 100% 90%; /* Neon pink */
+    --destructive: 0 100% 50%; /* Bright red */
+    --destructive-foreground: 330 100% 90%; /* Neon pink */
+    --border: 200 100% 50%; /* Bright cyan */
+    --input: 200 100% 50%; /* Bright cyan */
+    --ring: 330 100% 90%; /* Neon pink */
+    --chart-1: 330 100% 90%; /* Neon pink */
+    --chart-2: 200 100% 50%; /* Bright cyan */
+    --chart-3: 280 100% 50%; /* Bright blue */
+    --chart-4: 160 100% 50%; /* Bright green */
+    --chart-5: 0 100% 50%; /* Bright red */
+  }
 }
 
 @layer base {

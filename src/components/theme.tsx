@@ -29,6 +29,10 @@ const frameworks = [
     value: 'dark',
     label: 'Dark',
   },
+  {
+    value: 'vaporwave',
+    label: 'Vaporwave',
+  },
 ];
 
 export function ThemeDropdown() {
