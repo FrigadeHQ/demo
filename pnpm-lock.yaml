@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@frigade/react':
-    specifier: ^2.6.0
-    version: 2.6.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.6.7
+    version: 2.6.7(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -442,21 +442,21 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /@frigade/js@0.7.22:
-    resolution: {integrity: sha512-Ij0KVpsOyAShQ3re4pFUT58JkLFhFFSFc1XPFUyZnrO1nVfriVw00D87W/RX1kYi9hKfrMABRQKwtgKzRYtEvw==}
+  /@frigade/js@0.7.23:
+    resolution: {integrity: sha512-djQJBqrie8bQ7JT4+2APaoc0xdqRiWLA/xmNROTExpgz3yl/Wxrji000noWVLiVNTcHAJGoPCnhOMxSjtL89lQ==}
     dependencies:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.6.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-duceUhFrCQiQavOCb/cHw0u9NowBNr+ylT4pTTQUumk3NQFya/MiOSUSQJvt23j2HrUMVIAEtvmvyRjS424bbw==}
+  /@frigade/react@2.6.7(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-0Eqnj90ak2aKyZGWsAHL5vWqqu0QM4dYUVepmFYjLOEAbu9Dkoc1w+4FDX4+FIRirb9Mwra41q5o84cuvACTDA==}
     peerDependencies:
       react: 17 - 18
       react-dom: 17 - 18
     dependencies:
       '@emotion/react': 11.13.0(@types/react@18.0.0)(react@18.0.0)
       '@floating-ui/react': 0.26.23(react-dom@18.0.0)(react@18.0.0)
-      '@frigade/js': 0.7.22
+      '@frigade/js': 0.7.23
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-collapsible': 1.1.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
@@ -472,6 +472,7 @@ packages:
       react-dom: 18.0.0(react@18.0.0)
       react-hook-form: 7.52.2(react@18.0.0)
       react-remove-scroll: 2.6.0(@types/react@18.0.0)(react@18.0.0)
+      use-sync-external-store: 1.4.0(react@18.0.0)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -8009,6 +8010,14 @@ packages:
       detect-node-es: 1.1.0
       react: 18.0.0
       tslib: 2.6.3
+    dev: false
+
+  /use-sync-external-store@1.4.0(react@18.0.0):
+    resolution: {integrity: sha512-9WXSPC5fMv61vaupRkCKCxsPxBocVnwakBEkMIHHpkTTg6icbJtg6jzgtLDm4bl3cSHAca52rYWih0k4K3PfHw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    dependencies:
+      react: 18.0.0
     dev: false
 
   /util-deprecate@1.0.2:
