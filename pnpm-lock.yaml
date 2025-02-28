@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@frigade/react':
-    specifier: ^2.9.0
-    version: 2.9.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.9.2
+    version: 2.9.2(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -442,21 +442,21 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /@frigade/js@0.9.0:
-    resolution: {integrity: sha512-vI8Z+IpHgtXezy7ls9b3ca19mstVnSl/MNeCF5tjOujG2O/ACxDjBxKrwVS14/ynOEUsw8o8wn0nB5v425j2OQ==}
+  /@frigade/js@0.9.2:
+    resolution: {integrity: sha512-cAY8bBmPRjRun0I/yKWGoIv415CaooNdOI6xSfWwZBl+ZmIwcoSXUDXHhSsjf2A0SwlbWI3Y6uaZvhZJJPfVgA==}
     dependencies:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.9.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-JOlPYXRgSI+Hm+9CWKUZ+aG1HwR0HhvBSwz+kCwZWJ+r6i4KfdtNBoW+/R1dF0DXKnXpol2/p9117g9CTZjd0Q==}
+  /@frigade/react@2.9.2(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-NCr2ch+gV5dyZFu80MeJnVUHSnhQ+xTNYz2MA52HQpPtSomdHYN+Al6xUt3+08tnYkY7wWi3kwyjOppAtlHXqQ==}
     peerDependencies:
       react: 17 - 19
       react-dom: 17 - 19
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.0.0)(react@18.0.0)
       '@floating-ui/react': 0.26.23(react-dom@18.0.0)(react@18.0.0)
-      '@frigade/js': 0.9.0
+      '@frigade/js': 0.9.2
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-collapsible': 1.1.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
@@ -464,7 +464,7 @@ packages:
       '@radix-ui/react-radio-group': 1.2.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-select': 2.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       clsx: 2.1.1
-      dompurify: 3.1.6
+      dompurify: 3.2.4
       embla-carousel-react: 8.1.8(react@18.0.0)
       jsdom: 23.2.0
       known-css-properties: 0.29.0
@@ -4535,6 +4535,12 @@ packages:
     resolution: {integrity: sha512-1Xve+NMN7FWjY14vLoY5tL3BVEQ/n42YLwaqJIPYhotZ9uBHt87VceMwWQpzmdEt2TNXIorIFG+YeCUUW7RInw==}
     dev: false
 
+  /@types/trusted-types@2.0.7:
+    resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
   /@types/unist@2.0.11:
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
     dev: false
@@ -5248,8 +5254,10 @@ packages:
       esutils: 2.0.3
     dev: true
 
-  /dompurify@3.1.6:
-    resolution: {integrity: sha512-cTOAhc36AalkjtBpfG6O8JimdTMWNXjiePT2xQH/ppBGi/4uIpmj8eKyIkMJErXWARyINV/sB38yf8JCLF5pbQ==}
+  /dompurify@3.2.4:
+    resolution: {integrity: sha512-ysFSFEDVduQpyhzAob/kkuJjf5zWkZD8/A9ywSp1byueyuCfHamrCBa14/Oc2iiB0e51B+NpxSl5gmzn+Ms/mg==}
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
     dev: false
 
   /dotenv@16.4.5:
