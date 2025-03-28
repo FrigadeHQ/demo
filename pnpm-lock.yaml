@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@frigade/react':
-    specifier: ^2.9.2
-    version: 2.9.2(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
+    specifier: ^2.9.4
+    version: 2.9.4(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
   '@nextui-org/react':
     specifier: ^2.4.6
     version: 2.4.6(@types/react@18.0.0)(framer-motion@11.3.24)(react-dom@18.0.0)(react@18.0.0)(tailwindcss@3.4.1)
@@ -442,21 +442,21 @@ packages:
       tslib: 2.6.3
     dev: false
 
-  /@frigade/js@0.9.2:
-    resolution: {integrity: sha512-cAY8bBmPRjRun0I/yKWGoIv415CaooNdOI6xSfWwZBl+ZmIwcoSXUDXHhSsjf2A0SwlbWI3Y6uaZvhZJJPfVgA==}
+  /@frigade/js@0.9.4:
+    resolution: {integrity: sha512-ebm+3IDqyvcIBR72qghGmX7XxN9fPL/vwuG3BgEe+PENhLd5z3H8rb7LwYbi+I8xl+1JTKJYT7xhrakyuAB1QQ==}
     dependencies:
       uuid: 9.0.1
     dev: false
 
-  /@frigade/react@2.9.2(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
-    resolution: {integrity: sha512-NCr2ch+gV5dyZFu80MeJnVUHSnhQ+xTNYz2MA52HQpPtSomdHYN+Al6xUt3+08tnYkY7wWi3kwyjOppAtlHXqQ==}
+  /@frigade/react@2.9.4(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0):
+    resolution: {integrity: sha512-5jwE8yFIJ68dzJo8fzp+U7iOGxE5RPn8d/a7tLLoGprY86NQMzLDwMlc6/2mBPf/L/hegYciaQoNg+w8giyHcg==}
     peerDependencies:
       react: 17 - 19
       react-dom: 17 - 19
     dependencies:
       '@emotion/react': 11.14.0(@types/react@18.0.0)(react@18.0.0)
       '@floating-ui/react': 0.26.23(react-dom@18.0.0)(react@18.0.0)
-      '@frigade/js': 0.9.2
+      '@frigade/js': 0.9.4
       '@radix-ui/react-checkbox': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-collapsible': 1.1.0(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
       '@radix-ui/react-dialog': 1.1.1(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0)(react@18.0.0)
