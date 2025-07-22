@@ -968,6 +968,12 @@
       overflow: hidden;
     }
 
+    .fr-form {
+      border: none;
+      box-shadow: none;
+      background: transparent;
+    }
+
     .fr-carousel-prev-wrapper {
       background: none !important;
     }
