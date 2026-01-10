@@ -1,8 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { useExperience } from '@/components/experience-context';
 
 export function Footer() {
+  const { experience } = useExperience();
+
+  if (experience === 'assistant') {
+    return null;
+  }
+
   return (
     <div className="w-full bg-white border-t border-[#E5E5E5] flex justify-center px-6 xl:px-0 z-10">
       <div className="bg-white grid mb-0 w-full max-w-7xl grid-cols-2 md:grid-cols-3 lg:grid-cols-6 text-left py-8 gap-6">

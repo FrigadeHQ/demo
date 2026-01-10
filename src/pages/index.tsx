@@ -5,7 +5,7 @@ import { useExperience } from '@/components/experience-context';
 import Script from 'next/script';
 
 export default function Home() {
-  const { experience } = useExperience();
+  const { experience, setExperience } = useExperience();
 
   return (
     <div className="flex flex-col justify-center text-center gap-2 items-center w-full">
@@ -14,8 +14,9 @@ export default function Home() {
         {experience === 'assistant' ? 'AI Assistant' : 'Engage'} demo
       </h2>
       <p className="text-sm text-muted-foreground max-w-[400px]">
-        This demo contains a collection of Frigade pre-built UI components and
-        common onboarding patterns in action.
+        {experience === 'assistant'
+          ? 'Effortlessly guide and onboard users through your product with AI-powered assistance – increasing retention and customer success.'
+          : 'This demo contains a collection of Frigade Engage and the pre-built UI components and common onboarding patterns in action.'}
       </p>
 
       {experience === 'assistant' && (

@@ -1,17 +1,14 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useExperience, ExperienceType } from '@/components/experience-context';
+import { useExperience } from '@/components/experience-context';
 
 export function Header() {
-  const { experience, setExperience } = useExperience();
+  const { experience } = useExperience();
+
+  if (experience === 'assistant') {
+    return null;
+  }
 
   return (
     <div className="w-full bg-white border-b border-[#E5E5E5] flex justify-center z-10 px-6">
@@ -20,18 +17,6 @@ export function Header() {
           <Link href="/" className="flex items-center">
             <img src="/images/frigade.svg" />
           </Link>
-          <Select
-            value={experience}
-            onValueChange={(val) => setExperience(val as ExperienceType)}
-          >
-            <SelectTrigger className="w-[160px] h-8 bg-blue-600 text-white border-none hover:bg-blue-700 focus:ring-0 focus:ring-offset-0">
-              <SelectValue placeholder="Select experience" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="assistant">Frigade Assistant</SelectItem>
-              <SelectItem value="engage">Frigade Engage</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="flex items-center dark:via-black static size-auto gap-6">
