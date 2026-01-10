@@ -1,21 +1,38 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useExperience, ExperienceType } from '@/components/experience-context';
 
 export function Header() {
+  const { experience, setExperience } = useExperience();
+
   return (
     <div className="w-full bg-white border-b border-[#E5E5E5] flex justify-center z-10 px-6">
       <div className="z-10 w-full max-w-7xl items-center justify-between p-6 px-0 text-sm flex">
-        <Link
-          href="/"
-          className="flex gap-2 flex items-center dark:via-black static size-auto"
-        >
-          <img src="/images/frigade.svg" />
-          <Badge className="px-2 py-0.5 mt-0.5 bg-blue-600 hover:bg-blue-600 border-none text-white">
-            <span className="text-[10px]">Demo</span>
-          </Badge>
-        </Link>
+        <div className="flex gap-4 items-center dark:via-black static size-auto">
+          <Link href="/" className="flex items-center">
+            <img src="/images/frigade.svg" />
+          </Link>
+          <Select
+            value={experience}
+            onValueChange={(val) => setExperience(val as ExperienceType)}
+          >
+            <SelectTrigger className="w-[160px] h-8 bg-blue-600 text-white border-none hover:bg-blue-700 focus:ring-0 focus:ring-offset-0">
+              <SelectValue placeholder="Select experience" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="assistant">Frigade Assistant</SelectItem>
+              <SelectItem value="engage">Frigade Engage</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="flex items-center dark:via-black static size-auto gap-6">
           <HeaderLink href={'https://frigade.com?ref=demo'}>

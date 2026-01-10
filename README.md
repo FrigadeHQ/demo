@@ -1,4 +1,4 @@
-<H3 align="center"><strong>Frigade Demo</strong></H3>
+<H3 align="center"><strong>Frigade Engage Demo</strong></H3>
 <div align="center">
 <a href="https://frigade.com">Website</a> 
 <span> · </span>
@@ -12,7 +12,7 @@
 
 ![Frigade iamge](https://cdn.frigade.com/0534ad31-8dc3-4061-9e53-53aae2ff3cf8.png)
 
-[Frigade](<https://frigade.com>) is the modern product adoption platform. Frigade makes it easy to build better customer
+[Frigade Engage](<https://frigade.com/engage>) is the modern product adoption platform. Frigade makes it easy to build better customer
 journeys in your product through beautiful pre-built UI components, a flexible API and SDK, and an easy-to-use web
 dashboard. It is
 purpose-built for modern software teams that care about design, flexibility, and customization.

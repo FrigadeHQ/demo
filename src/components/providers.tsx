@@ -5,6 +5,7 @@ import { NextUIProvider } from '@nextui-org/react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import * as Frigade from '@frigade/react';
 import { getUserId } from '@/lib/utils';
+import { ExperienceProvider } from './experience-context';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   if (typeof process.env.NEXT_PUBLIC_FRIGADE_API_KEY === 'undefined') {
@@ -18,13 +19,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <NextUIProvider>
-      <NextThemesProvider
-        attribute="class"
-        defaultTheme="light"
-        themes={['light', 'dark', 'windows', 'vaporwave', 'linear', 'spotify']}
-      >
-        <Frigade.Provider
+    <ExperienceProvider>
+      <NextUIProvider>
+        <NextThemesProvider
+          attribute="class"
+          defaultTheme="light"
+          themes={['light', 'dark', 'windows', 'vaporwave', 'linear', 'spotify']}
+        >
+          <Frigade.Provider
           apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}
           userId={getUserId()}
           css={{
@@ -77,5 +79,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         </Frigade.Provider>
       </NextThemesProvider>
     </NextUIProvider>
+    </ExperienceProvider>
   );
 }
