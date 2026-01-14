@@ -20,9 +20,9 @@ export default function Home() {
       </p>
 
       {experience === 'assistant' && (
-        <div className="w-full max-w-[600px] mt-6 rounded-xl overflow-hidden shadow-lg border border-gray-100">
+        <div className="w-full max-w-[800px] mt-6 rounded-xl overflow-hidden shadow-lg border border-gray-100">
           <iframe
-            src="https://player.vimeo.com/video/1069009672?autoplay=1&autopause=0&controls=0&loop=1&muted=1&app_id=122963"
+            src="https://www.youtube.com/embed/FhHSj8YpR2U?autoplay=1&controls=1&loop=1&playlist=FhHSj8YpR2U"
             frameBorder="0"
             allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
@@ -33,7 +33,6 @@ export default function Home() {
             }}
             title="Frigade AI - The easiest way to guide and onboard your users"
           />
-          <Script src="https://player.vimeo.com/api/player.js" />
         </div>
       )}
 
