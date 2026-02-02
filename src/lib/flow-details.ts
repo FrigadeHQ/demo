@@ -41,7 +41,7 @@ steps:
       title: Visit Frigade
       action: false
       target: _blank
-      uri: https://frigade.com
+      uri: https://frigade.com/engage
 **/
 
 export const USER_FEEDBACK_MODAL_FLOW_ID = 'flow_aI9TTbI6';
@@ -146,7 +146,7 @@ steps:
       title: Next
     secondaryButton:
       title: Learn more
-      uri: https://frigade.com/
+      uri: https://frigade.com/engage
       target: _blank
       action: false
     imageUri: https://cdn.frigade.com/b7540f8f-1690-4234-b92b-adb9a42ebe36.svg
@@ -177,7 +177,7 @@ steps:
     secondaryButton:
       title: Learn more
       action: false
-      uri: https://frigade.com
+      uri: https://frigade.com/engage
       target: _blank
   - id: checklist-step-two
     title: Dynamic Completion
@@ -385,4 +385,3 @@ steps:
       - id: custom-typeahead
         type: custom-typeahead
 **/
-
