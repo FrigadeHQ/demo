@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useRouter } from 'next/router';
 
 export type ExperienceType = 'assistant' | 'engage';
 
@@ -11,8 +12,17 @@ const ExperienceContext = createContext<ExperienceContextType | undefined>(
   undefined,
 );
 
+const ENGAGE_ROUTES = ['/forms', '/tours', '/hints', '/checklists', '/modals', '/cards'];
+
 export function ExperienceProvider({ children }: { children: ReactNode }) {
-  const [experience, setExperience] = useState<ExperienceType>('assistant');
+  const router = useRouter();
+  const initialExperience: ExperienceType = ENGAGE_ROUTES.some(
+    (route) => router.pathname.startsWith(route),
+  )
+    ? 'engage'
+    : 'assistant';
+
+  const [experience, setExperience] = useState<ExperienceType>(initialExperience);
 
   return (
     <ExperienceContext.Provider value={{ experience, setExperience }}>
