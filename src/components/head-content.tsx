@@ -5,7 +5,6 @@ export default function HeadContent() {
     <>
       <Head>
         <title>Frigade Demo</title>
-        <meta name="robots" content="noindex" />
         {/* Open Graph */}
         <meta property="og:site_name" content="Frigade" />
         <meta property="og:title" content="Frigade Demo" />
