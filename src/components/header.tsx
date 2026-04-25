@@ -2,7 +2,7 @@ import React from 'react';
 import { CtaButton } from '@/components/ui/cta-button';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useExperience } from '@/components/experience-context';
+import { useExperience, ENGAGE_ROUTES } from '@/components/experience-context';
 import Image from 'next/image';
 import { products, productAccent, type ProductSlug } from "@/lib/products";
 
@@ -10,13 +10,15 @@ export function Header() {
   const { experience, setExperience } = useExperience();
   const isAssistant = experience === 'assistant';
   const router = useRouter();
-  const switchExperience = (nextExperience: 'assistant' | 'engage') => {
-    if (nextExperience === experience) {
-      return;
-    }
-
+  const switchExperience = (nextExperience: ProductSlug) => {
+    if (nextExperience === experience) return;
     setExperience(nextExperience);
-    router.push('/');
+    // setExperience updates ?product= in place — only navigate to / if we
+    // were on a flow route that doesn't match the new experience.
+    const onEngageRoute = ENGAGE_ROUTES.some((r) => router.pathname.startsWith(r));
+    if (nextExperience === 'assistant' && onEngageRoute) {
+      router.push({ pathname: '/', query: { product: 'assistant' } });
+    }
   };
 
   return (
