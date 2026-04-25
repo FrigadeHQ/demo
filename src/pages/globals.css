@@ -1209,7 +1209,13 @@
 @layer base {
   /* Retro/themed scopes set their font on the html element. The body rule
      above would override that inheritance for body and below. Re-inherit
-     so themed pages keep their full retro typography. */
+     so themed pages keep their full retro typography.
+
+     Keep this list in sync with:
+       - the theme blocks below (.vaporwave, .windows, .spotify, .linear)
+       - src/components/providers.tsx (NextThemesProvider `themes` prop)
+       - src/components/theme.tsx (the frameworks array)
+  */
   :where(.vaporwave, .windows, .spotify, .linear) body {
     font-family: inherit;
   }
