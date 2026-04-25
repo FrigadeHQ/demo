@@ -51,7 +51,9 @@
     }
   }
 
-  .dark {
+  /* Themes redefine tokens inside .demo-window only, so the demo card adopts
+     the theme look while the surrounding header/footer chrome stays brand. */
+  .dark .demo-window {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -79,32 +81,34 @@
   }
 
   .vaporwave {
-    --background: 300 100% 95%; /* Soft pink */
-    --foreground: 315 80% 40%; /* Deep magenta */
-    --card: 270 100% 97%; /* Light purple */
-    --card-foreground: 315 80% 40%; /* Deep magenta */
-    --popover: 270 100% 97%; /* Light purple */
-    --popover-foreground: 315 80% 40%; /* Deep magenta */
-    --primary: 315 100% 60%; /* Hot pink */
-    --primary-foreground: 180 100% 95%; /* Cyan */
-    --secondary: 180 100% 50%; /* Bright cyan */
-    --secondary-foreground: 315 80% 40%; /* Deep magenta */
-    --muted: 270 30% 90%; /* Muted purple */
-    --muted-foreground: 315 40% 60%; /* Muted pink */
-    --accent: 225 100% 70%; /* Bright purple */
-    --accent-foreground: 180 100% 95%; /* Cyan */
-    --destructive: 0 100% 65%; /* Coral red */
-    --destructive-foreground: 180 100% 95%; /* Cyan */
-    --border: 315 50% 85%; /* Light pink border */
-    --input: 270 100% 97%; /* Light purple */
-    --ring: 315 100% 60%; /* Hot pink */
-    --chart-1: 315 100% 60%; /* Hot pink */
-    --chart-2: 180 100% 50%; /* Bright cyan */
-    --chart-3: 270 100% 70%; /* Bright purple */
-    --chart-4: 45 100% 75%; /* Pastel yellow */
-    --chart-5: 195 100% 65%; /* Ocean blue */
+    .demo-window {
+      --background: 300 100% 95%; /* Soft pink */
+      --foreground: 315 80% 40%; /* Deep magenta */
+      --card: 270 100% 97%; /* Light purple */
+      --card-foreground: 315 80% 40%; /* Deep magenta */
+      --popover: 270 100% 97%; /* Light purple */
+      --popover-foreground: 315 80% 40%; /* Deep magenta */
+      --primary: 315 100% 60%; /* Hot pink */
+      --primary-foreground: 180 100% 95%; /* Cyan */
+      --secondary: 180 100% 50%; /* Bright cyan */
+      --secondary-foreground: 315 80% 40%; /* Deep magenta */
+      --muted: 270 30% 90%; /* Muted purple */
+      --muted-foreground: 315 40% 60%; /* Muted pink */
+      --accent: 225 100% 70%; /* Bright purple */
+      --accent-foreground: 180 100% 95%; /* Cyan */
+      --destructive: 0 100% 65%; /* Coral red */
+      --destructive-foreground: 180 100% 95%; /* Cyan */
+      --border: 315 50% 85%; /* Light pink border */
+      --input: 270 100% 97%; /* Light purple */
+      --ring: 315 100% 60%; /* Hot pink */
+      --chart-1: 315 100% 60%; /* Hot pink */
+      --chart-2: 180 100% 50%; /* Bright cyan */
+      --chart-3: 270 100% 70%; /* Bright purple */
+      --chart-4: 45 100% 75%; /* Pastel yellow */
+      --chart-5: 195 100% 65%; /* Ocean blue */
 
-    font-family: 'VT323', 'Helvetica', monospace;
+      font-family: 'VT323', 'Helvetica', monospace;
+    }
 
     .fr-button-primary {
       background: linear-gradient(
@@ -305,36 +309,38 @@
   }
 
   .linear {
-    --background: 0 0% 7%; /* Linear dark background */
-    --foreground: 0 0% 98%; /* Off-white text */
-    --card: 0 0% 10%; /* Slightly lighter card background */
-    --card-foreground: 0 0% 98%; /* Off-white text */
-    --popover: 0 0% 10%; /* Slightly lighter popover background */
-    --popover-foreground: 0 0% 98%; /* Off-white text */
-    --primary: 220 90% 60%; /* Linear blue */
-    --primary-foreground: 0 0% 98%; /* Off-white text */
-    --secondary: 0 0% 15%; /* Dark gray secondary */
-    --secondary-foreground: 0 0% 98%; /* Off-white text */
-    --muted: 0 0% 15%; /* Dark gray muted */
-    --muted-foreground: 0 0% 60%; /* Light gray muted text */
-    --accent: 220 90% 60%; /* Linear blue */
-    --accent-foreground: 0 0% 98%; /* Off-white text */
-    --destructive: 0 84% 60%; /* Red */
-    --destructive-foreground: 0 0% 98%; /* Off-white text */
-    --border: 0 0% 15%; /* Dark border */
-    --input: 0 0% 10%; /* Dark input */
-    --ring: 220 90% 60%; /* Linear blue */
-    --chart-1: 220 90% 60%; /* Linear blue */
-    --chart-2: 280 90% 60%; /* Purple */
-    --chart-3: 330 90% 60%; /* Pink */
-    --chart-4: 35 90% 60%; /* Orange */
-    --chart-5: 0 84% 60%; /* Red */
+    .demo-window {
+      --background: 0 0% 7%; /* Linear dark background */
+      --foreground: 0 0% 98%; /* Off-white text */
+      --card: 0 0% 10%; /* Slightly lighter card background */
+      --card-foreground: 0 0% 98%; /* Off-white text */
+      --popover: 0 0% 10%; /* Slightly lighter popover background */
+      --popover-foreground: 0 0% 98%; /* Off-white text */
+      --primary: 220 90% 60%; /* Linear blue */
+      --primary-foreground: 0 0% 98%; /* Off-white text */
+      --secondary: 0 0% 15%; /* Dark gray secondary */
+      --secondary-foreground: 0 0% 98%; /* Off-white text */
+      --muted: 0 0% 15%; /* Dark gray muted */
+      --muted-foreground: 0 0% 60%; /* Light gray muted text */
+      --accent: 220 90% 60%; /* Linear blue */
+      --accent-foreground: 0 0% 98%; /* Off-white text */
+      --destructive: 0 84% 60%; /* Red */
+      --destructive-foreground: 0 0% 98%; /* Off-white text */
+      --border: 0 0% 15%; /* Dark border */
+      --input: 0 0% 10%; /* Dark input */
+      --ring: 220 90% 60%; /* Linear blue */
+      --chart-1: 220 90% 60%; /* Linear blue */
+      --chart-2: 280 90% 60%; /* Purple */
+      --chart-3: 330 90% 60%; /* Pink */
+      --chart-4: 35 90% 60%; /* Orange */
+      --chart-5: 0 84% 60%; /* Red */
 
-    font-family:
-      'Inter',
-      -apple-system,
-      BlinkSpotifySystemFont,
-      sans-serif;
+      font-family:
+        'Inter',
+        -apple-system,
+        BlinkSpotifySystemFont,
+        sans-serif;
+    }
 
     .fr-button-primary {
       background: hsl(220, 90%, 60%);
@@ -545,32 +551,34 @@
   }
 
   .spotify {
-    --background: 0 0% 0%; /* Spotify black */
-    --foreground: 0 0% 100%; /* White text */
-    --card: 0 0% 13%; /* Dark gray card */
-    --card-foreground: 0 0% 100%; /* White text */
-    --popover: 0 0% 13%; /* Dark gray popover */
-    --popover-foreground: 0 0% 100%; /* White text */
-    --primary: 142 72% 29%; /* Spotify green */
-    --primary-foreground: 0 0% 100%; /* White text */
-    --secondary: 0 0% 13%; /* Dark gray secondary */
-    --secondary-foreground: 0 0% 100%; /* White text */
-    --muted: 0 0% 13%; /* Dark gray muted */
-    --muted-foreground: 0 0% 45%; /* Gray muted text */
-    --accent: 142 72% 29%; /* Spotify green */
-    --accent-foreground: 0 0% 100%; /* White text */
-    --destructive: 0 84% 60%; /* Red */
-    --destructive-foreground: 0 0% 100%; /* White text */
-    --border: 0 0% 20%; /* Dark border */
-    --input: 0 0% 13%; /* Dark input */
-    --ring: 142 72% 29%; /* Spotify green */
-    --chart-1: 142 72% 29%; /* Spotify green */
-    --chart-2: 208 100% 47%; /* Blue */
-    --chart-3: 329 100% 56%; /* Pink */
-    --chart-4: 35 100% 50%; /* Orange */
-    --chart-5: 269 97% 85%; /* Purple */
+    .demo-window {
+      --background: 0 0% 0%; /* Spotify black */
+      --foreground: 0 0% 100%; /* White text */
+      --card: 0 0% 13%; /* Dark gray card */
+      --card-foreground: 0 0% 100%; /* White text */
+      --popover: 0 0% 13%; /* Dark gray popover */
+      --popover-foreground: 0 0% 100%; /* White text */
+      --primary: 142 72% 29%; /* Spotify green */
+      --primary-foreground: 0 0% 100%; /* White text */
+      --secondary: 0 0% 13%; /* Dark gray secondary */
+      --secondary-foreground: 0 0% 100%; /* White text */
+      --muted: 0 0% 13%; /* Dark gray muted */
+      --muted-foreground: 0 0% 45%; /* Gray muted text */
+      --accent: 142 72% 29%; /* Spotify green */
+      --accent-foreground: 0 0% 100%; /* White text */
+      --destructive: 0 84% 60%; /* Red */
+      --destructive-foreground: 0 0% 100%; /* White text */
+      --border: 0 0% 20%; /* Dark border */
+      --input: 0 0% 13%; /* Dark input */
+      --ring: 142 72% 29%; /* Spotify green */
+      --chart-1: 142 72% 29%; /* Spotify green */
+      --chart-2: 208 100% 47%; /* Blue */
+      --chart-3: 329 100% 56%; /* Pink */
+      --chart-4: 35 100% 50%; /* Orange */
+      --chart-5: 269 97% 85%; /* Purple */
 
-    font-family: 'Circular Std', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'Circular Std', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
 
     .fr-button-primary {
       background: #1db954;
@@ -825,32 +833,34 @@
   }
 
   .windows {
-    --background: 195 100% 50%; /* Windows XP Blue */
-    --foreground: 0 0% 0%; /* Black text */
-    --card: 0 0% 95%; /* Light gray window */
-    --card-foreground: 0 0% 0%; /* Black text */
-    --popover: 0 0% 95%; /* Light gray window */
-    --popover-foreground: 0 0% 0%; /* Black text */
-    --primary: 207 100% 42%; /* Windows XP Button Blue */
-    --primary-foreground: 0 0% 100%; /* White text */
-    --secondary: 120 100% 25%; /* Windows XP Green */
-    --secondary-foreground: 0 0% 100%; /* White text */
-    --muted: 0 0% 85%; /* Muted gray */
-    --muted-foreground: 0 0% 45%; /* Darker gray text */
-    --accent: 207 100% 42%; /* Windows XP Blue */
-    --accent-foreground: 0 0% 100%; /* White text */
-    --destructive: 0 100% 50%; /* Bright red */
-    --destructive-foreground: 0 0% 100%; /* White text */
-    --border: 0 0% 75%; /* Classic window border gray */
-    --input: 0 0% 95%; /* Light gray input */
-    --ring: 207 100% 42%; /* Windows XP Blue */
-    --chart-1: 207 100% 42%; /* Windows XP Blue */
-    --chart-2: 120 100% 25%; /* Windows XP Green */
-    --chart-3: 45 100% 50%; /* Windows XP Gold */
-    --chart-4: 0 100% 50%; /* Windows XP Red */
-    --chart-5: 270 100% 50%; /* Windows XP Purple */
+    .demo-window {
+      --background: 195 100% 50%; /* Windows XP Blue */
+      --foreground: 0 0% 0%; /* Black text */
+      --card: 0 0% 95%; /* Light gray window */
+      --card-foreground: 0 0% 0%; /* Black text */
+      --popover: 0 0% 95%; /* Light gray window */
+      --popover-foreground: 0 0% 0%; /* Black text */
+      --primary: 207 100% 42%; /* Windows XP Button Blue */
+      --primary-foreground: 0 0% 100%; /* White text */
+      --secondary: 120 100% 25%; /* Windows XP Green */
+      --secondary-foreground: 0 0% 100%; /* White text */
+      --muted: 0 0% 85%; /* Muted gray */
+      --muted-foreground: 0 0% 45%; /* Darker gray text */
+      --accent: 207 100% 42%; /* Windows XP Blue */
+      --accent-foreground: 0 0% 100%; /* White text */
+      --destructive: 0 100% 50%; /* Bright red */
+      --destructive-foreground: 0 0% 100%; /* White text */
+      --border: 0 0% 75%; /* Classic window border gray */
+      --input: 0 0% 95%; /* Light gray input */
+      --ring: 207 100% 42%; /* Windows XP Blue */
+      --chart-1: 207 100% 42%; /* Windows XP Blue */
+      --chart-2: 120 100% 25%; /* Windows XP Green */
+      --chart-3: 45 100% 50%; /* Windows XP Gold */
+      --chart-4: 0 100% 50%; /* Windows XP Red */
+      --chart-5: 270 100% 50%; /* Windows XP Purple */
 
-    font-family: 'Tahoma', sans-serif;
+      font-family: 'Tahoma', sans-serif;
+    }
 
     .fr-button-primary {
       background: linear-gradient(
@@ -1206,17 +1216,3 @@
   }
 }
 
-@layer base {
-  /* Retro/themed scopes set their font on the html element. The body rule
-     above would override that inheritance for body and below. Re-inherit
-     so themed pages keep their full retro typography.
-
-     Keep this list in sync with:
-       - the theme blocks below (.vaporwave, .windows, .spotify, .linear)
-       - src/components/providers.tsx (NextThemesProvider `themes` prop)
-       - src/components/theme.tsx (the frameworks array)
-  */
-  :where(.vaporwave, .windows, .spotify, .linear) body {
-    font-family: inherit;
-  }
-}
