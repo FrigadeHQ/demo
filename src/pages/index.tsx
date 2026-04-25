@@ -36,13 +36,16 @@ export default function Home() {
     function getYtIframes() {
       return Array.from(
         document.querySelectorAll<HTMLIFrameElement>(
-          'iframe[src*="youtube.com/embed"]'
+          'iframe[data-hero-video]'
         )
       );
     }
 
     function applyState() {
       for (const iframe of getYtIframes()) {
+        // offsetParent is null iff display: none. Wrapper uses Tailwind `hidden`
+        // for the off-experience case — don't switch to visibility/opacity hiding
+        // without updating this check.
         const isVisible = iframe.offsetParent !== null;
         ytCommand(
           iframe,
@@ -163,6 +166,7 @@ export default function Home() {
         }`}
       >
         <iframe
+          data-hero-video=""
           src="https://www.youtube.com/embed/FhHSj8YpR2U?autoplay=1&controls=1&loop=1&playlist=FhHSj8YpR2U&enablejsapi=1"
           frameBorder="0"
           allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
