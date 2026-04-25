@@ -92,8 +92,6 @@ export default function Home() {
     };
   }, [experience, router.isReady]);
 
-  if (!router.isReady) return null;
-
   const content =
     experience === 'assistant'
       ? {
