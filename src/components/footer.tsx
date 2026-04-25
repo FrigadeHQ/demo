@@ -60,17 +60,17 @@ function LinkButton({
   return (
     <Link
       href={href}
-      className="group rounded-lg border  border-gray-200 px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100"
+      className="group rounded-lg border border-border bg-background px-5 py-4 transition-colors hover:border-foreground/20 hover:bg-secondary"
     >
-      <h2 className="mb-1 text-base font-semibold text-black">
+      <h2 className="mb-1 text-base font-semibold text-foreground">
         {title}{' '}
         <ArrowRight
           size={16}
-          className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none mb-[2px]"
+          className="inline-block text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-primary motion-reduce:transform-none mb-[2px]"
           stroke="currentColor"
         />
       </h2>
-      <p className="m-0 max-w-[30ch] text-xs opacity-50 text-gray-600">
+      <p className="m-0 max-w-[30ch] text-xs text-muted-foreground">
         {description}
       </p>
     </Link>
