@@ -90,7 +90,7 @@ export function Header() {
                 ? 'https://app.frigade.ai/sign-up?ref=demo'
                 : 'https://app.frigade.com/sign-up?ref=demo'
             }
-            variant="primary"
+            variant={isAssistant ? 'primary' : 'engage'}
           >
             Get started
           </CtaButton>

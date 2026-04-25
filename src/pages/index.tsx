@@ -1,9 +1,7 @@
 import React, { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { CtaButton } from '@/components/ui/cta-button';
 import { useRouter } from 'next/router';
 import { useExperience } from '@/components/experience-context';
-import Script from 'next/script';
 
 // YouTube IFrame API postMessage helper.
 function ytCommand(iframe: HTMLIFrameElement, func: 'playVideo' | 'pauseVideo') {
@@ -95,16 +93,14 @@ export default function Home() {
   const content =
     experience === 'assistant'
       ? {
-          title: 'Frigade',
+          title: 'Frigade Assistant',
           subtitle:
-            'Meet the Frigade Product Agent: an AI assistant that can answer product questions, guide users through onboarding, and proactively recommend next steps – boosting engagement and customer success.',
-          detail: '',
+            'AI that learns your product and guides users in real time.',
         }
       : {
           title: 'Frigade Engage',
           subtitle:
-            'A developer platform for onboarding with pre-built UI components and a powerful backend system for targeting, customization, and state management.',
-          detail: '',
+            'Drop-in React components for onboarding and product tours.',
         };
 
   return (
@@ -113,40 +109,34 @@ export default function Home() {
       <p className="text-sm text-muted-foreground max-w-[400px]">
         {content.subtitle}
       </p>
-      <p className="text-xs text-muted-foreground max-w-[520px]">
-        {content.detail}
-      </p>
 
       <div className="flex flex-row gap-4 justify-center mt-6">
         {experience === 'assistant' ? (
           <>
-            <Button asChild className="fr-button-primary">
-              <Link href="https://app.frigade.ai/sign-up" target="_blank">
-                Get started now
-              </Link>
-            </Button>
-            <Button variant="outline" asChild className="fr-button-secondary">
-              <Link
-                href="https://cal.com/forms/ed0e923f-6f00-4191-a08f-7bebba6636b6"
-                target="_blank"
-              >
-                Book a demo
-              </Link>
-            </Button>
+            <CtaButton
+              href="https://app.frigade.ai/sign-up?ref=demo"
+              variant="primary"
+            >
+              Get started
+            </CtaButton>
+            <CtaButton
+              href="https://cal.com/forms/ed0e923f-6f00-4191-a08f-7bebba6636b6"
+              variant="secondary"
+            >
+              Book a demo
+            </CtaButton>
           </>
         ) : (
           <>
-            <Button asChild className="fr-button-primary">
-              <Link href="/forms">Begin</Link>
-            </Button>
-            <Button variant="outline" asChild className="fr-button-secondary">
-              <Link
-                href="https://cal.com/team/frigade/frigade-demo"
-                target="_blank"
-              >
-                Book a call
-              </Link>
-            </Button>
+            <CtaButton href="/forms" variant="engage">
+              Begin
+            </CtaButton>
+            <CtaButton
+              href="https://cal.com/team/frigade/frigade-demo"
+              variant="secondary"
+            >
+              Book a call
+            </CtaButton>
           </>
         )}
       </div>
