@@ -1,94 +1,68 @@
 import React, { useEffect } from 'react';
 import { CtaButton } from '@/components/ui/cta-button';
-import { useRouter } from 'next/router';
 import { useExperience } from '@/components/experience-context';
 
-// YouTube IFrame API postMessage helper.
-function ytCommand(iframe: HTMLIFrameElement, func: 'playVideo' | 'pauseVideo') {
-  if (!iframe.contentWindow) return;
-  iframe.contentWindow.postMessage(
-    JSON.stringify({ event: 'command', func, args: [] }),
-    '*'
-  );
-}
-
 export default function Home() {
-  const router = useRouter();
   const { experience } = useExperience();
 
-  // The hero YouTube embed is always-mounted (CSS-hidden when Engage is
-  // active), driven via the YouTube IFrame API. This avoids the toggle bug
-  // where unmount/remount fired autoplay while the previous player's audio
-  // tail was still in flight, producing brief overlap.
-  //
-  // Subtlety: the responsive layout in `Main` renders this page in TWO
-  // sibling containers (mobile + desktop), so there are TWO matching
-  // iframes in the DOM at all times. We `playVideo` the one that is
-  // currently CSS-visible and `pauseVideo` the rest — otherwise the
-  // off-screen sibling autoplays its own audio over the visible player.
-  // Listening for the YouTube player's `onReady` event lets us drive the
-  // initial pause-the-hidden-one as soon as each player is alive.
+  // The hero video is always-mounted (CSS-hidden when Engage is active) so
+  // toggling the experience chooser doesn't remount the player. The
+  // responsive layout in `Main` renders this page in TWO sibling containers
+  // (mobile + desktop), so there are TWO matching <video> elements in the
+  // DOM at all times. We `play()` the one that is currently CSS-visible
+  // and `pause()` the rest — otherwise the off-screen sibling autoplays
+  // its own audio over the visible player. We also re-apply on tab focus
+  // because some browsers pause background <video> elements to save
+  // resources and don't auto-resume on focus return.
   useEffect(() => {
-    if (!router.isReady) return;
-
-    function getYtIframes() {
+    function getVideos() {
       return Array.from(
-        document.querySelectorAll<HTMLIFrameElement>(
-          'iframe[data-hero-video]'
-        )
+        document.querySelectorAll<HTMLVideoElement>('video[data-hero-video]')
       );
     }
 
     function applyState() {
-      for (const iframe of getYtIframes()) {
+      for (const video of getVideos()) {
         // offsetParent is null iff display: none. Wrapper uses Tailwind `hidden`
         // for the off-experience case — don't switch to visibility/opacity hiding
         // without updating this check.
-        const isVisible = iframe.offsetParent !== null;
-        ytCommand(
-          iframe,
-          experience === 'assistant' && isVisible ? 'playVideo' : 'pauseVideo'
-        );
+        const isVisible = video.offsetParent !== null;
+        if (experience === 'assistant' && isVisible) {
+          // play() returns a promise; muted+playsInline should let autoplay
+          // succeed in every modern browser. Swallow rejection so a failed
+          // autoplay doesn't surface as an unhandled rejection.
+          void video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
       }
     }
 
-    // Subscribe to player events; required before YouTube starts emitting
-    // `onReady` (and friends) for cross-origin postMessage consumers.
-    for (const iframe of getYtIframes()) {
-      if (!iframe.contentWindow) continue;
-      iframe.contentWindow.postMessage(
-        JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }),
-        '*'
-      );
+    function onLoadedData() {
+      applyState();
     }
 
-    function onMessage(e: MessageEvent) {
-      if (typeof e.data !== 'string') return;
-      let data: unknown;
-      try {
-        data = JSON.parse(e.data);
-      } catch {
-        return;
-      }
-      if (
-        data &&
-        typeof data === 'object' &&
-        'event' in data &&
-        (data as { event?: string }).event === 'onReady'
-      ) {
+    const videos = getVideos();
+    for (const video of videos) {
+      video.addEventListener('loadeddata', onLoadedData);
+    }
+
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible') {
         applyState();
       }
     }
+    document.addEventListener('visibilitychange', onVisibilityChange);
 
-    window.addEventListener('message', onMessage);
-    // Apply once now too — covers subsequent `experience` flips where the
-    // players are already ready and `onReady` won't fire again.
     applyState();
 
     return () => {
-      window.removeEventListener('message', onMessage);
+      for (const video of videos) {
+        video.removeEventListener('loadeddata', onLoadedData);
+      }
+      document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [experience, router.isReady]);
+  }, [experience]);
 
   const content =
     experience === 'assistant'
@@ -141,30 +115,32 @@ export default function Home() {
         )}
       </div>
 
-      {/* Always mount the iframe so toggling the chooser doesn't remount
-          the YouTube player. Hide via CSS when Engage is active, then drive
-          play/pause through the YouTube IFrame API (`enablejsapi=1`) in the
-          effect above. `autoplay=1` is kept so the visible iframe begins
-          playing without requiring the user to click — the effect's
-          `onReady` handler immediately pauses the off-screen sibling that
-          the responsive layout in `Main` also renders. */}
+      {/* Always mount the video so toggling the chooser doesn't remount
+          the player. Hide via CSS when Engage is active, then drive
+          play/pause via the effect above. autoPlay+muted+playsInline lets
+          the visible video begin playing without requiring the user to
+          click — the effect's loadeddata handler immediately pauses the
+          off-screen sibling that the responsive layout in Main also
+          renders. */}
       <div
         className={`w-full max-w-[800px] mt-6 rounded-xl overflow-hidden shadow-lg border border-gray-100 ${
           experience === 'assistant' ? 'block' : 'hidden'
         }`}
       >
-        <iframe
+        <video
           data-hero-video=""
-          src="https://www.youtube.com/embed/FhHSj8YpR2U?autoplay=1&controls=1&loop=1&playlist=FhHSj8YpR2U&enablejsapi=1"
-          frameBorder="0"
-          allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
+          src="/videos/hero.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          controls
+          preload="auto"
           style={{
             width: '100%',
             height: 'auto',
-            aspectRatio: '16/9',
+            aspectRatio: '1566 / 1080',
           }}
-          title="Frigade AI - The easiest way to guide and onboard your users"
         />
       </div>
     </div>

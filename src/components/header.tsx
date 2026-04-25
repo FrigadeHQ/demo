@@ -25,7 +25,12 @@ export function Header() {
     <div className="w-full bg-white border-b border-[#E5E5E5] flex justify-center z-10 px-6">
       <div className="z-10 w-full max-w-7xl items-center justify-between p-6 px-0 text-sm flex flex-col gap-4 sm:flex-row">
         <div className="flex gap-3 sm:gap-4 items-center dark:via-black static size-auto w-full sm:w-auto justify-between sm:justify-start">
-          <Link href="/" className="flex items-center">
+          <Link
+            href="https://frigade.com?ref=demo"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center"
+          >
             <Image
               src="/images/frigade-logo.svg"
               alt="Frigade"
