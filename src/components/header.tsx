@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { CtaButton } from '@/components/ui/cta-button';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useExperience } from '@/components/experience-context';
@@ -25,7 +25,7 @@ export function Header() {
         <div className="flex gap-3 sm:gap-4 items-center dark:via-black static size-auto w-full sm:w-auto justify-between sm:justify-start">
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/frigade.svg"
+              src="/images/frigade-logo.svg"
               alt="Frigade"
               width={120}
               height={24}
@@ -82,21 +82,16 @@ export function Header() {
               Source code
             </HeaderLink>
           )}
-          <Button
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white hover:border-blue-700"
+          <CtaButton
+            href={
+              isAssistant
+                ? 'https://app.frigade.ai/sign-up?ref=demo'
+                : 'https://app.frigade.com/sign-up?ref=demo'
+            }
+            variant="primary"
           >
-            <Link
-              href={
-                isAssistant
-                  ? 'https://app.frigade.ai/sign-up?ref=demo'
-                  : 'https://app.frigade.com/sign-up?ref=demo'
-              }
-              target="_blank"
-            >
-              Get started
-            </Link>
-          </Button>
+            Get started
+          </CtaButton>
         </div>
       </div>
     </div>
@@ -114,7 +109,7 @@ function HeaderLink({
     <Link
       href={href}
       target="_blank"
-      className="m-0 max-w-[30ch] hidden sm:block text-sm font-medium hover:text-blue-500 text-black"
+      className="m-0 max-w-[30ch] hidden sm:block text-[14px] font-medium text-foreground/70 hover:text-primary transition-colors"
     >
       {children}
     </Link>
