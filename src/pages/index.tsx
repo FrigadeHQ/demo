@@ -1,11 +1,16 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useExperience } from '@/components/experience-context';
 import Script from 'next/script';
 
 export default function Home() {
+  const router = useRouter();
   const { experience } = useExperience();
+
+  if (!router.isReady) return null;
+
   const content =
     experience === 'assistant'
       ? {
