@@ -15,7 +15,7 @@ export function Main({ children }: { children: React.ReactNode }) {
       <HeadContent />
       <div className="flex w-full grow px-6 xl:px-0 lg:hidden">
         <Box className="bg-grid -z-1"></Box>
-        <div className="demo-window relative max-w-7xl shadow-sm bg-background rounded-lg w-full justify-center items-center border flex mx-auto p-6">
+        <div className="demo-window relative max-w-7xl shadow-sm bg-background text-foreground rounded-lg w-full justify-center items-center border flex mx-auto p-6">
           {experience === 'assistant' ? (
             children
           ) : (
@@ -27,7 +27,7 @@ export function Main({ children }: { children: React.ReactNode }) {
       </div>
       <div className="hidden lg:flex w-full grow px-6 xl:px-0">
         <Box className="bg-grid -z-1"></Box>
-        <div className="demo-window relative max-w-7xl shadow-sm bg-background rounded-lg w-full justify-center items-center border flex mx-auto p-6">
+        <div className="demo-window relative max-w-7xl shadow-sm bg-background text-foreground rounded-lg w-full justify-center items-center border flex mx-auto p-6">
           {experience !== 'assistant' && (
             <div className="absolute left-6 top-6 z-10">
               <ThemeDropdown />

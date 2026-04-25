@@ -52,8 +52,12 @@
   }
 
   /* Themes redefine tokens inside .demo-window only, so the demo card adopts
-     the theme look while the surrounding header/footer chrome stays brand. */
-  .dark .demo-window {
+     the theme look while the surrounding header/footer chrome stays brand.
+     `[data-radix-popper-content-wrapper]` is included so portaled popovers
+     (theme dropdown, etc.) inherit the same themed tokens even though they
+     escape the demo card via Radix's default body portal. */
+  .dark .demo-window,
+  .dark [data-radix-popper-content-wrapper] {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -81,7 +85,8 @@
   }
 
   .vaporwave {
-    .demo-window {
+    .demo-window,
+    [data-radix-popper-content-wrapper] {
       --background: 300 100% 95%; /* Soft pink */
       --foreground: 315 80% 40%; /* Deep magenta */
       --card: 270 100% 97%; /* Light purple */
@@ -309,7 +314,8 @@
   }
 
   .linear {
-    .demo-window {
+    .demo-window,
+    [data-radix-popper-content-wrapper] {
       --background: 0 0% 7%; /* Linear dark background */
       --foreground: 0 0% 98%; /* Off-white text */
       --card: 0 0% 10%; /* Slightly lighter card background */
@@ -551,7 +557,8 @@
   }
 
   .spotify {
-    .demo-window {
+    .demo-window,
+    [data-radix-popper-content-wrapper] {
       --background: 0 0% 0%; /* Spotify black */
       --foreground: 0 0% 100%; /* White text */
       --card: 0 0% 13%; /* Dark gray card */
@@ -833,7 +840,8 @@
   }
 
   .windows {
-    .demo-window {
+    .demo-window,
+    [data-radix-popper-content-wrapper] {
       --background: 195 100% 50%; /* Windows XP Blue */
       --foreground: 0 0% 0%; /* Black text */
       --card: 0 0% 95%; /* Light gray window */
