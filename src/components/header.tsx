@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useExperience } from '@/components/experience-context';
 import Image from 'next/image';
+import { products, productAccent, type ProductSlug } from "@/lib/products";
 
 export function Header() {
   const { experience, setExperience } = useExperience();
@@ -31,29 +32,38 @@ export function Header() {
               className="block h-6 w-auto sm:h-7"
             />
           </Link>
-          <div className="grid grid-cols-2 items-center rounded-full border border-gray-200 bg-gray-100 p-1 w-full sm:w-auto max-w-[220px] sm:max-w-none">
-            <button
-              type="button"
-              onClick={() => switchExperience('assistant')}
-              className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors ${
-                isAssistant
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Frigade
-            </button>
-            <button
-              type="button"
-              onClick={() => switchExperience('engage')}
-              className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-medium whitespace-nowrap transition-colors ${
-                !isAssistant
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Frigade Engage
-            </button>
+          <div className="inline-flex items-center rounded-full border border-border bg-muted p-1">
+            {products.map((product) => {
+              const isActive = product.slug === experience;
+              const accent = productAccent[product.color];
+              const Icon = product.icon;
+              return (
+                <button
+                  key={product.slug}
+                  type="button"
+                  onClick={() => switchExperience(product.slug)}
+                  aria-pressed={isActive}
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium whitespace-nowrap transition-colors cursor-pointer ${
+                    isActive
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  style={
+                    isActive
+                      ? { boxShadow: `0 0 0 1px rgba(${accent.rgb}, 0.18), 0 1px 2px rgba(${accent.rgb}, 0.08)` }
+                      : undefined
+                  }
+                >
+                  <span
+                    className="flex h-4 w-4 items-center justify-center rounded-[5px] text-white"
+                    style={{ background: accent.hex }}
+                  >
+                    <Icon className="h-3 w-3" strokeWidth={2.25} />
+                  </span>
+                  {product.name}
+                </button>
+              );
+            })}
           </div>
         </div>
 
