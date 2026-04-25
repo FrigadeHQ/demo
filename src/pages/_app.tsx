@@ -24,11 +24,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       `}</style>
       <Providers>
         {/*<HeadContent />*/}
-        <main className="flex bg-[#F6F8F7] min-h-screen flex-col items-center justify-between p-0 gap-8">
+        <main className="flex bg-secondary min-h-screen flex-col items-center p-0 gap-8">
           <Header />
-          <Main>
-            <Component {...pageProps} />
-          </Main>
+          <div className="flex w-full flex-1 flex-col items-center">
+            <Main>
+              <Component {...pageProps} />
+            </Main>
+          </div>
           <Footer />
         </main>
       </Providers>
