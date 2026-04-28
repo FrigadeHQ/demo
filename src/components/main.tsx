@@ -6,17 +6,31 @@ import { Box } from '@frigade/react';
 import HeadContent from '@/components/head-content';
 import Script from 'next/script';
 import { useExperience } from '@/components/experience-context';
+import { cn } from '@/lib/utils';
 
 export function Main({ children }: { children: React.ReactNode }) {
   const { experience } = useExperience();
+  const isAssistant = experience === 'assistant';
+
+  // The Engage pane uses theme-driven CSS variables (`bg-background`,
+  // `text-foreground`, etc.) so the ThemeDropdown can repaint it. The
+  // Assistant pane should ignore the theme entirely and always render
+  // on a clean white surface, regardless of which theme is persisted in
+  // next-themes from a prior Engage session.
+  const paneClasses = cn(
+    'demo-window relative max-w-7xl shadow-sm rounded-lg w-full justify-center items-center border flex mx-auto p-6',
+    isAssistant
+      ? 'bg-white text-neutral-900 border-neutral-200'
+      : 'bg-background text-foreground'
+  );
 
   return (
     <>
       <HeadContent />
       <div className="flex w-full grow px-6 xl:px-0 lg:hidden">
         <Box className="bg-grid -z-1"></Box>
-        <div className="relative max-w-7xl shadow-sm bg-background rounded-lg w-full justify-center items-center border flex mx-auto p-6">
-          {experience === 'assistant' ? (
+        <div className={paneClasses}>
+          {isAssistant ? (
             children
           ) : (
             <p className="text-sm font-medium text-muted-foreground">
@@ -27,8 +41,8 @@ export function Main({ children }: { children: React.ReactNode }) {
       </div>
       <div className="hidden lg:flex w-full grow px-6 xl:px-0">
         <Box className="bg-grid -z-1"></Box>
-        <div className="relative max-w-7xl shadow-sm bg-background rounded-lg w-full justify-center items-center border flex mx-auto p-6">
-          {experience !== 'assistant' && (
+        <div className={paneClasses}>
+          {!isAssistant && (
             <div className="absolute left-6 top-6 z-10">
               <ThemeDropdown />
             </div>
