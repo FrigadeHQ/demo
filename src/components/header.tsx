@@ -74,20 +74,26 @@ export function Header() {
           </div>
         </div>
 
-        <div className="flex items-center dark:via-black static size-auto gap-4 w-full sm:w-auto justify-between sm:justify-end">
-          <HeaderLink
+        <div className="flex items-center dark:via-black static size-auto gap-3 w-full sm:w-auto justify-between sm:justify-end">
+          <CtaButton
             href={
               isAssistant
                 ? 'https://frigade.com?ref=demo'
                 : 'https://frigade.com/engage?ref=demo'
             }
+            variant="secondary"
+            className="hidden sm:inline-flex"
           >
-            {isAssistant ? 'Visit Frigade' : 'Visit Frigade Engage'}
-          </HeaderLink>
+            Website
+          </CtaButton>
           {!isAssistant && (
-            <HeaderLink href={'https://github.com/FrigadeHQ/demo'}>
-              Source code
-            </HeaderLink>
+            <CtaButton
+              href="https://github.com/FrigadeHQ/demo"
+              variant="secondary"
+              className="hidden sm:inline-flex"
+            >
+              GitHub
+            </CtaButton>
           )}
           <CtaButton
             href={
@@ -102,23 +108,5 @@ export function Header() {
         </div>
       </div>
     </div>
-  );
-}
-
-function HeaderLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      target="_blank"
-      className="m-0 max-w-[30ch] hidden sm:block text-[14px] font-medium text-foreground/70 hover:text-primary transition-colors"
-    >
-      {children}
-    </Link>
   );
 }

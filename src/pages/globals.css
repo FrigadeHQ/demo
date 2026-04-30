@@ -56,32 +56,186 @@
      `[data-radix-popper-content-wrapper]` is included so portaled popovers
      (theme dropdown, etc.) inherit the same themed tokens even though they
      escape the demo card via Radix's default body portal. */
-  .dark .demo-window,
-  .dark [data-radix-popper-content-wrapper] {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+  .dark {
+    .demo-window,
+    [data-radix-popper-content-wrapper] {
+      --background: 0 0% 3.9%;
+      --foreground: 0 0% 98%;
+      --card: 0 0% 3.9%;
+      --card-foreground: 0 0% 98%;
+      --popover: 0 0% 3.9%;
+      --popover-foreground: 0 0% 98%;
+      --primary: 0 0% 98%;
+      --primary-foreground: 0 0% 9%;
+      --secondary: 0 0% 14.9%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 0 0% 14.9%;
+      --muted-foreground: 0 0% 63.9%;
+      --accent: 0 0% 14.9%;
+      --accent-foreground: 0 0% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 0 0% 14.9%;
+      --input: 0 0% 14.9%;
+      --ring: 0 0% 83.1%;
+      --chart-1: 220 70% 50%;
+      --chart-2: 160 60% 45%;
+      --chart-3: 30 80% 55%;
+      --chart-4: 280 65% 60%;
+      --chart-5: 340 75% 55%;
+    }
+
+    /* Without these, the SDKs default white card styling wins and the
+       theme-token redefinitions above never reach .fr-* elements.
+       Outer padding 16px matches what windows (the visually-correct
+       reference) uses — the SDK positions the dismiss button relative
+       to .fr-card and breaks without it. */
+    .fr-card {
+      background: hsl(0, 0%, 6%);
+      border: 1px solid hsl(0, 0%, 14.9%);
+      border-radius: 0.75rem;
+      box-shadow: none;
+      padding: 16px;
+      color: hsl(0, 0%, 98%);
+      font-family: inherit;
+      overflow: visible;
+    }
+
+    /* SDK ships .fr-form / .fr-card-header / .fr-card-footer with their
+       own subtle chrome (background + borders + padding). On a dark outer
+       .fr-card those internal sections read as an inset card-in-a-card
+       which makes the Frigade Card stand out from native shadcn cards in
+       the same row. Resetting to transparent removes the seam. */
+    .fr-form,
+    .fr-card-header,
+    .fr-card-footer {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    .fr-dropdown {
+      background: hsl(0, 0%, 6%);
+      border: 1px solid hsl(0, 0%, 14.9%);
+      border-radius: 8px;
+      box-shadow: none;
+      padding: 4px;
+      color: hsl(0, 0%, 98%);
+      overflow: hidden;
+    }
+
+    .fr-button-primary {
+      background: hsl(0, 0%, 98%);
+      border: none;
+      border-radius: 8px;
+      box-shadow: none;
+      color: hsl(0, 0%, 9%);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+    }
+
+    .fr-button-secondary {
+      background: transparent;
+      border: 1px solid hsl(0, 0%, 20%);
+      border-radius: 8px;
+      box-shadow: none;
+      color: hsl(0, 0%, 98%);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+    }
+
+    .fr-button-secondary:hover {
+      background: hsl(0, 0%, 12%);
+      border-color: hsl(0, 0%, 30%);
+      color: hsl(0, 0%, 98%);
+    }
+
+    .fr-button-plain {
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      box-shadow: none;
+      color: hsl(0, 0%, 98%);
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+
+    .fr-progress-bar {
+      background: hsl(0, 0%, 14.9%);
+      border: none;
+      border-radius: 4px;
+      box-shadow: none;
+      height: 4px;
+      overflow: hidden;
+    }
+
+    .fr-progress-bar-fill {
+      background: hsl(0, 0%, 98%);
+      height: 100%;
+      transition: width 0.2s ease;
+      border-radius: 4px;
+    }
+
+    .fr-carousel-prev-wrapper,
+    .fr-carousel-next-wrapper {
+      background: none !important;
+    }
+
+    .fr-field-radio,
+    .fr-field-text,
+    .fr-field-select,
+    .fr-field-textarea,
+    .fr-field-check {
+      border: 1px solid hsl(0, 0%, 14.9%);
+      border-radius: 8px;
+      padding: 8px 12px;
+      background: hsl(0, 0%, 6%);
+      box-shadow: none;
+      font-size: 14px;
+      color: hsl(0, 0%, 98%);
+    }
+
+    .fr-check-indicator-checked {
+      background: hsl(0, 0%, 98%);
+      border: none;
+      border-radius: 4px;
+      color: hsl(0, 0%, 9%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .fr-check-indicator {
+      width: 16px;
+      height: 16px;
+      border: 1px solid hsl(0, 0%, 20%);
+      border-radius: 4px;
+      background: transparent;
+    }
+
+    .fr-field-radio-value {
+      width: 16px;
+      height: 16px;
+      border: 1px solid hsl(0, 0%, 20%);
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .fr-field-radio-value[data-state='checked'] {
+      background: hsl(0, 0%, 98%);
+      border-radius: 50%;
+    }
+
+    .fr-field-radio-value[data-state='checked'],
+    .fr-field-radio-value[data-state='checked'] > * {
+      background: hsl(0, 0%, 98%);
+      border-color: hsl(0, 0%, 98%);
+      border-radius: 50%;
+    }
   }
 
   .vaporwave {
@@ -191,7 +345,21 @@
       padding: 16px;
       font-family: 'VT323', monospace;
       color: #fff;
-      overflow: hidden;
+      /* Buttons inside use 4px-offset cyan/magenta box-shadows; clipping
+         them with overflow:hidden cuts off the chromatic aberration that
+         defines the look. */
+      overflow: visible;
+    }
+
+    /* See note in .dark — keep .fr-form / .fr-card-header / .fr-card-footer
+       transparent so the SDKs inner chrome doesnt double up over the
+       outer themed .fr-card. */
+    .fr-form,
+    .fr-card-header,
+    .fr-card-footer {
+      background: transparent;
+      border: none;
+      box-shadow: none;
     }
 
     .fr-dropdown {
@@ -414,13 +582,24 @@
     .fr-card {
       background: hsl(0, 0%, 10%);
       border: 1px solid hsl(0, 0%, 15%);
-      border-radius: 8px;
+      border-radius: 0.75rem;
       box-shadow: none;
       padding: 16px;
       font-family: inherit;
       color: #fff;
-      overflow: hidden;
+      overflow: visible;
       transition: all 0.2s ease;
+    }
+
+    /* See note in .dark — keep .fr-form / .fr-card-header / .fr-card-footer
+       transparent so the SDKs inner chrome doesnt double up over the
+       outer themed .fr-card. */
+    .fr-form,
+    .fr-card-header,
+    .fr-card-footer {
+      background: transparent;
+      border: none;
+      box-shadow: none;
     }
 
     .fr-dropdown {
@@ -658,12 +837,23 @@
     .fr-card {
       background: #282828;
       border: none;
-      border-radius: 8px;
+      border-radius: 0.75rem;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       padding: 16px;
       font-family: inherit;
       color: #fff;
-      overflow: hidden;
+      overflow: visible;
+    }
+
+    /* See note in .dark — keep .fr-form / .fr-card-header / .fr-card-footer
+       transparent so the SDKs inner chrome doesnt double up over the
+       outer themed .fr-card. */
+    .fr-form,
+    .fr-card-header,
+    .fr-card-footer {
+      background: transparent;
+      border: none;
+      box-shadow: none;
     }
 
     .fr-dropdown {

@@ -20,14 +20,42 @@ export function CtaButton({
   children,
   variant = "primary",
   className,
+  calLink,
+  calNamespace,
+  calConfig,
+  onClick,
 }: {
-  href: string;
+  href?: string;
   children: React.ReactNode;
   variant?: CtaVariant;
   className?: string;
+  // Cal.com popup mode: when calLink is set, the button opens Cal's
+  // popup directly (no Frigade modal chrome). The page must call
+  // getCalApi({ namespace }) once to register the namespace.
+  calLink?: string;
+  calNamespace?: string;
+  calConfig?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }) {
   const base =
     "relative inline-flex flex-col items-center justify-center gap-[10px] w-min cursor-pointer overflow-hidden no-underline px-4 py-1.5 text-sm font-medium leading-[1.6] whitespace-nowrap transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+  if (calLink) {
+    return (
+      <button
+        type="button"
+        data-cal-link={calLink}
+        data-cal-namespace={calNamespace}
+        data-cal-config={calConfig}
+        onClick={onClick}
+        className={cn(base, ctaVariantStyles[variant], className)}
+      >
+        {children}
+      </button>
+    );
+  }
+  if (!href) {
+    throw new Error("CtaButton requires either href or calLink");
+  }
   const isExternal = href.startsWith("http");
   if (isExternal) {
     return (

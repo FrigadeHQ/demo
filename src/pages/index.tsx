@@ -1,9 +1,21 @@
 import React, { useEffect } from 'react';
+import { getCalApi } from '@calcom/embed-react';
 import { CtaButton } from '@/components/ui/cta-button';
 import { useExperience } from '@/components/experience-context';
 
 export default function Home() {
   const { experience } = useExperience();
+
+  // Initialize both Cal.com popup namespaces once. Each CTA below targets
+  // its corresponding namespace via data-cal-namespace.
+  useEffect(() => {
+    (async () => {
+      const calAssistant = await getCalApi({ namespace: 'frigade-demo-call' });
+      calAssistant('ui', { hideEventTypeDetails: false, layout: 'month_view' });
+      const calEngage = await getCalApi({ namespace: 'frigade-engage-demo' });
+      calEngage('ui', { hideEventTypeDetails: false, layout: 'month_view' });
+    })();
+  }, []);
 
   // The hero video is always-mounted (CSS-hidden when Engage is active) so
   // toggling the experience chooser doesn't remount the player. The
@@ -94,7 +106,9 @@ export default function Home() {
               Get started
             </CtaButton>
             <CtaButton
-              href="https://cal.com/forms/ed0e923f-6f00-4191-a08f-7bebba6636b6"
+              calLink="team/frigade/frigade-demo-call"
+              calNamespace="frigade-demo-call"
+              calConfig='{"layout":"month_view","useSlotsViewOnSmallScreen":"true"}'
               variant="secondary"
             >
               Book a demo
@@ -106,7 +120,9 @@ export default function Home() {
               Begin
             </CtaButton>
             <CtaButton
-              href="https://cal.com/team/frigade/frigade-demo"
+              calLink="team/frigade/frigade-engage-demo"
+              calNamespace="frigade-engage-demo"
+              calConfig='{"layout":"month_view","useSlotsViewOnSmallScreen":"true"}'
               variant="secondary"
             >
               Book a call
