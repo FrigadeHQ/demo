@@ -1407,6 +1407,19 @@
   }
 }
 
+/* Forms page: kill the SDKs bottom padding/margin on the form so the
+   submit buttons baseline equals the form bottom. The Do later link
+   in pages/forms/index.tsx is absolutely-positioned at bottom-0 of the
+   forms parent and will only line up with the submit button when the
+   form has no trailing space. SDK ships these with non-zero values that
+   our css-prop overrides cant beat without !important. */
+.fr-form,
+.fr-form-step,
+.fr-form-step-footer {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 @layer base {
   body {
     font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI',

@@ -104,8 +104,24 @@ export default function Forms() {
                       'mandatory-video': MandatoryVideoFormField,
                     }}
                     css={{
+                      // The form ends with .fr-form-step-footer; killing its
+                      // bottom margin/padding (and the wrapping .fr-form-step)
+                      // makes the form bottom flush with the submit buttons
+                      // bottom edge so the absolutely-positioned Do later
+                      // link in the parent can align via bottom-0 across all
+                      // themes.
                       '.fr-form-step-footer': {
                         marginTop: '25px',
+                        marginBottom: 0,
+                        paddingBottom: 0,
+                      },
+                      '.fr-form-step': {
+                        marginBottom: 0,
+                        paddingBottom: 0,
+                      },
+                      '.fr-form': {
+                        marginBottom: 0,
+                        paddingBottom: 0,
                       },
                       '.fr-button-primary': {
                         width: '25%',
@@ -139,12 +155,15 @@ export default function Forms() {
                       },
                     }}
                   />
-                  <div className="absolute left-0 bottom-0">
+                  {/* Vertically-centered with the forms submit button:
+                      h-9 (36px) matches .fr-form-step-footer height so the
+                      Do later link sits on the buttons baseline rather
+                      than at the form bottom. */}
+                  <div className="absolute left-0 bottom-0 h-9 flex items-center">
                     <Frigade.Button.Link
                       onClick={() => {
                         setIsPaused(true);
                       }}
-                      className="fr-button-secondary"
                     >
                       <p className="text-muted-foreground text-sm">Do later</p>
                     </Frigade.Button.Link>
