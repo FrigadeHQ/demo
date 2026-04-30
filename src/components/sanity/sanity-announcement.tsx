@@ -39,7 +39,12 @@ export function SanityAnnouncement({ flowId, ...props }: AnnouncementProps) {
             >
               {step.imageUri && (
                 <Card radius={4} overflow="hidden">
-                  <img src={step.imageUri} className="h-[136px]" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={step.imageUri}
+                    alt={step.title ?? ''}
+                    className="h-[136px]"
+                  />
                 </Card>
               )}
 

@@ -50,7 +50,7 @@ const VideoField = React.forwardRef<HTMLVideoElement, VideoFieldProps>(
         type: 'manual',
         message: 'You must watch the entire video to proceed.',
       });
-    }, []);
+    }, [field.id, props.formContext]);
 
     return (
       <div>
