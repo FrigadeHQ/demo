@@ -105,8 +105,12 @@
        own subtle chrome (background + borders + padding). On a dark outer
        .fr-card those internal sections read as an inset card-in-a-card
        which makes the Frigade Card stand out from native shadcn cards in
-       the same row. Resetting to transparent removes the seam. */
-    .fr-form,
+       the same row. Resetting to transparent removes the seam.
+       Scoped to descendants only — Form-as-Dialog and Survey.NPS render
+       the form on the *same* element as .fr-card (combined classes), so
+       a flat .fr-form selector would also wipe out the dialog background
+       and leave the buttons floating with no card chrome. */
+    .fr-card .fr-form,
     .fr-card-header,
     .fr-card-footer {
       background: transparent;
@@ -353,8 +357,10 @@
 
     /* See note in .dark — keep .fr-form / .fr-card-header / .fr-card-footer
        transparent so the SDKs inner chrome doesnt double up over the
-       outer themed .fr-card. */
-    .fr-form,
+       outer themed .fr-card. Scoped to descendants — Form-as-Dialog and
+       Survey.NPS combine .fr-card and .fr-form on a single element, so a
+       flat .fr-form selector would wipe out the dialog background. */
+    .fr-card .fr-form,
     .fr-card-header,
     .fr-card-footer {
       background: transparent;
@@ -593,8 +599,10 @@
 
     /* See note in .dark — keep .fr-form / .fr-card-header / .fr-card-footer
        transparent so the SDKs inner chrome doesnt double up over the
-       outer themed .fr-card. */
-    .fr-form,
+       outer themed .fr-card. Scoped to descendants — Form-as-Dialog and
+       Survey.NPS combine .fr-card and .fr-form on a single element, so a
+       flat .fr-form selector would wipe out the dialog background. */
+    .fr-card .fr-form,
     .fr-card-header,
     .fr-card-footer {
       background: transparent;
@@ -847,8 +855,10 @@
 
     /* See note in .dark — keep .fr-form / .fr-card-header / .fr-card-footer
        transparent so the SDKs inner chrome doesnt double up over the
-       outer themed .fr-card. */
-    .fr-form,
+       outer themed .fr-card. Scoped to descendants — Form-as-Dialog and
+       Survey.NPS combine .fr-card and .fr-form on a single element, so a
+       flat .fr-form selector would wipe out the dialog background. */
+    .fr-card .fr-form,
     .fr-card-header,
     .fr-card-footer {
       background: transparent;
@@ -1176,7 +1186,10 @@
       overflow: hidden;
     }
 
-    .fr-form {
+    /* Scoped to descendants — Form-as-Dialog and Survey.NPS combine
+       .fr-card and .fr-form on a single element, so a flat .fr-form
+       selector would wipe out the dialog background. */
+    .fr-card .fr-form {
       border: none;
       box-shadow: none;
       background: transparent;
