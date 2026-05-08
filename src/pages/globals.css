@@ -1535,6 +1535,35 @@
   border-radius: 0;
 }
 
+/* Assistant pane is theme-neutral. Themes redefine tokens on
+   `.<theme> .demo-window` (specificity 0,2,0); this rule matches that
+   specificity via `.demo-window.demo-window--assistant` and is placed
+   last in the file so it wins on source order, snapping all tokens
+   back to the `:root` light values. Without this, utilities like
+   `text-muted-foreground` on inner Assistant content (e.g. the home
+   page subtitle) inherit the active theme's pink/purple/etc. */
+.demo-window.demo-window--assistant {
+  --background: 0 0% 100%;
+  --foreground: 225 41% 17%;
+  --card: 0 0% 100%;
+  --card-foreground: 225 41% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 225 41% 17%;
+  --primary: 217 99% 49%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 13% 96%;
+  --secondary-foreground: 225 41% 17%;
+  --muted: 220 13% 96%;
+  --muted-foreground: 223 8% 46%;
+  --accent: 220 13% 96%;
+  --accent-foreground: 225 41% 17%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 224 17% 92%;
+  --input: 224 17% 92%;
+  --ring: 217 99% 49%;
+}
+
 @layer base {
   body {
     font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI',

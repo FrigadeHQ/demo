@@ -33,7 +33,6 @@ export const ANNOUNCEMENT_CSS = {
   },
   '.fr-image': {
     order: 0,
-    borderBottom: '1px solid var(--fr-colors-neutral-border)',
     borderRadius: '8px 8px 0 0',
     aspectRatio: '1.9047619048',
     margin: '-32px -32px 0 -32px',

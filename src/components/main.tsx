@@ -16,11 +16,13 @@ export function Main({ children }: { children: React.ReactNode }) {
   // `text-foreground`, etc.) so the ThemeDropdown can repaint it. The
   // Assistant pane should ignore the theme entirely and always render
   // on a clean white surface, regardless of which theme is persisted in
-  // next-themes from a prior Engage session.
+  // next-themes from a prior Engage session. The `demo-window--assistant`
+  // class resets all theme tokens back to light defaults so descendants
+  // using `text-muted-foreground` etc. don't bleed the active theme.
   const paneClasses = cn(
     'demo-window relative max-w-7xl shadow-sm rounded-lg w-full justify-center items-center border flex mx-auto p-6',
     isAssistant
-      ? 'bg-white text-neutral-900 border-neutral-200'
+      ? 'demo-window--assistant bg-white text-neutral-900 border-neutral-200'
       : 'bg-background text-foreground'
   );
 
