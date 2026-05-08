@@ -877,10 +877,6 @@
       overflow: hidden;
     }
 
-    .fr-carousel-wrapper {
-      overflow: visible;
-    }
-
     .fr-carousel-prev-wrapper {
       background: none !important;
     }
