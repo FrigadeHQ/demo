@@ -1494,6 +1494,46 @@
   margin-bottom: 0 !important;
 }
 
+/* Dialog-rendered cards (User Feedback, Styled Modal, NPS Survey) share
+   their wrapper with .fr-card. Themes set overflow:visible on .fr-card so
+   button drop-shadows can escape, but that lets the SDK's announcement
+   image (margin: -32px, width: calc(100% + 64px) — see ANNOUNCEMENT_CSS)
+   spill out the dialog edges as a visible "rogue" rectangle. Force clip
+   on dialog-cards across every theme. Two classes raise specificity to
+   (0,2,0), enough to beat the .<theme> .fr-card rules. */
+.fr-card.fr-dialog {
+  overflow: hidden;
+}
+
+/* Radix auto-focuses the dismiss button when a dialog opens, so the
+   browser's default :focus-visible ring (a thick blue/violet outline)
+   greets users as soon as User Feedback / NPS / Styled Modal renders.
+   Replace with a subtle, theme-aware ring on close + plain buttons.
+   Per-theme overrides below keep the ring color in family. */
+.fr-button-plain:focus-visible,
+.fr-close:focus-visible,
+.fr-dismiss:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+}
+.linear .fr-button-plain:focus-visible,
+.linear .fr-close:focus-visible,
+.linear .fr-dismiss:focus-visible {
+  box-shadow: 0 0 0 2px rgba(94, 106, 210, 0.4);
+}
+.spotify .fr-button-plain:focus-visible,
+.spotify .fr-close:focus-visible,
+.spotify .fr-dismiss:focus-visible {
+  box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.4);
+}
+.vaporwave .fr-button-plain:focus-visible,
+.vaporwave .fr-close:focus-visible,
+.vaporwave .fr-dismiss:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 113, 206, 0.5);
+  border-radius: 0;
+}
+
 @layer base {
   body {
     font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI',
