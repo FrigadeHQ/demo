@@ -1498,10 +1498,11 @@
    their wrapper with .fr-card. Themes set overflow:visible on .fr-card so
    button drop-shadows can escape, but that lets the SDK's announcement
    image (margin: -32px, width: calc(100% + 64px) — see ANNOUNCEMENT_CSS)
-   spill out the dialog edges as a visible "rogue" rectangle. Force clip
-   on dialog-cards across every theme. Two classes raise specificity to
-   (0,2,0), enough to beat the .<theme> .fr-card rules. */
-.fr-card.fr-dialog {
+   spill out the dialog edges as a visible "rogue" divider rectangle.
+   Target via the .fr-dialog-wrapper portal so it covers both
+   .fr-card.fr-dialog (Form-as-Dialog, NPS) AND .fr-card.fr-announcement
+   (Frigade.Announcement, which doesn't add the .fr-dialog class). */
+.fr-dialog-wrapper .fr-card {
   overflow: hidden;
 }
 
