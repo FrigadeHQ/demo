@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import { mkdirSync } from 'node:fs';
 import { argv } from 'node:process';
 
-const BASE = process.env.DEMO_URL ?? 'http://localhost:3001';
+const BASE = process.env.DEMO_URL ?? 'http://localhost:3000';
 const OUT = process.env.OUT_DIR ?? '/tmp/theme-screenshots';
 const requestedThemes = argv.slice(2).filter(a => !a.startsWith('--'));
 const THEMES = requestedThemes.length ? requestedThemes : ['spotify', 'linear', 'vaporwave'];
@@ -37,6 +37,9 @@ async function shoot(page, file) {
 (async () => {
   const browser = await puppeteer.launch({
     headless: 'new',
+    executablePath:
+      process.env.CHROME_PATH ??
+      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     defaultViewport: { width: 1440, height: 900 },
     args: ['--no-sandbox'],
   });
@@ -51,18 +54,22 @@ async function shoot(page, file) {
 
     for (const { path, name } of PAGES) {
       try {
-        await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle0', timeout: 20000 });
+        await page.goto(`${BASE}${path}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
       } catch (e) {
         console.log(`  ! ${path} navigation: ${e.message}`);
       }
-      await settle(page, 2000);
+      // Wait for hydration: Engage demo flows + tailwind responsive classes.
+      try {
+        await page.waitForSelector('button', { timeout: 15000 });
+      } catch {}
+      await settle(page, 2500);
       await shoot(page, `${dir}/${name}.png`);
 
       if (name === 'modals') {
         for (const label of MODAL_BUTTONS) {
-          // Re-navigate so each modal opens cleanly
-          await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle0' });
-          await settle(page, 1500);
+          await page.goto(`${BASE}${path}`, { waitUntil: 'domcontentloaded' });
+          try { await page.waitForSelector('button', { timeout: 15000 }); } catch {}
+          await settle(page, 2000);
           const clicked = await page.evaluate(text => {
             const btn = [...document.querySelectorAll('button')]
               .find(b => b.textContent?.trim() === text);
@@ -70,7 +77,7 @@ async function shoot(page, file) {
             return false;
           }, label);
           if (!clicked) { console.log(`  ! could not find button ${label}`); continue; }
-          await settle(page, 1200);
+          await settle(page, 1500);
           await shoot(page, `${dir}/modal-${label.toLowerCase().replace(/\s+/g, '-')}.png`);
         }
       }
