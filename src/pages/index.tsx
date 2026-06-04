@@ -894,6 +894,8 @@ export default function NorthwindPage() {
         @media (min-width:1240px){.nw-rails{display:block}}
         .nw-small{display:none}
         @media (max-width:999px){.nw-demo{display:none}.nw-small{display:block}}
+        .nw-hdr-bar{padding:0 24px}
+        @media (max-width:640px){.nw-hdr-bar{padding:0 14px}.nw-hdr{flex-wrap:wrap;row-gap:9px;padding:9px 0}.nw-hdr-cta{flex-basis:100%;justify-content:center}.nw-hdr-web{display:none}}
         .nw-reveal>*{opacity:0;transform:translateY(10px);animation:nwrev .6s cubic-bezier(.4,0,.2,1) forwards}
         .nw-reveal>*:nth-child(1){animation-delay:.08s}
         .nw-reveal>*:nth-child(2){animation-delay:.16s}
@@ -940,14 +942,14 @@ export default function NorthwindPage() {
       </div>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <header style={{ position: 'sticky', top: 0, zIndex: 5, background: 'rgba(255,255,255,0.85)', backdropFilter: 'saturate(180%) blur(8px)', borderBottom: `1px solid rgba(34,34,79,0.07)`, padding: '0 24px', flexShrink: 0 }}>
-          <div style={{ maxWidth: 1240, margin: '0 auto', height: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <header className="nw-hdr-bar" style={{ position: 'sticky', top: 0, zIndex: 5, background: 'rgba(255,255,255,0.85)', backdropFilter: 'saturate(180%) blur(8px)', borderBottom: `1px solid rgba(34,34,79,0.07)`, flexShrink: 0 }}>
+          <div className="nw-hdr" style={{ maxWidth: 1240, margin: '0 auto', minHeight: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <img src="/images/frigade-logo.svg" alt="Frigade" style={{ height: 25, width: 'auto', display: 'block' }} />
               <HeaderToggle />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <a href={experience === 'engage' ? 'https://frigade.com/engage' : 'https://frigade.com'} target="_blank" rel="noreferrer" style={{ padding: '7px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Website</a>
+            <div className="nw-hdr-cta" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <a className="nw-hdr-web" href={experience === 'engage' ? 'https://frigade.com/engage' : 'https://frigade.com'} target="_blank" rel="noreferrer" style={{ padding: '7px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Website</a>
               <a href={experience === 'engage' ? APP_URL : APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '7px 14px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: experience === 'engage' ? 'linear-gradient(rgb(80,96,118) 0%, rgb(64,78,97) 100%)' : 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: experience === 'engage' ? CTA_ENGAGE : CTA_BRAND, textDecoration: 'none' }}>Get started</a>
             </div>
           </div>
