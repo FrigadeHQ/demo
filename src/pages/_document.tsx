@@ -2,9 +2,9 @@ import { Head, Html, Main, NextScript } from 'next/document';
 
 export default function Document() {
   return (
-    <Html lang="en" className="h-full">
+    <Html lang="en">
       <Head></Head>
-      <body style={{ overflow: 'hidden' }}>
+      <body>
         <Main />
         <NextScript />
       </body>

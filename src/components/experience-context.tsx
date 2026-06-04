@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 
+// The demo ships two Frigade products on one page: Engage (the interactive
+// walkthrough) and Assistant (a product video). The header toggle flips between
+// them, and the choice is mirrored to the ?product= query param so a link can
+// deep-link straight to either one. Assistant is the default landing view.
 export type ExperienceType = 'assistant' | 'engage';
 
 interface ExperienceContextType {
@@ -10,30 +14,22 @@ interface ExperienceContextType {
 
 const ExperienceContext = createContext<ExperienceContextType | undefined>(undefined);
 
-const ENGAGE_ROUTES = ['/forms', '/tours', '/hints', '/checklists', '/modals', '/cards'];
-
-export { ENGAGE_ROUTES };
+const DEFAULT_EXPERIENCE: ExperienceType = 'assistant';
 
 function isExperience(value: unknown): value is ExperienceType {
   return value === 'assistant' || value === 'engage';
 }
 
-function inferFromPath(pathname: string): ExperienceType {
-  return ENGAGE_ROUTES.some((route) => pathname.startsWith(route)) ? 'engage' : 'assistant';
-}
-
 export function ExperienceProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  // 1. Query param wins. 2. Path inference falls back.
+  // A valid ?product= wins; otherwise we land on the Assistant view.
   const queryProduct = router.query.product;
-  const initial: ExperienceType = isExperience(queryProduct)
-    ? queryProduct
-    : inferFromPath(router.pathname);
+  const initial: ExperienceType = isExperience(queryProduct) ? queryProduct : DEFAULT_EXPERIENCE;
 
   const [experience, setExperienceState] = useState<ExperienceType>(initial);
 
-  // If the URL changes (or the query param appears after first render via
-  // hydration), sync state to it.
+  // The query param is empty during static render and populated after
+  // hydration, so re-sync state once it (or a later navigation) appears.
   useEffect(() => {
     if (isExperience(queryProduct) && queryProduct !== experience) {
       setExperienceState(queryProduct);
@@ -42,7 +38,7 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
 
   const setExperience = (next: ExperienceType) => {
     setExperienceState(next);
-    // Reflect the choice in the URL without navigating.
+    // Reflect the choice in the URL without navigating away from the page.
     router.replace(
       { pathname: router.pathname, query: { ...router.query, product: next } },
       undefined,

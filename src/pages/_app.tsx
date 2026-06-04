@@ -2,11 +2,6 @@ import '@/pages/globals.css';
 import { Providers } from '@/components/providers';
 import { Inter } from 'next/font/google';
 import { AppProps } from 'next/app';
-import { Header } from '@/components/header';
-import { Main } from '@/components/main';
-import { Footer } from '@/components/footer';
-
-// import HeadContent from '@/components/layout/head-content';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -14,6 +9,9 @@ const inter = Inter({
   display: 'swap',
 });
 
+// The demo is a single self-contained page that renders its own header and
+// footer, so the app shell is just the shared providers (Frigade SDK + the
+// product-toggle context) plus the font variable.
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
@@ -23,16 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
       `}</style>
       <Providers>
-        {/*<HeadContent />*/}
-        <main className="flex bg-secondary min-h-screen flex-col items-center p-0 gap-8">
-          <Header />
-          <div className="flex w-full flex-1 flex-col items-center">
-            <Main>
-              <Component {...pageProps} />
-            </Main>
-          </div>
-          <Footer />
-        </main>
+        <Component {...pageProps} />
       </Providers>
     </>
   );

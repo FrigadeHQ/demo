@@ -36,3 +36,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# Frigade keys (never commit)
+.env.local
+.env*.local
+
+# local agent/skill working files (not part of the open-source project)
+.superpowers/
+.claude/
+.frigade
+docs/plans/
+
+# pnpm 10 leaves this as an allowBuilds stub; this is a single-package repo, not a
+# workspace (the one override lives in package.json), and the stub breaks pnpm 9 on CI.
+pnpm-workspace.yaml
