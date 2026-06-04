@@ -897,8 +897,8 @@ export default function NorthwindPage() {
         .nw-hdr-bar{padding:0 24px}
         /* Below ~600px the four header items get cramped, so drop the secondary Website link, tighten the side padding, and keep everything on one row. */
         @media (max-width:600px){.nw-hdr-bar{padding:0 14px}.nw-hdr-web{display:none}}
-        /* Below ~440px even logo+toggle+CTA won't fit one row, so wrap Get started to a centered second row. */
-        @media (max-width:440px){.nw-hdr{flex-wrap:wrap;row-gap:9px;padding:9px 0}.nw-hdr-cta{flex-basis:100%;justify-content:center}}
+        /* On phones, drop the header Get started rather than wrapping it: the page already has Get started CTAs (the hero and the closing card), so the header stays a clean logo + product toggle on one row. */
+        @media (max-width:440px){.nw-hdr-cta{display:none!important}}
         .nw-reveal>*{opacity:0;transform:translateY(10px);animation:nwrev .6s cubic-bezier(.4,0,.2,1) forwards}
         .nw-reveal>*:nth-child(1){animation-delay:.08s}
         .nw-reveal>*:nth-child(2){animation-delay:.16s}
