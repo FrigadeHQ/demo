@@ -8,7 +8,7 @@ export default function HnDemoPage() {
   return (
     <>
       <Head>
-        <title>Frigade — live demo</title>
+        <title>Frigade Assistant demo</title>
         <meta name="robots" content="noindex, nofollow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
