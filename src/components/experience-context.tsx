@@ -38,9 +38,10 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
 
   const setExperience = (next: ExperienceType) => {
     setExperienceState(next);
-    // Reflect the choice in the URL without navigating away from the page.
+    // Reflect the choice in the URL and drop any other params (e.g. a ?skill=
+    // deep link from the Assistant view) so switching tabs lands on a clean URL.
     router.replace(
-      { pathname: router.pathname, query: { ...router.query, product: next } },
+      { pathname: router.pathname, query: { product: next } },
       undefined,
       { shallow: true }
     );

@@ -11,6 +11,7 @@ import { getUserId } from '@/lib/utils';
 import { DEMO_FLOWS } from '@/lib/demo-flows';
 import { getCalApi } from '@calcom/embed-react';
 import { useExperience } from '@/components/experience-context';
+import { VIDEO_BASE, SkillsChooser } from '@/components/skills-chooser';
 
 // Cal.com popup config for the booking flows (reused from the existing demo site).
 // Each product has its own Cal event type; the toggle decides which CTA fires.
@@ -45,6 +46,7 @@ const APP_URL_ASSISTANT = 'https://app.frigade.ai/sign-up?ref=demo';
  */
 
 const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif';
+const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const CARD_SH = '0 1px 2px rgba(18,24,40,.06), 0 0 0 1px rgba(18,24,40,.05)';
 const STAGE_SH = '0 1px 3px rgba(18,24,40,.05), 0 8px 26px rgba(18,24,40,.05)';
 const C = {
@@ -138,11 +140,11 @@ function NavTarget({ target, icon: Icon, label, w, lit, hint, onFire, onDismiss 
     </div>
   );
 }
-function ExpBadge({ icon: Icon, label }: { icon: IconType; label: string }) {
+function ExpBadge({ icon: Icon, label, onClick }: { icon: IconType; label: string; onClick?: () => void }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, height: 31, borderRadius: 999, background: '#fff', padding: '0 13px', boxShadow: '0 1px 2px rgba(18,24,40,0.05), 0 0 0 1px rgba(18,24,40,0.07)', fontSize: 12.5, fontWeight: 500, color: C.ink2 }}>
+    <button type="button" onClick={onClick} className="nw-exp-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, height: 31, borderRadius: 999, background: '#fff', padding: '0 13px', boxShadow: '0 1px 2px rgba(18,24,40,0.05), 0 0 0 1px rgba(18,24,40,0.07)', fontSize: 12.5, fontWeight: 500, color: C.ink2, border: 0, cursor: 'pointer' }}>
       <Icon size={14} color={C.brand} strokeWidth={2} />{label}
-    </span>
+    </button>
   );
 }
 function Toggle({ icon: Icon, label, active, hex, rgb, onClick }: { icon: IconType; label: string; active?: boolean; hex: string; rgb: string; onClick?: () => void }) {
@@ -154,10 +156,10 @@ const AGENTS = [
   { name: 'Lead Router', type: 'Workflow', status: 'Running', run: '14m ago', on: true },
   { name: 'Onboarding Bot', type: 'Single Prompt', status: 'Paused', run: '1d ago', on: false },
 ];
-const EXPERIENCES: { label: string; icon: IconType }[] = [
-  { label: 'Welcome announcement', icon: Megaphone }, { label: 'Onboarding form', icon: ClipboardList },
-  { label: 'Checklist', icon: ListChecks }, { label: 'Product tour', icon: Route },
-  { label: 'Banner', icon: Flag }, { label: 'Survey', icon: MessageSquare }, { label: 'Changelog', icon: Newspaper },
+const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
+  { label: 'Welcome announcement', icon: Megaphone, action: 'welcome' }, { label: 'Onboarding form', icon: ClipboardList, action: 'form' },
+  { label: 'Checklist', icon: ListChecks, action: 'checklist' }, { label: 'Product tour', icon: Route, action: 'tour' },
+  { label: 'Banner', icon: Flag, action: 'banner' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
 ];
 const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText };
 // Abridged marketing value props for the section below the demo (Engage-framed, marketing voice).
@@ -226,7 +228,7 @@ function PanelHead({ onClose }: { onClose: () => void }) {
 //   banner       -> contextual banner, fires once two checklist steps are done
 //   survey       -> NPS-style survey, fires when the checklist is complete
 //   tour         -> product tour with a spotlight + coachmarks
-function NorthwindApp({ dark, setDark }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>> }) {
+function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; actionsRef?: React.MutableRefObject<((key: string) => void) | null> }) {
   const { flow } = Frigade.useFlow(DEMO_FLOWS.changelog);
   const steps = flow ? Array.from(flow.steps.values()) : [];
   const [seen, setSeen] = useState<Set<string>>(() => new Set());
@@ -391,6 +393,30 @@ function NorthwindApp({ dark, setDark }: { dark: boolean; setDark: React.Dispatc
   function markOnboarded() { try { localStorage.setItem('nw-onboarding-done:' + getUserId(), '1'); } catch {} }
   function submitForm() { try { fmStep?.complete?.(fmValues); } catch {} markOnboarded(); setFmOpen(false); setFmStepIdx(0); if (journey) { setJourney(false); setAnOpen(true); } }
   function skipForm() { try { fmFlow?.skip?.(); } catch {} markOnboarded(); setFmOpen(false); setFmStepIdx(0); if (journey) { setJourney(false); setAnOpen(true); } }
+  // Close every Frigade surface at once. The hero pills use this to enter a "manual
+  // mode": one pill shows exactly one component instead of stacking on top of whatever
+  // the guided demo already had open.
+  function closeAllFlows() {
+    setJourney(false);
+    setAnOpen(false); setFmOpen(false); setBellOpen(false); setPanelOpen(false);
+    setCkOpen(false); setBannerOpen(false); setSurveyOpen(false); setTourActive(false);
+  }
+  // Publish the demo actions so the Engage hero pills can replay any single flow. Each
+  // click resets the others first (manual mode), so nothing overlaps. One-time flows
+  // (welcome/form/survey) also clear their "seen" flag so they always show again.
+  function runExperience(key: string) {
+    closeAllFlows();
+    switch (key) {
+      case 'welcome': setAnOpen(true); break;
+      case 'form': setFmStepIdx(0); setFmOpen(true); break;
+      case 'tour': startTour(); break;
+      case 'checklist': setCkOpen(true); break;
+      case 'banner': try { localStorage.removeItem(bannerKey); } catch {} setBannerOpen(true); break;
+      case 'survey': try { localStorage.removeItem(surveyKey); } catch {} setSurveyRating(null); setSurveyOpen(true); break;
+      case 'changelog': markSeen(); setBellOpen(true); break;
+    }
+  }
+  useEffect(() => { if (actionsRef) actionsRef.current = runExperience; });
   function resetDemo() {
     try {
       localStorage.setItem('frigadeUserId', 'demo-' + Math.random().toString(36).slice(2, 10));
@@ -783,15 +809,14 @@ function MarketingFooter() {
 
 // A labeled value-prop grid (eyebrow + heading + bento). Shown under both the
 // Engage demo and the Assistant video. maxWidth 1040 keeps it inside the rails.
-function BenefitsSection({ eyebrow, title, subtitle, items }: { eyebrow: string; title: string; subtitle: string; items: { icon: IconType; title: string; desc: string }[] }) {
+function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: string; items: { icon: IconType; title: string; desc: string }[] }) {
   return (
     <div style={{ maxWidth: 1016, margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 34px' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.13em', textTransform: 'uppercase', color: C.brand, marginBottom: 12 }}>{eyebrow}</div>
-        <h2 style={{ margin: '0 0 12px', fontSize: 32, lineHeight: 1.1, letterSpacing: '-0.8px', fontWeight: 700, color: C.ink }}>{title}</h2>
-        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.5, color: C.muted }}>{subtitle}</p>
+      <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 40px' }}>
+        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>{title}</h2>
+        <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>{subtitle}</p>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
         {items.map((b) => {
           const Icon = b.icon;
           return (
@@ -807,23 +832,16 @@ function BenefitsSection({ eyebrow, title, subtitle, items }: { eyebrow: string;
   );
 }
 
-// Closing CTA card. Borrows the marketing site's announcement-banner treatment
-// (a faint hatch pattern + a brand-blue radial glow) plus the hero compass ring,
-// so it reads like a Frigade surface instead of a plain box. The buttons come in
-// as children. maxWidth 1040 keeps it inside the rails.
-function RichCtaCard({ title, subtext, children }: { title: string; subtext: string; children: React.ReactNode }) {
+// Closing CTA card, following the marketing site's house pattern: a clean rounded
+// card on a near-white surface with a hairline border and a soft, brand-tinted
+// lift. Centered headline + subtitle + button pair.
+function RichCtaCard({ title, subtext, children, flush }: { title: string; subtext: string; children: React.ReactNode; flush?: boolean }) {
   return (
-    <div style={{ maxWidth: 1016, margin: '44px auto 0' }}>
-      <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 20, border: '1px solid rgba(1,94,251,0.16)', background: 'linear-gradient(180deg, #eef4ff 0%, #ffffff 72%)', boxShadow: '0 1px 3px rgba(18,24,40,.05), 0 22px 52px rgba(1,58,170,.11)' }}>
-        {/* hatch texture, faded toward the center so the copy stays clean */}
-        <div aria-hidden style={{ position: 'absolute', inset: 0, backgroundImage: "url('/images/pattern-hatch-dark.svg')", backgroundSize: '74.5px auto', opacity: 0.4, WebkitMaskImage: 'radial-gradient(118% 132% at 50% 50%, transparent 30%, #000 100%)', maskImage: 'radial-gradient(118% 132% at 50% 50%, transparent 30%, #000 100%)', pointerEvents: 'none' }} />
-        {/* brand-blue glow from the top edge */}
-        <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 62% 150% at 50% 0%, rgba(1,94,251,0.18) 0%, rgba(1,94,251,0.06) 42%, transparent 72%)', pointerEvents: 'none' }} />
-        {/* compass ring graphic, bleeding in from the right */}
-        <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: '50%', right: -120, transform: 'translateY(-50%)', width: 420, opacity: 0.55, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(circle at 50% 50%, #000 40%, transparent 70%)', maskImage: 'radial-gradient(circle at 50% 50%, #000 40%, transparent 70%)' }} />
-        <div style={{ position: 'relative', zIndex: 1, padding: '54px 32px', textAlign: 'center' }}>
-          <h2 style={{ margin: '0 auto 12px', maxWidth: 560, fontSize: 31, lineHeight: 1.12, letterSpacing: '-0.7px', fontWeight: 700, color: C.ink }}>{title}</h2>
-          <p style={{ margin: '0 auto 28px', maxWidth: 500, fontSize: 15.5, lineHeight: 1.55, color: C.muted }}>{subtext}</p>
+    <div style={{ maxWidth: 1016, margin: flush ? '0 auto' : '76px auto 0' }}>
+      <div style={{ borderRadius: 20, border: '1px solid #1b1b1d0d', background: '#fbfcfe', boxShadow: '0 1px 2px rgba(15,23,42,.04), 0 22px 48px -28px rgba(1,94,251,.18)' }}>
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+          <h2 className="nw-h2" style={{ margin: 0, maxWidth: 560, fontWeight: 700, color: C.ink }}>{title}</h2>
+          <p className="nw-balance" style={{ margin: 0, maxWidth: 480, fontSize: 15, lineHeight: 1.6, color: C.muted }}>{subtext}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>{children}</div>
         </div>
       </div>
@@ -831,51 +849,251 @@ function RichCtaCard({ title, subtext, children }: { title: string; subtext: str
   );
 }
 
-// The Assistant product's page on the live demo is a product walkthrough video,
-// so the Assistant tab shows that video plus its sign-up and book-a-demo CTAs.
-// (Engage is the full interactive demo above; Assistant is the guided look.)
-function AssistantSection() {
+// "Built with a Claude skill" section for the Engage page. This whole demo was
+// generated with the frigade-engage skill for Claude Code, so we say so here and
+// link it. The framing stays agent-agnostic (any AI coding agent) while the
+// specifics name Claude, which is what ships today. Mirrors the treatment on
+// frigade.com/engage. Light page chrome; the terminal card is the one dark element.
+function BuiltWithSkill() {
+  const codeStyle: React.CSSProperties = { fontFamily: MONO, fontSize: '0.9em', background: C.brandWeak, color: C.brand, padding: '1px 6px', borderRadius: 5 };
+  const points = [
+    { t: 'Typed and documented', d: 'Engage ships as typed TypeScript with full SDK docs, so your agent already knows how to use it.' },
+    { t: 'Claude today, more soon', d: 'The Claude skill is live now. Cursor, Codex, and other agents are available on request.' },
+    { t: 'Reviewable output', d: 'Your agent writes real Engage code that ships through your normal pipeline. Nothing is guessed at runtime.' },
+  ];
+  const dim = '#8a93a8', tint = '#5b9bff', hair = 'rgba(255,255,255,0.07)';
   return (
-    <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
-      <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
-      <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '46px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 15 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.13em', textTransform: 'uppercase', color: C.brand }}>Frigade Assistant · Live demo</div>
-        <h2 style={{ margin: 0, fontSize: 40, lineHeight: 1.07, letterSpacing: '-1.1px', fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32', maxWidth: 720 }}>See what Assistant can do.</h2>
-        <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 540 }}>AI that learns your product and answers your users in real time.</p>
+    <div style={{ maxWidth: 1016, margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', maxWidth: 660, margin: '0 auto 38px' }}>
+        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Engage is code. Your AI agent already knows what to do with it.</h2>
+        <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade ships the <code style={codeStyle}>frigade-engage</code> skill for Claude Code. Describe the onboarding, tour, or survey you want; Claude writes it against Engage components, wires the <code style={codeStyle}>@frigade/react</code> SDK, and opens the PR. Every flow in this demo was built exactly that way.</p>
       </div>
-      <div className="nw-revealv" style={{ position: 'relative', zIndex: 1, marginTop: 32, padding: '0 16px 64px' }}>
+
+      {/* Terminal snippet. Accents use a lighter blue than the brand token, which
+          reads too dark on the terminal background. */}
+      <div style={{ maxWidth: 760, margin: '0 auto', borderRadius: 14, overflow: 'hidden', background: '#0d1424', border: `1px solid ${hair}`, boxShadow: '0 1px 3px rgba(18,24,40,.08), 0 20px 46px rgba(1,58,170,.14)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '11px 14px', borderBottom: `1px solid ${hair}` }}>
+          <span style={{ width: 11, height: 11, borderRadius: 999, background: '#ff5f57' }} />
+          <span style={{ width: 11, height: 11, borderRadius: 999, background: '#febc2e' }} />
+          <span style={{ width: 11, height: 11, borderRadius: 999, background: '#28c840' }} />
+          <span style={{ marginLeft: 8, fontFamily: MONO, fontSize: 11.5, color: 'rgba(255,255,255,0.38)' }}>app · claude</span>
+        </div>
+        <div style={{ padding: '15px 18px 17px', fontFamily: MONO, fontSize: 13, lineHeight: 1.9, color: '#c7d0e0', overflowX: 'auto' }}>
+          <div><span style={{ color: dim }}>$</span> claude</div>
+          <div style={{ color: '#eaf0fb' }}><span style={{ color: tint }}>›</span> Build a getting-started checklist and a product tour for new users with Frigade Engage.</div>
+          <div style={{ color: dim }}>Loading skill: <span style={{ color: tint }}>frigade-engage</span> …</div>
+          <div style={{ color: dim }}>Reading types from <span style={{ color: tint }}>@frigade/react</span> …</div>
+          <div style={{ color: dim }}>Generating flows, wiring <span style={{ color: tint }}>@frigade/react</span>, opening PR …</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 18, maxWidth: 760, margin: '34px auto 0' }}>
+        {points.map((p) => (
+          <div key={p.t} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: 999, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}><Check size={13} strokeWidth={3} /></span>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{p.t}</div>
+              <div style={{ fontSize: 12.5, lineHeight: 1.5, color: C.muted }}>{p.d}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dark "get the skill" button pairs with the terminal + github mark; the docs
+          link stays plain, so neither competes with the blue CTA card below. */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 38 }}>
+        <a href="https://github.com/FrigadeHQ/frigade-engage-skill" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 8, fontSize: 14.5, fontWeight: 600, color: '#fff', background: C.dark, textDecoration: 'none', boxShadow: '0 1px 2px rgba(0,0,0,.16), 0 8px 18px rgba(18,24,40,.16)' }}>{SOCIAL_ICON.github} Get the skill →</a>
+        <a href="https://engage-docs.frigade.com" target="_blank" rel="noreferrer" style={{ fontSize: 14, fontWeight: 600, color: C.brand, textDecoration: 'none' }}>Read the developer docs →</a>
+      </div>
+    </div>
+  );
+}
+
+// SKILL_VIDEOS, the brand logos, and the SkillsChooser now live in
+// components/skills-chooser.tsx (shared with the standalone /hn embed). VIDEO_BASE is
+// re-exported from there and imported above.
+
+// Reusable rail band: content framed in the 1240 rails with a hairline separator and
+// vertical rhythm, matching the Engage sections. Page chrome, always light.
+function RailBand({ children, top = 80, bottom = 80, id }: { children: React.ReactNode; top?: number; bottom?: number; id?: string }) {
+  return (
+    <section id={id} style={{ position: 'relative', zIndex: 1, scrollMarginTop: 72 }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+        <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: top, paddingBottom: bottom }}>
+          {children}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// An outlined feature badge above a section header (AI product tours / Skills /
+// Suggestions). Each links out to that feature's page on the marketing site.
+function SectionTag({ children, href }: { children: React.ReactNode; href: string }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" className="nw-feat-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 16, padding: '5px 13px', borderRadius: 999, border: `1px solid ${C.line}`, background: '#fff', color: C.ink2, fontSize: 12.5, fontWeight: 600, letterSpacing: '.01em', lineHeight: 1, textDecoration: 'none' }}>
+      <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: C.brand }} />
+      {children}
+    </a>
+  );
+}
+
+// Skills feature demo: the assistant learned to drive Hacker News, Spotify, and Jira
+// with no code. Company logos are the chooser; the three short clips are stacked and
+// crossfade on switch, looping muted with no controls. Deep-linkable via #skills and
+// ?skill=<app>, which also scrolls the section into view on load.
+function SkillsSection() {
+  return (
+    <RailBand id="skills">
+      <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 30px' }}>
+        <SectionTag href="https://frigade.com/features/skills">Skills</SectionTag>
+        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Real actions, no code required.</h2>
+        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
+      </div>
+      <SkillsChooser defaultSkill="jira" scrollTargetId="skills" />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
+        {[
+          { icon: Sparkles, t: 'Learns any product', d: 'Frigade uses your product like a user, so no actions need mapping.' },
+          { icon: Zap, t: 'Real actions, not answers', d: 'It completes the task with the user’s own permissions.' },
+          { icon: Lock, t: 'No code, you stay in control', d: 'Review each skill and switch on only what you want.' },
+        ].map((u) => {
+          const Icon = u.icon;
+          return (
+            <div key={u.t} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 9, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={17} strokeWidth={2} /></span>
+              <div>
+                <div style={{ fontSize: 14.5, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{u.t}</div>
+                <div style={{ fontSize: 13, lineHeight: 1.5, color: C.muted }}>{u.d}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </RailBand>
+  );
+}
+
+// The Assistant view is a stack of feature-demo sections: Suggestions (the video up
+// top) and Skills (the app chooser), then the shared value props + closing CTA.
+function AssistantSection() {
+  const { setExperience } = useExperience();
+  return (
+    <>
+      {/* Page hero. */}
+      <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
+        <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
+        <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '56px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
+          <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See the assistant in action.</h2>
+          <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>AI that learns your product and answers your users in real time.</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+            <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
+            <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
+          </div>
+        </div>
+      </section>
+
+      {/* General intro: the assistant learns your product like a power user, so it has real context. */}
+      <RailBand>
+        <div style={{ textAlign: 'center', margin: '0 auto 30px' }}>
+          <SectionTag href="https://frigade.com/features/ai-generated-tours">AI product tours</SectionTag>
+          <h2 className="nw-h2 nw-nowrap-lg" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>It knows your product like a power user.</h2>
+          <p className="nw-pretty" style={{ margin: '0 auto', maxWidth: 700, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade learns your product by using it, the way a power user would. That context is what lets it actually help your users, guiding them through real workflows instead of pointing at a help article.</p>
+        </div>
+        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
+          <video src={VIDEO_BASE + '/videos/airbnb.mp4'} poster={VIDEO_BASE + '/videos/airbnb.jpg'} autoPlay muted loop playsInline preload="auto" aria-label="Airbnb assistant demo" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
+          {[
+            { icon: Sparkles, t: 'No setup, no scripting', d: 'Frigade learns by using your product, so nothing needs to be mapped or configured.' },
+            { icon: Route, t: 'Guided tours, generated', d: 'It walks users through real workflows it learned itself, not a static tour you built by hand.' },
+            { icon: RotateCcw, t: 'Always up to date', d: 'Ship a change and it relearns on its own. Nothing to update by hand.' },
+          ].map((u) => {
+            const Icon = u.icon;
+            return (
+              <div key={u.t} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 9, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={17} strokeWidth={2} /></span>
+                <div>
+                  <div style={{ fontSize: 14.5, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{u.t}</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5, color: C.muted }}>{u.d}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </RailBand>
+
+      {/* Skills: the assistant driving real apps, no code. */}
+      <SkillsSection />
+
+      {/* Suggestions demo: proactive engagement. Header + video + use-case value row. */}
+      <RailBand id="suggestions">
+        <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 30px' }}>
+          <SectionTag href="https://frigade.com/features/suggestions">Suggestions</SectionTag>
+          <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>A virtual AE for every user.</h2>
+          <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Suggestions proactively onboard new users, drive feature adoption, and nudge the next step at the moment that matters. The impact of an account exec on every account, with almost none of the effort.</p>
+        </div>
         <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', background: '#fff', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
           <video data-hero-video src="/videos/hero.mp4" autoPlay muted loop playsInline controls preload="auto" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '1566 / 1080' }} />
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 30 }}>
-          <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '10px 20px', borderRadius: 8, fontSize: 14.5, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
-          <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '10px 20px', borderRadius: 6, fontSize: 14.5, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a demo</button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
+          {[
+            { icon: UserPlus, t: 'Onboard new users', d: 'AI-generated onboarding walks each signup to their first win.' },
+            { icon: Sparkles, t: 'Drive feature adoption', d: 'Surface the feature they are missing, right when it counts.' },
+            { icon: Megaphone, t: 'Reach every account', d: 'Proactive nudges at scale, with almost no effort from you.' },
+          ].map((u) => {
+            const Icon = u.icon;
+            return (
+              <div key={u.t} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 9, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={17} strokeWidth={2} /></span>
+                <div>
+                  <div style={{ fontSize: 14.5, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{u.t}</div>
+                  <div style={{ fontSize: 13, lineHeight: 1.5, color: C.muted }}>{u.d}</div>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
-      {/* Value props + closing CTA below the video, mirroring the Engage page. */}
-      <div style={{ position: 'relative', zIndex: 1, padding: '8px 24px 96px' }}>
+      </RailBand>
+
+      {/* Shared value props. */}
+      <RailBand>
         <BenefitsSection
-          eyebrow="Frigade Assistant"
           title="Support that scales with your product."
           subtitle="Trained on your product and answering in real time. Here's what that unlocks."
           items={ASSISTANT_BENEFITS}
         />
+      </RailBand>
+
+      {/* Closing CTA. */}
+      <RailBand top={64} bottom={96}>
         <RichCtaCard
+          flush
           title="AI that actually knows your product."
           subtext="Frigade Assistant learns your product and answers your users in real time. Add it to yours in an afternoon."
         >
-          <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '10px 20px', borderRadius: 8, fontSize: 14.5, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
-          <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '10px 20px', borderRadius: 6, fontSize: 14.5, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a demo</button>
+          <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
+          <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
         </RichCtaCard>
-      </div>
-    </section>
+        <p style={{ textAlign: 'center', margin: '34px 0 0', fontSize: 14.5, lineHeight: 1.5, color: C.muted }}>
+          Looking for Engage, our SDK to build onboarding in code?{' '}
+          <button onClick={() => { setExperience('engage'); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: C.brand, fontWeight: 600, cursor: 'pointer' }}>See Engage &rarr;</button>
+        </p>
+      </RailBand>
+    </>
   );
 }
 
 export default function NorthwindPage() {
   const [dark, setDark] = useState(false);
   // Which product is showing, synced to ?product= in the URL via the context.
-  const { experience } = useExperience();
+  const { experience, setExperience } = useExperience();
+  // NorthwindApp publishes its action dispatcher here so the Engage hero pills can
+  // replay any flow in the live demo and scroll it into view.
+  const demoActionsRef = useRef<((key: string) => void) | null>(null);
+  const triggerDemo = (action: string) => {
+    if (typeof document !== 'undefined') document.querySelector('.nw-demo')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    demoActionsRef.current?.(action);
+  };
   // Register both Cal.com popup namespaces up front (Engage + Assistant booking).
   useEffect(() => { (async () => { try {
     const calEngage = await getCalApi({ namespace: CAL_NS });
@@ -883,6 +1101,18 @@ export default function NorthwindPage() {
     const calAssistant = await getCalApi({ namespace: CAL_NS_ASSISTANT });
     calAssistant('ui', { hideEventTypeDetails: false, layout: 'month_view' });
   } catch {} })(); }, []);
+  // Reveal each section band as it scrolls into view, so everything below the hero
+  // animates in (not just the hero). Re-runs per view since Engage/Assistant differ.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const els = Array.from(document.querySelectorAll('.nw-sr'));
+    if (!('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('nw-sr-in')); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('nw-sr-in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [experience]);
   return (
     <div style={{ minHeight: '100vh', background: '#fff', color: C.ink, fontFamily: FONT }}>
       <style dangerouslySetInnerHTML={{ __html: `
@@ -904,7 +1134,30 @@ export default function NorthwindPage() {
         .nw-reveal>*:nth-child(4){animation-delay:.32s}
         .nw-revealv{opacity:0;transform:translateY(18px);animation:nwrev .7s cubic-bezier(.4,0,.2,1) .42s forwards}
         .nw-balance{text-wrap:balance}
+        .nw-pretty{text-wrap:pretty}
+        /* Sections below the hero reveal as they scroll into view, so the whole page animates in, not just the hero. */
+        .nw-sr{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+        .nw-sr.nw-sr-in{opacity:1;transform:none}
+        @media (prefers-reduced-motion: reduce){.nw-sr{opacity:1;transform:none;transition:none}}
+        /* Responsive heading scale, mirroring the marketing site (frigade.com): h1 32/44/60, h2 28/36/48. */
+        .nw-h1{font-size:32px;line-height:1.1;letter-spacing:-.6px;text-wrap:balance}
+        @media(min-width:768px){.nw-h1{font-size:46px;line-height:1.04;letter-spacing:-1.2px}}
+        @media(min-width:1024px){.nw-h1{font-size:66px;letter-spacing:-1.9px}}
+        .nw-h2{font-size:28px;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+        @media(min-width:768px){.nw-h2{font-size:36px}}
+        @media(min-width:1024px){.nw-h2{font-size:48px}}
+        /* The intro (AI product tours) headline reads best on one line; let it hold on a single line once there's room for it. */
+        @media(min-width:1180px){.nw-nowrap-lg{white-space:nowrap;text-wrap:nowrap}}
+        /* Rail insets: align section content to the 1240 rails (100px) on desktop, 32px tablet, edge padding on mobile. Mirrors marketing's rail-outer-mx. */
+        .nw-rail-inset{margin-left:0;margin-right:0;padding-left:20px;padding-right:20px}
+        @media(min-width:640px){.nw-rail-inset{margin-left:32px;margin-right:32px;padding-left:0;padding-right:0}}
+        @media(min-width:1240px){.nw-rail-inset{margin-left:100px;margin-right:100px}}
         .nw-pills{opacity:0;transform:translateY(10px);animation:nwrev .6s cubic-bezier(.4,0,.2,1) .34s forwards}
+        .nw-exp-pill{transition:box-shadow .15s ease,transform .12s ease}
+        .nw-exp-pill:hover{box-shadow:0 3px 10px rgba(18,24,40,.12),0 0 0 1px rgba(1,94,251,.4)!important}
+        .nw-exp-pill:active{transform:scale(.96)}
+        .nw-feat-badge{transition:border-color .15s ease,box-shadow .15s ease}
+        .nw-feat-badge:hover{border-color:#cfd4de!important;box-shadow:0 1px 2px rgba(18,24,40,.05)}
         @property --nw-sweep{syntax:'<angle>';initial-value:0deg;inherits:false}
         @keyframes nwsweep{0%{--nw-sweep:0deg;opacity:0}3%{opacity:1}33%{opacity:1}38%{--nw-sweep:360deg;opacity:0}100%{--nw-sweep:360deg;opacity:0}}
         .ck-sweep{position:absolute;inset:0;border-radius:10px;padding:1.2px;background:conic-gradient(from var(--nw-sweep,0deg),transparent 0deg,#015efb 30deg,transparent 78deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;opacity:0;animation:nwsweep 5.5s linear 1.2s infinite}
@@ -961,18 +1214,17 @@ export default function NorthwindPage() {
         <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
           <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
           <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '46px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 15 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.13em', textTransform: 'uppercase', color: C.brand }}>Frigade Engage · Live demo</div>
-            <h2 style={{ margin: 0, fontSize: 40, lineHeight: 1.07, letterSpacing: '-1.1px', fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32', maxWidth: 720 }}>See what Engage can do.</h2>
+            <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32', maxWidth: 760 }}>See what Engage can do.</h2>
             <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 540 }}>Everything in <span style={{ color: C.brand, fontWeight: 600 }}>blue</span> is powered by Frigade.</p>
           </div>
 
-          {/* TODO(backlog): make these pills interactive — click opens/replays its experience in the demo. Nuance: one-time flows (announcement/form/survey) may be completed already -> restart() so the viewer always sees it; persistent ones (checklist/changelog/banner) open/scroll into view. Design alongside the Demo Console. */}
-          <div className="nw-pills" style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 1080, margin: '20px auto 0', padding: '0 24px' }}>
-            {EXPERIENCES.map((e) => <ExpBadge key={e.label} icon={e.icon} label={e.label} />)}
+          {/* Each pill replays its Frigade surface in the live demo below (same actions as the Demo Console), scrolling it into view. */}
+          <div className="nw-pills" style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', maxWidth: 1080, margin: '30px auto 0', padding: '0 24px' }}>
+            {EXPERIENCES.map((e) => <ExpBadge key={e.label} icon={e.icon} label={e.label} onClick={() => triggerDemo(e.action)} />)}
           </div>
 
           <div className="nw-revealv" style={{ position: 'relative', zIndex: 1, marginTop: 30, padding: '0 16px 56px' }}>
-            <div className="nw-demo" style={{ maxWidth: 1280, margin: '0 auto' }}><BrowserFrame dark={dark}><NorthwindApp dark={dark} setDark={setDark} /></BrowserFrame></div>
+            <div className="nw-demo" style={{ maxWidth: 1280, margin: '0 auto' }}><BrowserFrame dark={dark}><NorthwindApp dark={dark} setDark={setDark} actionsRef={demoActionsRef} /></BrowserFrame></div>
             <div className="nw-small" style={{ maxWidth: 460, margin: '4px auto 0', textAlign: 'center', background: '#fff', borderRadius: 16, padding: '34px 30px', boxShadow: C.cardSh }}>
               <div style={{ width: 46, height: 46, borderRadius: 12, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><LayoutGrid size={22} strokeWidth={2} /></div>
               <h3 style={{ margin: '0 0 7px', fontSize: 18, fontWeight: 700, letterSpacing: '-.01em', color: C.ink }}>Best viewed on a larger screen</h3>
@@ -981,21 +1233,45 @@ export default function NorthwindPage() {
           </div>
         </section>
 
-        {/* Abridged marketing section below the demo — value props bento + CTA (page chrome, always light) */}
-        <section style={{ position: 'relative', zIndex: 1, padding: '8px 24px 96px' }}>
-          <BenefitsSection
-            eyebrow="Built with Frigade"
-            title="Everything you just saw, from one SDK."
-            subtitle="Native to your product and driven by real events. This is what powers it."
-            items={BENEFITS}
-          />
-          <RichCtaCard
-            title="The backend for product onboarding."
-            subtext="Build the experiences you want and ship them fast. This whole demo was built with Frigade and an AI agent in less than an afternoon."
-          >
-            <a href={APP_URL} target="_blank" rel="noreferrer" style={{ padding: '10px 20px', borderRadius: 8, fontSize: 14.5, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
-            <button data-cal-link={CAL_LINK} data-cal-namespace={CAL_NS} data-cal-config={CAL_CONFIG} style={{ padding: '10px 20px', borderRadius: 6, fontSize: 14.5, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Grab a demo</button>
-          </RichCtaCard>
+        {/* Marketing sections below the demo. Each is framed in the 1240 rails with a
+            hairline separator and an 80px vertical rhythm, mirroring frigade.com/engage. */}
+        <section style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: 80, paddingBottom: 80 }}>
+              <BenefitsSection
+                title="Everything you just saw, from one SDK."
+                subtitle="Native to your product and driven by real events. This is what powers it."
+                items={BENEFITS}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: 80, paddingBottom: 80 }}>
+              <BuiltWithSkill />
+            </div>
+          </div>
+        </section>
+
+        <section style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: 64, paddingBottom: 96 }}>
+              <RichCtaCard
+                flush
+                title="The backend for product onboarding."
+                subtext="Build the experiences you want and ship them fast. This whole demo was built with Frigade and an AI agent, using the frigade-engage skill, in less than an afternoon."
+              >
+                <a href={APP_URL} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
+                <button data-cal-link={CAL_LINK} data-cal-namespace={CAL_NS} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
+              </RichCtaCard>
+              <p style={{ textAlign: 'center', margin: '34px 0 0', fontSize: 14.5, lineHeight: 1.5, color: C.muted }}>
+                Looking for the AI assistant that learns your product on its own?{' '}
+                <button onClick={() => { setExperience('assistant'); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: C.brand, fontWeight: 600, cursor: 'pointer' }}>See Assistant &rarr;</button>
+              </p>
+            </div>
+          </div>
         </section>
         </>
         ) : (
