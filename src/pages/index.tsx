@@ -859,14 +859,15 @@ function BuiltWithSkill() {
   const points = [
     { t: 'Typed and documented', d: 'Engage ships as typed TypeScript with full SDK docs, so your agent already knows how to use it.' },
     { t: 'Claude today, more soon', d: 'The Claude skill is live now. Cursor, Codex, and other agents are available on request.' },
-    { t: 'Reviewable output', d: 'Your agent writes real Engage code that ships through your normal pipeline. Nothing is guessed at runtime.' },
+    { t: 'Reviewable output', d: 'Your agent ships real Engage code through your normal pipeline. Nothing is guessed at runtime.' },
   ];
   const dim = '#8a93a8', tint = '#5b9bff', hair = 'rgba(255,255,255,0.07)';
   return (
     <div style={{ maxWidth: 1016, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', maxWidth: 660, margin: '0 auto 38px' }}>
         <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Engage is code. Your AI agent already knows what to do with it.</h2>
-        <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade ships the <code style={codeStyle}>frigade-engage</code> skill for Claude Code. Describe the onboarding, tour, or survey you want; Claude writes it against Engage components, wires the <code style={codeStyle}>@frigade/react</code> SDK, and opens the PR. Every flow in this demo was built exactly that way.</p>
+        {/* nbsp keeps "way" glued to "that" so the paragraph never ends on a one-word line. */}
+        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade ships the <code style={codeStyle}>frigade-engage</code> skill for Claude Code. Describe the onboarding, tour, or survey you want; Claude writes it against Engage components, wires the <code style={codeStyle}>@frigade/react</code> SDK, and opens the PR. Every flow in this demo was built exactly that&nbsp;way.</p>
       </div>
 
       {/* Terminal snippet. Accents use a lighter blue than the brand token, which
@@ -1134,6 +1135,8 @@ export default function NorthwindPage() {
         .nw-reveal>*:nth-child(4){animation-delay:.32s}
         .nw-revealv{opacity:0;transform:translateY(18px);animation:nwrev .7s cubic-bezier(.4,0,.2,1) .42s forwards}
         .nw-balance{text-wrap:balance}
+        /* For body paragraphs: avoid a lone word stranded on the last line (no-op where unsupported). */
+        .nw-pretty{text-wrap:pretty}
         /* Sections below the hero reveal as they scroll into view, so the whole page animates in, not just the hero. */
         .nw-sr{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
         .nw-sr.nw-sr-in{opacity:1;transform:none}

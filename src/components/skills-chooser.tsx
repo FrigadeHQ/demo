@@ -68,6 +68,20 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
     if (doc.fullscreenElement || doc.webkitFullscreenElement) (doc.exitFullscreen || doc.webkitExitFullscreen)?.call(doc);
     else if (el) (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
   };
+  // The button overlaps the video, so it only appears while the cursor is moving over
+  // the stage and fades back out after a moment of stillness. Resting on the button
+  // itself keeps it visible (hiding a control under a cursor about to click it is worse
+  // than any overlap). Keyboard focus bypasses all of this via :focus-visible in CSS.
+  const [fsBtnOn, setFsBtnOn] = useState(false);
+  const hideTimer = useRef<number | null>(null);
+  const overFsBtn = useRef(false);
+  const cancelHide = () => { if (hideTimer.current !== null) { window.clearTimeout(hideTimer.current); hideTimer.current = null; } };
+  const wakeFsBtn = () => {
+    setFsBtnOn(true);
+    cancelHide();
+    hideTimer.current = window.setTimeout(() => { if (!overFsBtn.current) setFsBtnOn(false); }, 2500);
+  };
+  useEffect(() => cancelHide, []);
   // On a bare ?skill= deep link (no #hash), scroll the target section into view.
   useEffect(() => {
     if (!scrollTargetId || window.location.hash) return;
@@ -92,8 +106,9 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
     <>
       {allowFullscreen && (
         <style dangerouslySetInnerHTML={{ __html: `
-          .sc-fsbtn{transition:background .16s ease,transform .12s ease,opacity .16s ease;opacity:.82}
-          .sc-fsbtn:hover{background:rgba(13,20,36,.72);opacity:1}
+          .sc-fsbtn{opacity:0;pointer-events:none;transition:background .16s ease,transform .12s ease,opacity .3s ease}
+          .sc-fsbtn-on,.sc-fsbtn:focus-visible{opacity:.82;pointer-events:auto;transition:background .16s ease,transform .12s ease,opacity .16s ease}
+          .sc-fsbtn-on:hover{background:rgba(13,20,36,.72);opacity:1}
           .sc-fsbtn:active{transform:scale(.94)}
           .sc-stage:fullscreen{width:100vw!important;height:100vh!important;max-width:none!important;border-radius:0!important;background:#000!important}
           .sc-stage:-webkit-full-screen{width:100vw!important;height:100vh!important;max-width:none!important;border-radius:0!important;background:#000!important}
@@ -111,12 +126,18 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
           );
         })}
       </div>
-      <div ref={stageRef} className={allowFullscreen ? 'sc-stage' : undefined} style={{ position: 'relative', maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
+      <div
+        ref={stageRef}
+        className={allowFullscreen ? 'sc-stage' : undefined}
+        onMouseMove={allowFullscreen ? wakeFsBtn : undefined}
+        onMouseLeave={allowFullscreen ? () => { cancelHide(); overFsBtn.current = false; setFsBtnOn(false); } : undefined}
+        style={{ position: 'relative', maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)', cursor: isFs && !fsBtnOn ? 'none' : undefined }}
+      >
         {SKILL_VIDEOS.map((s) => (
           <video key={s.key} ref={(el) => { refs.current[s.key] = el; }} src={VIDEO_BASE + s.src} poster={VIDEO_BASE + s.src.replace('.mp4', '.jpg')} autoPlay muted loop playsInline preload="auto" aria-label={`${s.label} demo`} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: s.key === active ? 1 : 0, transition: 'opacity .3s ease', pointerEvents: 'none' }} />
         ))}
         {allowFullscreen && (
-          <button type="button" onClick={toggleFullscreen} aria-label={isFs ? 'Exit full screen' : 'Full screen'} className="sc-fsbtn" style={{ position: 'absolute', right: 12, bottom: 12, zIndex: 3, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: 'rgba(13,20,36,.5)', border: '1px solid rgba(255,255,255,.18)', color: '#fff', cursor: 'pointer', WebkitBackdropFilter: 'blur(6px)', backdropFilter: 'blur(6px)' }}>
+          <button type="button" onClick={toggleFullscreen} aria-label={isFs ? 'Exit full screen' : 'Full screen'} className={fsBtnOn ? 'sc-fsbtn sc-fsbtn-on' : 'sc-fsbtn'} onMouseEnter={() => { overFsBtn.current = true; }} onMouseLeave={() => { overFsBtn.current = false; }} style={{ position: 'absolute', right: 12, bottom: 12, zIndex: 3, width: 36, height: 36, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: 'rgba(13,20,36,.5)', border: '1px solid rgba(255,255,255,.18)', color: '#fff', cursor: 'pointer', WebkitBackdropFilter: 'blur(6px)', backdropFilter: 'blur(6px)' }}>
             {isFs ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M8 3v3a2 2 0 0 1-2 2H3" /><path d="M21 8h-3a2 2 0 0 1-2-2V3" /><path d="M3 16h3a2 2 0 0 1 2 2v3" /><path d="M16 21v-3a2 2 0 0 1 2-2h3" /></svg>
             ) : (
