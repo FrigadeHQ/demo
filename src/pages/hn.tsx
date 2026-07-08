@@ -29,7 +29,7 @@ export default function HnDemoPage() {
           <SkillsChooser defaultSkill="hackernews" allowFullscreen />
         </div>
         <a
-          href="https://frigade.com"
+          href="https://frigade.com?utm_source=hn-demo&utm_medium=powered-by&utm_campaign=frigade-assistant"
           target="_blank"
           rel="noreferrer"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12.5, fontWeight: 500, color: '#9aa0b0', textDecoration: 'none' }}
