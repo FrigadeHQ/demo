@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as Frigade from '@frigade/react';
 import {
   LayoutGrid, Bot, KeyRound, BarChart3, ScrollText, CreditCard, Settings2,
-  Search, Bell, Plus, ChevronsUpDown, HelpCircle, Megaphone, Sun, Moon, Lock, ChevronUp,
+  Search, Bell, Plus, ChevronsUpDown, HelpCircle, Megaphone, Sun, Moon, Lock, ChevronUp, ChevronDown, Menu,
   Sparkles, CodeXml, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
   UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw,
 } from 'lucide-react';
@@ -67,7 +67,6 @@ function cssVars(p: typeof C): Record<string, string> {
   return { '--nw-card': p.card, '--nw-ghost': p.ghost, '--nw-line': p.line, '--nw-muted': p.muted, '--nw-ink': p.ink, '--nw-ink2': p.ink2, '--nw-faint': p.faint, '--nw-brand': p.brand, '--nw-bw': p.brandWeak, '--nw-hover': p.hover, '--nw-bg': p.bg, '--nw-csh': p.cardSh };
 }
 const CTA_SECONDARY = 'inset 0 1px 0.4px rgba(255,255,255,0.9), inset 0 -2px 2px rgba(20,30,60,0.08), 0 1px 1px rgba(0,0,0,0.06), 0 2px 4px rgba(20,30,60,0.08), 0 0 0 1px rgba(18,55,105,0.1)';
-const CTA_ENGAGE = 'inset 0 1px 0.4px rgba(255,255,255,0.18), inset 0 -3px 2px rgba(0,0,0,0.28), 0 1px 1px rgba(0,0,0,0.14), 0 2px 4px rgba(20,30,50,0.18), 1px 4px 10px rgba(64,78,97,0.22), 0 0 0 1px rgb(48,60,76)';
 const CTA_BRAND = 'inset 0 1px 0.4px rgba(255,255,255,0.28), inset 0 -3px 2px rgba(0,0,0,0.24), 0 1px 1px rgba(0,0,0,0.14), 0 2px 4px rgba(0,30,90,0.16), 1px 4px 10px rgba(0,86,248,0.18), 0 0 0 1px rgb(13,97,255)';
 
 type IconType = LucideIcon;
@@ -147,9 +146,6 @@ function ExpBadge({ icon: Icon, label, onClick }: { icon: IconType; label: strin
     </button>
   );
 }
-function Toggle({ icon: Icon, label, active, hex, rgb, onClick }: { icon: IconType; label: string; active?: boolean; hex: string; rgb: string; onClick?: () => void }) {
-  return (<button onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 6, borderRadius: 999, padding: '5px 11px', fontSize: 12.5, fontWeight: 500, border: 0, cursor: 'pointer', color: active ? C.ink : C.muted, background: active ? '#fff' : 'transparent', boxShadow: active ? `0 0 0 1px rgba(${rgb},0.18), 0 1px 2px rgba(${rgb},0.08)` : 'none' }}><span style={{ width: 16, height: 16, borderRadius: 5, background: hex, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Icon size={11} strokeWidth={2.25} /></span>{label}</button>);
-}
 
 const AGENTS = [
   { name: 'Support Triage', type: 'Conversation', status: 'Running', run: '2m ago', on: true },
@@ -157,7 +153,7 @@ const AGENTS = [
   { name: 'Onboarding Bot', type: 'Single Prompt', status: 'Paused', run: '1d ago', on: false },
 ];
 const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
-  { label: 'Welcome announcement', icon: Megaphone, action: 'welcome' }, { label: 'Onboarding form', icon: ClipboardList, action: 'form' },
+  { label: 'Onboarding form', icon: ClipboardList, action: 'form' }, { label: 'Welcome announcement', icon: Megaphone, action: 'welcome' },
   { label: 'Checklist', icon: ListChecks, action: 'checklist' }, { label: 'Product tour', icon: Route, action: 'tour' },
   { label: 'Banner', icon: Flag, action: 'banner' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
 ];
@@ -718,15 +714,172 @@ function BrowserFrame({ children, dark = false }: { children: React.ReactNode; d
   );
 }
 
-// The product switch. Reads/writes the shared experience context, which keeps
-// the choice in the URL (?product=assistant|engage) so a link can deep-link to
-// either product. Both Frigade products live on this one page.
-function HeaderToggle() {
-  const { experience, setExperience } = useExperience();
+// ---------------------------------------------------------------------------
+// Marketing header mirror. A faithful copy of frigade.com's header (grid, links,
+// dropdowns, buttons, mobile menu), with every destination pointing at the real
+// marketing site in the same tab, so this domain reads as the same website.
+// The one deliberate divergence: the product picker is not in the header. It sits
+// above the hero as ProductPill, the same pill frigade.com shows there, except
+// ours swaps the demo variant in place instead of navigating between pages.
+// ---------------------------------------------------------------------------
+const MKT_NAV: { t: string; h: string }[] = [
+  { t: 'How It Works', h: '/how-it-works' }, { t: 'Pricing', h: '/pricing' },
+  { t: 'Updates', h: '/updates' }, { t: 'Blog', h: '/blog' }, { t: 'About', h: '/about' },
+];
+// Copy, colors, and destinations lifted verbatim from the live frigade.com header.
+const PRODUCT_META = {
+  assistant: { label: 'Assistant', tile: '#015efb', icon: Sparkles, desc: 'AI that learns your product and guides users in real time.', mkt: 'https://frigade.com/', signIn: 'https://app.frigade.ai/sign-in', signInDesc: 'Manage your AI assistant' },
+  engage: { label: 'Engage', tile: '#2d4976', icon: CodeXml, desc: 'Drop-in React components for onboarding and product tours.', mkt: 'https://frigade.com/engage', signIn: 'https://app.frigade.com/sign-in', signInDesc: 'Build onboarding flows' },
+} as const;
+type ProductKey = keyof typeof PRODUCT_META;
+
+function ProductTile({ k, size, radius, iconSize }: { k: ProductKey; size: number; radius: number; iconSize: number }) {
+  const Icon = PRODUCT_META[k].icon;
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 2, borderRadius: 999, border: `1px solid ${C.line}`, background: '#f4f5f7', padding: 4 }}>
-      <Toggle icon={Sparkles} label="Assistant" active={experience === 'assistant'} hex="#015efb" rgb="1,94,251" onClick={() => setExperience('assistant')} />
-      <Toggle icon={CodeXml} label="Engage" active={experience === 'engage'} hex="#404e61" rgb="64,78,97" onClick={() => setExperience('engage')} />
+    <span style={{ flexShrink: 0, width: size, height: size, borderRadius: radius, background: PRODUCT_META[k].tile, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.4)' }}>
+      <Icon size={iconSize} strokeWidth={2.4} />
+    </span>
+  );
+}
+
+// One row inside the Products / Login dropdowns: icon tile + title + description.
+function MktPanelItem({ k, i, login }: { k: ProductKey; i: number; login?: boolean }) {
+  const m = PRODUCT_META[k];
+  return (
+    <a href={login ? m.signIn : m.mkt} className="mh-item" style={{ display: 'flex', alignItems: 'flex-start', gap: 11, padding: login ? '8px 10px' : '10px', borderRadius: 12, textDecoration: 'none', animation: `mhItemIn .22s cubic-bezier(.4,0,.2,1) ${i * 0.04}s both` }}>
+      <ProductTile k={k} size={28} radius={9} iconSize={15} />
+      <span style={{ display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left', paddingTop: login ? 0 : 1 }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: C.ink, lineHeight: 1.3 }}>{m.label}</span>
+        <span style={{ fontSize: 12.5, lineHeight: 1.35, color: C.muted }}>{login ? m.signInDesc : m.desc}</span>
+      </span>
+    </a>
+  );
+}
+
+const MKT_PANEL_CHROME: React.CSSProperties = { position: 'absolute', top: 'calc(100% + 15px)', padding: 6, borderRadius: 16, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 18px 44px rgba(18,24,40,.14), 0 4px 12px rgba(18,24,40,.06)', zIndex: 60 };
+
+function MarketingHeader() {
+  const [open, setOpen] = useState<'products' | 'login' | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => { if (barRef.current && !barRef.current.contains(e.target as Node)) setOpen(null); };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(null); };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('keydown', key);
+    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
+  }, [open]);
+  // The mobile overlay owns the viewport while open, so park page scroll.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [mobileOpen]);
+  const chev = (on: boolean) => <ChevronDown size={14} strokeWidth={2.2} style={{ transform: on ? 'rotate(180deg)' : 'none', transition: 'transform .18s ease', opacity: 0.55 }} />;
+  const logo = <a href="https://frigade.com" aria-label="Frigade" style={{ display: 'inline-flex' }}><img src="/images/frigade-logo.svg" alt="Frigade" width={95} height={32} style={{ display: 'block' }} /></a>;
+  return (
+    <header style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: '1px solid rgba(34,34,79,0.06)', flexShrink: 0 }}>
+      <div ref={barRef} className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 79, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
+        <div style={{ gridColumn: 1, justifySelf: 'start', display: 'inline-flex' }}>{logo}</div>
+        <nav className="mh-nav" aria-label="Frigade" style={{ gridColumn: 2, justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
+          <div style={{ position: 'relative', display: 'inline-flex' }}>
+            <button type="button" className="mh-link" aria-haspopup="menu" aria-expanded={open === 'products'} onClick={() => setOpen(open === 'products' ? null : 'products')} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 14, fontWeight: 500, fontFamily: 'inherit', color: open === 'products' ? C.brand : C.ink }}>
+              Products {chev(open === 'products')}
+            </button>
+            {open === 'products' && <span aria-hidden style={{ position: 'absolute', left: '50%', top: 'calc(100% + 6px)', width: 6, height: 6, background: C.brand, borderRadius: 1, transform: 'translateX(-50%) rotate(45deg)' }} />}
+            {open === 'products' && (
+              <div className="mh-panel" style={{ ...MKT_PANEL_CHROME, left: '50%', marginLeft: -180, width: 360 }}>
+                <MktPanelItem k="assistant" i={0} /><MktPanelItem k="engage" i={1} />
+              </div>
+            )}
+          </div>
+          {MKT_NAV.map((l) => <a key={l.t} className="mh-link" href={'https://frigade.com' + l.h} style={{ fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
+        </nav>
+        <div style={{ gridColumn: 3, justifySelf: 'end', display: 'flex', alignItems: 'center' }}>
+          <div className="mh-right" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ position: 'relative', display: 'inline-flex' }}>
+              <button type="button" aria-haspopup="menu" aria-expanded={open === 'login'} onClick={() => setOpen(open === 'login' ? null : 'login')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 34, padding: '0 14px', borderRadius: 6, fontSize: 14, fontWeight: 500, fontFamily: 'inherit', color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>
+                Login {chev(open === 'login')}
+              </button>
+              {open === 'login' && (
+                <div className="mh-panel" style={{ ...MKT_PANEL_CHROME, right: 0, width: 340 }}>
+                  <MktPanelItem k="assistant" i={0} login /><MktPanelItem k="engage" i={1} login />
+                </div>
+              )}
+            </div>
+            <a href={APP_URL_ASSISTANT} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
+          </div>
+          <button type="button" className="mh-burger" aria-label="Open menu" onClick={() => setMobileOpen(true)} style={{ display: 'none', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 8, background: 'none', border: 0, color: C.ink, cursor: 'pointer' }}><Menu size={22} strokeWidth={2} /></button>
+        </div>
+      </div>
+      {mobileOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 70, background: '#fff', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ height: 79, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', borderBottom: '1px solid rgba(34,34,79,0.06)' }}>
+            {logo}
+            <button type="button" aria-label="Close menu" onClick={() => setMobileOpen(false)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 8, background: 'none', border: 0, color: C.ink, cursor: 'pointer' }}><X size={22} strokeWidth={2} /></button>
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 16px' }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', color: '#8b93a5' }}>Products</p>
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {(Object.keys(PRODUCT_META) as ProductKey[]).map((k) => (
+                <a key={k} className="mh-item" href={PRODUCT_META[k].mkt} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 8px', margin: '0 -8px', borderRadius: 12, textDecoration: 'none' }}>
+                  <ProductTile k={k} size={32} radius={9} iconSize={17} />
+                  <span style={{ fontSize: 16, fontWeight: 500, color: C.ink }}>{PRODUCT_META[k].label}</span>
+                </a>
+              ))}
+            </div>
+            <p style={{ margin: '32px 0 0', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', color: '#8b93a5' }}>Company</p>
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column' }}>
+              {MKT_NAV.map((l) => <a key={l.t} href={'https://frigade.com' + l.h} style={{ padding: '10px 0', fontSize: 16, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
+            </div>
+          </div>
+          <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, padding: '20px 24px', borderTop: '1px solid rgba(34,34,79,0.06)' }}>
+            <a href={PRODUCT_META.assistant.signIn} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Login</a>
+            <a href={APP_URL_ASSISTANT} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
+
+// The frigade.com hero pill, reused as the demo's product switcher: identical
+// look, but picking a product swaps the demo variant in place (?product=)
+// instead of navigating to another page.
+function ProductPill() {
+  const { experience, setExperience } = useExperience();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const down = (e: PointerEvent) => { if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false); };
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('keydown', key);
+    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
+  }, [open]);
+  const cur: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
+  return (
+    <div ref={wrapRef} style={{ position: 'relative', display: 'inline-flex', justifyContent: 'center' }}>
+      <button type="button" className="mh-pill" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8, background: '#fff', border: `1px solid ${C.line}`, cursor: 'pointer', fontFamily: 'inherit' }}>
+        <ProductTile k={cur} size={20} radius={7} iconSize={12} />
+        <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)' }}>{PRODUCT_META[cur].label}</span>
+        <ChevronDown size={14} strokeWidth={2.2} color="#8b93a5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .18s ease' }} />
+      </button>
+      {open && (
+        <div className="mh-panel" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '50%', marginLeft: -75, width: 150, padding: 5, borderRadius: 12, background: '#fff', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 14px 36px rgba(18,24,40,.16), 0 3px 9px rgba(18,24,40,.07)', zIndex: 20 }}>
+          {(Object.keys(PRODUCT_META) as ProductKey[]).map((k, i) => (
+            <button key={k} type="button" role="menuitem" className="mh-item" onClick={() => { setExperience(k); setOpen(false); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 8, background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit', animation: `mhItemIn .22s cubic-bezier(.4,0,.2,1) ${i * 0.04}s both` }}>
+              <ProductTile k={k} size={20} radius={7} iconSize={12} />
+              <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)' }}>{PRODUCT_META[k].label}</span>
+              <span style={{ flex: 1, minWidth: 12 }} />
+              {cur === k && <span aria-hidden style={{ width: 7, height: 7, background: C.brand, borderRadius: 1.5, transform: 'rotate(45deg)' }} />}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -984,6 +1137,7 @@ function AssistantSection() {
       <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
         <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
         <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '56px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
+          <ProductPill />
           <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See the assistant in action.</h2>
           <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>AI that learns your product and stays up to date on its own.</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
@@ -1123,11 +1277,20 @@ export default function NorthwindPage() {
         @media (min-width:1240px){.nw-rails{display:block}}
         .nw-small{display:none}
         @media (max-width:999px){.nw-demo{display:none}.nw-small{display:block}}
-        .nw-hdr-bar{padding:0 24px}
-        /* Below ~600px the four header items get cramped, so drop the secondary Website link, tighten the side padding, and keep everything on one row. */
-        @media (max-width:600px){.nw-hdr-bar{padding:0 14px}.nw-hdr-web{display:none}}
-        /* On phones, drop the header Get started rather than wrapping it: the page already has Get started CTAs (the hero and the closing card), so the header stays a clean logo + product toggle on one row. */
-        @media (max-width:440px){.nw-hdr-cta{display:none!important}}
+        /* Marketing-header mirror: nav hover, dropdown fade + item drop-in (same
+           animation frigade.com uses), pill press feedback, and the 768px collapse
+           to hamburger, all matching the live site. */
+        .mh-link{transition:color .15s ease;white-space:nowrap}
+        .mh-link:hover{color:#015efb!important}
+        .mh-item{transition:background .15s ease}
+        .mh-item:hover{background:#f2f4f8}
+        .mh-panel{animation:mhPanelIn .16s ease both}
+        @keyframes mhPanelIn{from{opacity:0}to{opacity:1}}
+        @keyframes mhItemIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
+        .mh-pill{transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+        .mh-pill:hover{border-color:#d9dde6;box-shadow:0 2px 8px rgba(18,24,40,.06)}
+        .mh-pill:active{transform:scale(.97)}
+        @media (max-width:767px){.mh-nav{display:none!important}.mh-right{display:none!important}.mh-burger{display:inline-flex!important}}
         .nw-reveal>*{opacity:0;transform:translateY(10px);animation:nwrev .6s cubic-bezier(.4,0,.2,1) forwards}
         .nw-reveal>*:nth-child(1){animation-delay:.08s}
         .nw-reveal>*:nth-child(2){animation-delay:.16s}
@@ -1199,24 +1362,14 @@ export default function NorthwindPage() {
       </div>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <header className="nw-hdr-bar" style={{ position: 'sticky', top: 0, zIndex: 5, background: 'rgba(255,255,255,0.85)', backdropFilter: 'saturate(180%) blur(8px)', borderBottom: `1px solid rgba(34,34,79,0.07)`, flexShrink: 0 }}>
-          <div className="nw-hdr" style={{ maxWidth: 1240, margin: '0 auto', minHeight: 62, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <img src="/images/frigade-logo.svg" alt="Frigade" style={{ height: 25, width: 'auto', display: 'block' }} />
-              <HeaderToggle />
-            </div>
-            <div className="nw-hdr-cta" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <a className="nw-hdr-web" href={experience === 'engage' ? 'https://frigade.com/engage' : 'https://frigade.com'} target="_blank" rel="noreferrer" style={{ padding: '7px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Website</a>
-              <a href={experience === 'engage' ? APP_URL : APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '7px 14px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: experience === 'engage' ? 'linear-gradient(rgb(80,96,118) 0%, rgb(64,78,97) 100%)' : 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: experience === 'engage' ? CTA_ENGAGE : CTA_BRAND, textDecoration: 'none' }}>Get started</a>
-            </div>
-          </div>
-        </header>
+        <MarketingHeader />
 
         {experience === 'engage' ? (
         <>
         <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
           <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
           <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '46px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 15 }}>
+            <ProductPill />
             <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32', maxWidth: 760 }}>See what Engage can do.</h2>
             <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Real onboarding, tours, and checklists, all built with Frigade Engage.</p>
           </div>
