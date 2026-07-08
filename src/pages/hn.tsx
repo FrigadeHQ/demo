@@ -22,7 +22,7 @@ export default function HnDemoPage() {
           justifyContent: 'center',
           gap: 26,
           padding: '48px 20px',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif',
+          fontFamily: 'var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         }}
       >
         <div style={{ width: '100%', maxWidth: 900 }}>

@@ -45,7 +45,7 @@ const APP_URL_ASSISTANT = 'https://app.frigade.ai/sign-up?ref=demo';
  * agent to design and ship your own flows.
  */
 
-const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif';
+const FONT = 'var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const CARD_SH = '0 1px 2px rgba(18,24,40,.06), 0 0 0 1px rgba(18,24,40,.05)';
 const STAGE_SH = '0 1px 3px rgba(18,24,40,.05), 0 8px 26px rgba(18,24,40,.05)';
@@ -927,13 +927,13 @@ function RailBand({ children, top = 80, bottom = 80, id }: { children: React.Rea
   );
 }
 
-// An outlined feature badge above a section header (AI product tours / Skills /
-// Suggestions). Each links out to that feature's page on the marketing site.
-function SectionTag({ children, href }: { children: React.ReactNode; href: string }) {
+// A blue "Learn more about X" link under a section subtitle, mirroring the marketing
+// site's feature links: the arrow slides right on hover, plus underline-on-hover.
+function LearnMoreLink({ href, label }: { href: string; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="nw-feat-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, marginBottom: 16, padding: '5px 13px', borderRadius: 999, border: `1px solid ${C.line}`, background: '#fff', color: C.ink2, fontSize: 12.5, fontWeight: 600, letterSpacing: '.01em', lineHeight: 1, textDecoration: 'none' }}>
-      <span aria-hidden style={{ width: 5, height: 5, borderRadius: '50%', background: C.brand }} />
-      {children}
+    <a href={href} target="_blank" rel="noreferrer" className="nw-learn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, color: C.brand, textDecoration: 'none' }}>
+      {label}
+      <svg className="nw-learn-arw" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M12 5l7 7-7 7" /></svg>
     </a>
   );
 }
@@ -945,10 +945,10 @@ function SectionTag({ children, href }: { children: React.ReactNode; href: strin
 function SkillsSection() {
   return (
     <RailBand id="skills">
-      <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 30px' }}>
-        <SectionTag href="https://frigade.com/features/skills">Skills</SectionTag>
-        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Real actions, no code required.</h2>
-        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
+        <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>Real actions, no code required.</h2>
+        <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
+        <LearnMoreLink href="https://frigade.com/features/skills" label="Learn more about Skills" />
       </div>
       <SkillsChooser defaultSkill="jira" scrollTargetId="skills" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
@@ -984,7 +984,7 @@ function AssistantSection() {
         <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
         <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '56px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
           <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See the assistant in action.</h2>
-          <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>AI that learns your product and answers your users in real time.</p>
+          <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>AI that learns your product and stays up to date on its own.</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
             <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
@@ -994,10 +994,10 @@ function AssistantSection() {
 
       {/* General intro: the assistant learns your product like a power user, so it has real context. */}
       <RailBand>
-        <div style={{ textAlign: 'center', margin: '0 auto 30px' }}>
-          <SectionTag href="https://frigade.com/features/ai-generated-tours">AI product tours</SectionTag>
-          <h2 className="nw-h2 nw-nowrap-lg" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>It knows your product like a power user.</h2>
-          <p className="nw-pretty" style={{ margin: '0 auto', maxWidth: 700, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade learns your product by using it, the way a power user would. That context is what lets it actually help your users, guiding them through real workflows instead of pointing at a help article.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
+          <h2 className="nw-h2 nw-nowrap-lg" style={{ margin: 0, fontWeight: 700, color: C.ink }}>It knows your product like a power user.</h2>
+          <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, the way a power user would. That context is what lets it actually help your users, guiding them through real workflows instead of pointing at a help article.</p>
+          <LearnMoreLink href="https://frigade.com/features/ai-generated-tours" label="Learn more about product tours" />
         </div>
         <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
           <video src={VIDEO_BASE + '/videos/airbnb.mp4'} poster={VIDEO_BASE + '/videos/airbnb.jpg'} autoPlay muted loop playsInline preload="auto" aria-label="Airbnb assistant demo" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
@@ -1027,10 +1027,10 @@ function AssistantSection() {
 
       {/* Suggestions demo: proactive engagement. Header + video + use-case value row. */}
       <RailBand id="suggestions">
-        <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 30px' }}>
-          <SectionTag href="https://frigade.com/features/suggestions">Suggestions</SectionTag>
-          <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>A virtual AE for every user.</h2>
-          <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Suggestions proactively onboard new users, drive feature adoption, and nudge the next step at the moment that matters. The impact of an account exec on every account, with almost none of the effort.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
+          <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>A virtual AE for every user.</h2>
+          <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Suggestions proactively onboard new users, drive feature adoption, and nudge the next step at the moment that matters. The impact of an account exec on every account, with almost none of the effort.</p>
+          <LearnMoreLink href="https://frigade.com/features/suggestions" label="Learn more about Suggestions" />
         </div>
         <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', background: '#fff', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
           <video data-hero-video src="/videos/hero.mp4" autoPlay muted loop playsInline controls preload="auto" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '1566 / 1080' }} />
@@ -1059,7 +1059,7 @@ function AssistantSection() {
       <RailBand>
         <BenefitsSection
           title="Support that scales with your product."
-          subtitle="Trained on your product and answering in real time. Here's what that unlocks."
+          subtitle="Trained on your product and always up to date. Here's what that unlocks."
           items={ASSISTANT_BENEFITS}
         />
       </RailBand>
@@ -1069,7 +1069,7 @@ function AssistantSection() {
         <RichCtaCard
           flush
           title="AI that actually knows your product."
-          subtext="Frigade Assistant learns your product and answers your users in real time. Add it to yours in an afternoon."
+          subtext="Frigade Assistant learns your product and stays up to date automatically. Add it to yours in an afternoon."
         >
           <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
           <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
@@ -1134,7 +1134,6 @@ export default function NorthwindPage() {
         .nw-reveal>*:nth-child(4){animation-delay:.32s}
         .nw-revealv{opacity:0;transform:translateY(18px);animation:nwrev .7s cubic-bezier(.4,0,.2,1) .42s forwards}
         .nw-balance{text-wrap:balance}
-        .nw-pretty{text-wrap:pretty}
         /* Sections below the hero reveal as they scroll into view, so the whole page animates in, not just the hero. */
         .nw-sr{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
         .nw-sr.nw-sr-in{opacity:1;transform:none}
@@ -1156,8 +1155,9 @@ export default function NorthwindPage() {
         .nw-exp-pill{transition:box-shadow .15s ease,transform .12s ease}
         .nw-exp-pill:hover{box-shadow:0 3px 10px rgba(18,24,40,.12),0 0 0 1px rgba(1,94,251,.4)!important}
         .nw-exp-pill:active{transform:scale(.96)}
-        .nw-feat-badge{transition:border-color .15s ease,box-shadow .15s ease}
-        .nw-feat-badge:hover{border-color:#cfd4de!important;box-shadow:0 1px 2px rgba(18,24,40,.05)}
+        .nw-learn:hover{text-decoration:underline}
+        .nw-learn-arw{transition:transform .2s cubic-bezier(.32,.72,0,1)}
+        .nw-learn:hover .nw-learn-arw{transform:translateX(2px)}
         @property --nw-sweep{syntax:'<angle>';initial-value:0deg;inherits:false}
         @keyframes nwsweep{0%{--nw-sweep:0deg;opacity:0}3%{opacity:1}33%{opacity:1}38%{--nw-sweep:360deg;opacity:0}100%{--nw-sweep:360deg;opacity:0}}
         .ck-sweep{position:absolute;inset:0;border-radius:10px;padding:1.2px;background:conic-gradient(from var(--nw-sweep,0deg),transparent 0deg,#015efb 30deg,transparent 78deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;opacity:0;animation:nwsweep 5.5s linear 1.2s infinite}
@@ -1215,7 +1215,7 @@ export default function NorthwindPage() {
           <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
           <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '46px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 15 }}>
             <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32', maxWidth: 760 }}>See what Engage can do.</h2>
-            <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 540 }}>Everything in <span style={{ color: C.brand, fontWeight: 600 }}>blue</span> is powered by Frigade.</p>
+            <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Real onboarding, tours, and checklists, all built with Frigade Engage.</p>
           </div>
 
           {/* Each pill replays its Frigade surface in the live demo below (same actions as the Demo Console), scrolling it into view. */}
