@@ -712,11 +712,12 @@ const SOCIAL_ICON: Record<string, React.ReactNode> = {
 };
 // Footer columns mirror the live Frigade marketing site's published links.
 const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
-  { heading: 'Features', links: [{ t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
+  { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
   { heading: 'Use Cases', links: [{ t: 'Support Deflection', h: '/use-cases/support-deflection' }, { t: 'User Activation', h: '/use-cases/user-activation' }, { t: 'Virtual CSM', h: '/use-cases/virtual-csm' }, { t: 'Feature Adoption', h: '/use-cases/feature-adoption' }, { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell' }] },
-  { heading: 'Resources', links: [{ t: 'Get a demo', h: '/demo' }, { t: 'Contact us', h: '/contact' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }] },
-  { heading: 'Compare', links: [{ t: 'vs. Intercom Fin', h: '/compare/fin' }, { t: 'vs. Pendo', h: '/compare/pendo' }, { t: 'vs. Pylon', h: '/compare/pylon' }, { t: 'vs. Zendesk', h: '/compare/zendesk' }] },
-  { heading: 'Case Studies', links: [{ t: 'Valley', h: '/case-studies/valley' }] },
+  { heading: 'Resources', links: [{ t: 'How It Works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }] },
+  { heading: 'Compare', links: [{ t: 'vs. Intercom Fin', h: '/compare/fin' }, { t: 'vs. Pendo', h: '/compare/pendo' }, { t: 'vs. Pylon', h: '/compare/pylon' }, { t: 'vs. Zendesk', h: '/compare/zendesk' }, { t: 'vs. WalkMe', h: '/compare/walkme' }] },
+  { heading: 'Case Studies', links: [{ t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }] },
+  { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: '/contact' }, { t: 'Get a demo', h: '/demo' }] },
 ];
 const FOOTER_PRODUCTS: { name: string; h: string; beta?: boolean }[] = [
   { name: 'Assistant', h: '/' }, { name: 'Engage', h: '/engage' },
@@ -736,6 +737,11 @@ function MarketingFooter() {
             <img src="/images/frigade-logo.svg" alt="Frigade" style={{ height: 25, width: 'auto', display: 'block' }} />
             <div style={{ fontSize: 13, lineHeight: 1.55, color: C.muted }}>945 Market St.<br />San Francisco, CA 94103</div>
             <img src="/images/aicpa-soc-badge.avif" alt="AICPA SOC for Service Organizations" width={72} height={72} style={{ width: 72, height: 72, marginTop: 6 }} />
+            <div style={{ display: 'flex', gap: 8 }}>
+              {([['github', 'https://github.com/FrigadeHQ'], ['linkedin', 'https://www.linkedin.com/company/frigade'], ['x', 'https://x.com/FrigadeHQ']] as [string, string][]).map(([p, h]) => (
+                <a key={p} href={h} aria-label={p} style={{ width: 32, height: 32, borderRadius: 999, border: `1px solid ${C.line}`, color: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{SOCIAL_ICON[p]}</a>
+              ))}
+            </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '36px 24px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -754,14 +760,6 @@ function MarketingFooter() {
                 </ul>
               </div>
             ))}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <p style={head}>Socials</p>
-              <div style={{ display: 'flex', gap: 8 }}>
-                {([['github', 'https://github.com/FrigadeHQ'], ['linkedin', 'https://www.linkedin.com/company/frigade'], ['x', 'https://x.com/FrigadeHQ']] as [string, string][]).map(([p, h]) => (
-                  <a key={p} href={h} aria-label={p} style={{ width: 32, height: 32, borderRadius: 999, border: `1px solid ${C.line}`, color: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{SOCIAL_ICON[p]}</a>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>
