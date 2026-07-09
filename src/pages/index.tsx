@@ -4,7 +4,7 @@ import {
   LayoutGrid, Bot, KeyRound, BarChart3, ScrollText, CreditCard, Settings2,
   Search, Bell, Plus, ChevronsUpDown, HelpCircle, Megaphone, Sun, Moon, Lock, ChevronUp, ChevronDown, Menu,
   Sparkles, CodeXml, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
-  UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw,
+  UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw, Rocket, ShieldCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { getUserId } from '@/lib/utils';
@@ -157,7 +157,7 @@ const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
   { label: 'Checklist', icon: ListChecks, action: 'checklist' }, { label: 'Product tour', icon: Route, action: 'tour' },
   { label: 'Banner', icon: Flag, action: 'banner' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
 ];
-const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText };
+const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText, 'connect-sso': ShieldCheck, 'go-live': Rocket };
 // Abridged marketing value props for the section below the demo (Engage-framed, marketing voice).
 const BENEFITS: { icon: IconType; title: string; desc: string }[] = [
   { icon: LayoutGrid, title: 'Native to your product', desc: 'Frigade surfaces inherit your design system. Type, color, and spacing, all of it. They read as part of your app, not a third-party widget.' },
@@ -233,6 +233,24 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
   const [panelOpen, setPanelOpen] = useState(false);
   const { flow: ckFlow } = Frigade.useFlow(DEMO_FLOWS.checklist);
   const ckSteps = ckFlow ? Array.from(ckFlow.steps.values()) : [];
+  // Design preview (?preview=gates): stages two proposed checklist steps
+  // client-side (a visibility-gated SSO item + a criteria-locked capstone) so
+  // the treatments can be reviewed without touching the live flow. Add
+  // &plan=enterprise to see the hidden step the way an enterprise user would,
+  // and &unlocked=1 to preview the capstone unlocked. Goes away once the real
+  // YAML ships with these steps.
+  const [gatePreview, setGatePreview] = useState({ on: false, enterprise: false, unlocked: false });
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    setGatePreview({ on: q.get('preview') === 'gates', enterprise: q.get('plan') === 'enterprise', unlocked: q.get('unlocked') === '1' });
+  }, []);
+  const ckAllSteps: any[] = gatePreview.on ? [
+    ...ckSteps,
+    { id: 'connect-sso', title: 'Connect SAML SSO', isHidden: !gatePreview.enterprise, __mock: true },
+    { id: 'go-live', title: 'Take your agent live', isBlocked: !gatePreview.unlocked, __mock: true },
+  ] : ckSteps;
+  // Steps whose visibilityCriteria is unmet (isHidden) never render or count.
+  const ckVisible = ckAllSteps.filter((s: any) => !s.isHidden);
   const [done, setDone] = useState<Set<string>>(() => new Set());
   const [ckOpen, setCkOpen] = useState(false);
   const [activeStep, setActiveStep] = useState<string | null>(null); // checklist step whose hint is firing
@@ -341,8 +359,8 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
     setSeen(next); saveSet(seenKey, next);
   }
   function toggleBell() { if (bellOpen) { setBellOpen(false); return; } setPanelOpen(false); setCkOpen(false); markSeen(); setBellOpen(true); }
-  const ckTotal = ckSteps.length;
-  const ckDoneCount = ckSteps.filter((s: any) => done.has(s.id)).length;
+  const ckTotal = ckVisible.length;
+  const ckDoneCount = ckVisible.filter((s: any) => done.has(s.id)).length;
   const ckPct = ckTotal ? Math.round((ckDoneCount / ckTotal) * 100) : 0;
   // Contextual banner: slides into the dashboard once 2 checklist steps are done (until dismissed).
   useEffect(() => { if (ckDoneCount >= 2 && typeof window !== 'undefined' && !localStorage.getItem(bannerKey)) setBannerOpen(true); /* eslint-disable-next-line */ }, [ckDoneCount]);
@@ -460,10 +478,22 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
             <div style={{ height: 6, borderRadius: 99, background: C.bg, margin: '4px 13px 8px', overflow: 'hidden' }}><div style={{ width: ckPct + '%', height: '100%', background: C.brand, transition: 'width .4s cubic-bezier(.4,0,.2,1)' }} /></div>
             <div style={{ fontSize: 11.5, color: C.faint, padding: '0 13px 7px' }}>Pick a step and we&rsquo;ll point you to it.</div>
             <div style={{ padding: '2px 6px 4px', display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {ckSteps.map((s: any) => {
+              {ckVisible.map((s: any) => {
                 const isDone = done.has(s.id); const Ic = CK_ICONS[s.id] || Bot; const isActive = activeStep === s.id;
+                // A step whose startCriteria isn't met yet renders locked: muted and
+                // not clickable, with the lock in the right status slot (ring = todo,
+                // check = done, lock = locked) and a tooltip on hover or keyboard
+                // focus saying how to open it.
+                if (!isDone && s.isBlocked) return (
+                  <div key={s.id} className="ck-locked" tabIndex={0} aria-disabled="true" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, padding: '8px', borderRadius: 8, fontSize: 12.5, cursor: 'default', color: C.faint }}>
+                    <Ic size={16} color={C.faint} />
+                    <span style={{ flex: 1 }}>{s.title}</span>
+                    <Lock size={15} color={C.faint} aria-label="Locked" />
+                    <span className="ck-tip" role="tooltip">Finish the steps above to unlock</span>
+                  </div>
+                );
                 return (
-                  <div key={s.id} className={isDone ? undefined : 'ck-item'} onClick={isDone ? undefined : () => { setCkOpen(false); if (s.props && s.props.action === 'tour') startTour(); else setActiveStep(s.id); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px', borderRadius: 8, fontSize: 12.5, cursor: isDone ? 'default' : 'pointer', color: isDone ? C.muted : C.ink2, background: isActive ? C.brandWeak : 'transparent' }}>
+                  <div key={s.id} className={((isDone ? '' : 'ck-item') + (!isDone && s.id === 'go-live' ? ' ck-unlocked' : '')) || undefined} onClick={isDone || s.__mock ? undefined : () => { setCkOpen(false); if (s.props && s.props.action === 'tour') startTour(); else setActiveStep(s.id); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px', borderRadius: 8, fontSize: 12.5, cursor: isDone || s.__mock ? 'default' : 'pointer', color: isDone ? C.muted : C.ink2, background: isActive ? C.brandWeak : 'transparent' }}>
                     <Ic size={16} color={isDone ? C.muted : C.brand} />
                     <span style={{ flex: 1, textDecoration: isDone ? 'line-through' : 'none' }}>{s.title}</span>
                     {isDone ? <CheckCircle2 size={19} color={C.brand} /> : <span style={{ width: 18, height: 18, borderRadius: '50%', border: `1.6px solid ${isActive ? C.brand : C.line}` }} />}
@@ -707,6 +737,12 @@ function BrowserFrame({ children, dark = false }: { children: React.ReactNode; d
             <Lock size={12} color="#16a34a" /><span style={{ color: C.ink2 }}>app.northwind.ai</span><span>/agents</span>
           </div>
         </div>
+        {/* A real link in the fake chrome: "view source" on this window opens the actual
+            repo, because everything you're poking at here is public code. */}
+        <a className="nw-src" href="https://github.com/FrigadeHQ/demo" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: C.muted, whiteSpace: 'nowrap' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={GH_PATH} /></svg>
+          View source
+        </a>
         <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.05em', color: C.brand, background: C.brandWeak, padding: '4px 9px', borderRadius: 6 }}>DEMO</span>
       </div>
       {children}
@@ -862,20 +898,34 @@ function ProductPill() {
   }, [open]);
   const cur: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
   return (
-    <div ref={wrapRef} style={{ position: 'relative', display: 'inline-flex', justifyContent: 'center' }}>
+    // The hero's entrance animations (fill: forwards on opacity/transform) leave every
+    // sibling a stacking context, so without an explicit z-index the open menu paints
+    // underneath the headline. Raise the whole pill above its hero siblings.
+    <div ref={wrapRef} style={{ position: 'relative', zIndex: 30, display: 'inline-flex', justifyContent: 'center' }}>
       <button type="button" className="mh-pill" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8, background: '#fff', border: `1px solid ${C.line}`, cursor: 'pointer', fontFamily: 'inherit' }}>
         <ProductTile k={cur} size={20} radius={7} iconSize={12} />
         <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)' }}>{PRODUCT_META[cur].label}</span>
         <ChevronDown size={14} strokeWidth={2.2} color="#8b93a5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .18s ease' }} />
       </button>
       {open && (
-        <div className="mh-panel" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '50%', marginLeft: -75, width: 150, padding: 5, borderRadius: 12, background: '#fff', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 14px 36px rgba(18,24,40,.16), 0 3px 9px rgba(18,24,40,.07)', zIndex: 20 }}>
+        // Sized like frigade.com's pill menu (min 152px, grows to fit): a fixed width
+        // makes the longer Assistant row overflow into its own padding and shove the
+        // active marker off the edge.
+        <div className="mh-panel" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', width: 'max-content', minWidth: 152, padding: 5, borderRadius: 12, background: '#fff', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 14px 36px rgba(18,24,40,.16), 0 3px 9px rgba(18,24,40,.07)', zIndex: 20 }}>
           {(Object.keys(PRODUCT_META) as ProductKey[]).map((k, i) => (
             <button key={k} type="button" role="menuitem" className="mh-item" onClick={() => { setExperience(k); setOpen(false); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 8, background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit', animation: `mhItemIn .22s cubic-bezier(.4,0,.2,1) ${i * 0.04}s both` }}>
               <ProductTile k={k} size={20} radius={7} iconSize={12} />
               <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)' }}>{PRODUCT_META[k].label}</span>
               <span style={{ flex: 1, minWidth: 12 }} />
-              {cur === k && <span aria-hidden style={{ width: 7, height: 7, background: C.brand, borderRadius: 1.5, transform: 'rotate(45deg)' }} />}
+              {/* Active marker, mirrored from frigade.com's pill menu: a 6px gradient
+                  diamond with a second copy behind it that pings outward, so the
+                  current product reads as live. */}
+              {cur === k && (
+                <span aria-hidden style={{ position: 'relative', width: 6, height: 6, flexShrink: 0 }}>
+                  <span className="mh-live" style={{ position: 'absolute', inset: 0, borderRadius: 1.5, background: 'linear-gradient(rgb(1,94,251) 0%, rgba(1,94,251,.92) 100%)' }} />
+                  <span style={{ position: 'absolute', inset: 0, borderRadius: 1.5, transform: 'rotate(45deg)', background: 'linear-gradient(rgb(1,94,251) 0%, rgba(1,94,251,.92) 100%)' }} />
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -884,8 +934,11 @@ function ProductPill() {
   );
 }
 
+// GitHub mark path, shared by the footer icon, the skill CTA, and the demo frame's
+// view-source link (each at its own size).
+const GH_PATH = 'M12 .5a11.5 11.5 0 0 0-3.63 22.43c.58.1.79-.25.79-.56v-2.18c-3.21.7-3.89-1.37-3.89-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.75.4-1.27.73-1.56-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.77.11 3.06.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z';
 const SOCIAL_ICON: Record<string, React.ReactNode> = {
-  github: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 .5a11.5 11.5 0 0 0-3.63 22.43c.58.1.79-.25.79-.56v-2.18c-3.21.7-3.89-1.37-3.89-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.75.4-1.27.73-1.56-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.77.11 3.06.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z" /></svg>,
+  github: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={GH_PATH} /></svg>,
   linkedin: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M20.45 20.45h-3.56v-5.56c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.44-2.14 2.94v5.65H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.62 0 4.29 2.38 4.29 5.48v6.26ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.28V1.72C24 .77 23.21 0 22.22 0Z" /></svg>,
   x: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231L18.244 2.25Zm-1.16 17.52h1.833L7.084 4.126H5.117l11.967 15.644Z" /></svg>,
 };
@@ -1085,7 +1138,7 @@ function RailBand({ children, top = 80, bottom = 80, id }: { children: React.Rea
 // site's feature links: the arrow slides right on hover, plus underline-on-hover.
 function LearnMoreLink({ href, label }: { href: string; label: string }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" className="nw-learn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, color: C.brand, textDecoration: 'none' }}>
+    <a href={href} target="_blank" rel="noreferrer" className="nw-learn" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500, color: C.brand }}>
       {label}
       <svg className="nw-learn-arw" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12h14M12 5l7 7-7 7" /></svg>
     </a>
@@ -1287,6 +1340,11 @@ export default function NorthwindPage() {
         .mh-panel{animation:mhPanelIn .16s ease both}
         @keyframes mhPanelIn{from{opacity:0}to{opacity:1}}
         @keyframes mhItemIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
+        /* The echo diamond behind the pill menu's active marker: expands and fades on
+           repeat. Stilled (echo hidden, solid core stays) under reduced motion. */
+        @keyframes mhPing{0%{transform:rotate(45deg) scale(1);opacity:.5}70%,100%{transform:rotate(45deg) scale(2.2);opacity:0}}
+        .mh-live{animation:mhPing 1.8s cubic-bezier(0,0,.2,1) infinite}
+        @media (prefers-reduced-motion:reduce){.mh-live{animation:none;opacity:0}}
         .mh-pill{transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
         .mh-pill:hover{border-color:#d9dde6;box-shadow:0 2px 8px rgba(18,24,40,.06)}
         .mh-pill:active{transform:scale(.97)}
@@ -1321,7 +1379,10 @@ export default function NorthwindPage() {
         .nw-exp-pill{transition:box-shadow .15s ease,transform .12s ease}
         .nw-exp-pill:hover{box-shadow:0 3px 10px rgba(18,24,40,.12),0 0 0 1px rgba(1,94,251,.4)!important}
         .nw-exp-pill:active{transform:scale(.96)}
-        .nw-learn:hover{text-decoration:underline}
+        /* Underline-on-hover for the learn-more + view-source links. text-decoration
+           lives here, not inline, because an inline 'none' would outrank the :hover rule. */
+        .nw-learn,.nw-src{text-decoration:none}
+        .nw-learn:hover,.nw-src:hover{text-decoration:underline}
         .nw-learn-arw{transition:transform .2s cubic-bezier(.32,.72,0,1)}
         .nw-learn:hover .nw-learn-arw{transform:translateX(2px)}
         @property --nw-sweep{syntax:'<angle>';initial-value:0deg;inherits:false}
@@ -1330,6 +1391,13 @@ export default function NorthwindPage() {
         .ck-pop{position:absolute;bottom:100%;left:-6px;width:256px;margin-bottom:9px;background:var(--nw-card,#fff);border-radius:12px;box-shadow:0 16px 48px rgba(18,24,40,.18),0 0 0 1px var(--nw-line);transform-origin:bottom center;opacity:0;transform:scale(.97) translateY(12px);pointer-events:none;transition:opacity .28s cubic-bezier(.4,0,.2,1),transform .28s cubic-bezier(.4,0,.2,1);z-index:40}
         .ck-pop.open{opacity:1;transform:none;pointer-events:auto}
         .ck-item{transition:background .15s ease}.ck-item:hover{background:var(--nw-hover,#f5f6f8)}
+        /* Locked checklist step: tooltip appears on hover/focus; the row itself is inert. */
+        .ck-locked{outline:none}
+        .ck-tip{position:absolute;left:50%;bottom:calc(100% + 5px);transform:translateX(-50%) translateY(2px);background:#111c33;color:#fff;font-size:11px;font-weight:500;padding:6px 9px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .14s ease,transform .14s ease;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 8px 20px rgba(0,0,0,.28);z-index:46}
+        .ck-locked:hover .ck-tip,.ck-locked:focus-visible .ck-tip{opacity:1;transform:translateX(-50%) translateY(0)}
+        /* One soft flash when the capstone unlocks, so the state change is felt. */
+        .ck-unlocked{animation:ckunlockp 1.1s ease .1s}
+        @keyframes ckunlockp{0%{background:var(--nw-bw,#e8f0fe)}100%{background:transparent}}
         .nw-hint{animation:nwhintin .24s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwhintin{from{opacity:0}to{opacity:1}}
         .nw-gate-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#015efb;animation:nwpulse 1.6s infinite}
