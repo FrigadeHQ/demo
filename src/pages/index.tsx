@@ -758,10 +758,20 @@ function BrowserFrame({ children, dark = false }: { children: React.ReactNode; d
 // above the hero as ProductPill, the same pill frigade.com shows there, except
 // ours swaps the demo variant in place instead of navigating between pages.
 // ---------------------------------------------------------------------------
-const MKT_NAV: { t: string; h: string }[] = [
-  { t: 'How It Works', h: '/how-it-works' }, { t: 'Pricing', h: '/pricing' },
-  { t: 'Updates', h: '/updates' }, { t: 'Blog', h: '/blog' }, { t: 'About', h: '/about' },
-];
+// Nav links mirror frigade.com's header for the CURRENT product, matching how the
+// marketing site itself changes on /engage: How It Works is dropped there, Pricing
+// scopes to /engage/pricing, and Get Started points at the Engage app instead of
+// the Assistant sign-up. Updates, Blog, and About are shared across both.
+const MKT_NAV: Record<ProductKey, { t: string; h: string }[]> = {
+  assistant: [
+    { t: 'How It Works', h: '/how-it-works' }, { t: 'Pricing', h: '/pricing' },
+    { t: 'Updates', h: '/updates' }, { t: 'Blog', h: '/blog' }, { t: 'About', h: '/about' },
+  ],
+  engage: [
+    { t: 'Pricing', h: '/engage/pricing' },
+    { t: 'Updates', h: '/updates' }, { t: 'Blog', h: '/blog' }, { t: 'About', h: '/about' },
+  ],
+};
 // Copy, colors, and destinations lifted verbatim from the live frigade.com header.
 const PRODUCT_META = {
   assistant: { label: 'Assistant', tile: '#015efb', icon: Sparkles, desc: 'AI that learns your product and guides users in real time.', mkt: 'https://frigade.com/', signIn: 'https://app.frigade.ai/sign-in', signInDesc: 'Manage your AI assistant' },
@@ -795,6 +805,11 @@ function MktPanelItem({ k, i, login }: { k: ProductKey; i: number; login?: boole
 const MKT_PANEL_CHROME: React.CSSProperties = { position: 'absolute', top: 'calc(100% + 15px)', padding: 6, borderRadius: 16, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 18px 44px rgba(18,24,40,.14), 0 4px 12px rgba(18,24,40,.06)', zIndex: 60 };
 
 function MarketingHeader() {
+  const { experience } = useExperience();
+  const product: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
+  const nav = MKT_NAV[product];
+  // Same CTA targets the marketing header uses on each product's page.
+  const getStartedHref = product === 'engage' ? APP_URL : APP_URL_ASSISTANT;
   const [open, setOpen] = useState<'products' | 'login' | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const barRef = useRef<HTMLDivElement | null>(null);
@@ -831,7 +846,7 @@ function MarketingHeader() {
               </div>
             )}
           </div>
-          {MKT_NAV.map((l) => <a key={l.t} className="mh-link" href={'https://frigade.com' + l.h} style={{ fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
+          {nav.map((l) => <a key={l.t} className="mh-link" href={'https://frigade.com' + l.h} style={{ fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
         </nav>
         <div style={{ gridColumn: 3, justifySelf: 'end', display: 'flex', alignItems: 'center' }}>
           <div className="mh-right" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -845,7 +860,7 @@ function MarketingHeader() {
                 </div>
               )}
             </div>
-            <a href={APP_URL_ASSISTANT} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
+            <a href={getStartedHref} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
           </div>
           <button type="button" className="mh-burger" aria-label="Open menu" onClick={() => setMobileOpen(true)} style={{ display: 'none', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 8, background: 'none', border: 0, color: C.ink, cursor: 'pointer' }}><Menu size={22} strokeWidth={2} /></button>
         </div>
@@ -868,12 +883,12 @@ function MarketingHeader() {
             </div>
             <p style={{ margin: '32px 0 0', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', color: '#8b93a5' }}>Company</p>
             <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column' }}>
-              {MKT_NAV.map((l) => <a key={l.t} href={'https://frigade.com' + l.h} style={{ padding: '10px 0', fontSize: 16, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
+              {nav.map((l) => <a key={l.t} href={'https://frigade.com' + l.h} style={{ padding: '10px 0', fontSize: 16, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
             </div>
           </div>
           <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, padding: '20px 24px', borderTop: '1px solid rgba(34,34,79,0.06)' }}>
-            <a href={PRODUCT_META.assistant.signIn} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Login</a>
-            <a href={APP_URL_ASSISTANT} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
+            <a href={PRODUCT_META[product].signIn} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Login</a>
+            <a href={getStartedHref} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
           </div>
         </div>
       )}
