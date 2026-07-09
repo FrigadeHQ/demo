@@ -1448,7 +1448,15 @@ export default function NorthwindPage() {
           </div>
 
           <div className="nw-revealv" style={{ position: 'relative', zIndex: 1, marginTop: 30, padding: '0 16px 56px' }}>
-            <div className="nw-demo" style={{ maxWidth: 1280, margin: '0 auto' }}><BrowserFrame dark={dark}><NorthwindApp dark={dark} setDark={setDark} actionsRef={demoActionsRef} /></BrowserFrame></div>
+            <div className="nw-demo" style={{ maxWidth: 1280, margin: '0 auto' }}>
+              <BrowserFrame dark={dark}><NorthwindApp dark={dark} setDark={setDark} actionsRef={demoActionsRef} /></BrowserFrame>
+              {/* Caption under the window: the demo is its own receipt. Same dark github
+                  button treatment as the "Get the skill" CTA in the skill section. */}
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '10px 16px', marginTop: 22 }}>
+                <span style={{ fontSize: 14, color: C.muted }}>This whole demo is open source.</span>
+                <a href="https://github.com/FrigadeHQ/demo" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#fff', background: C.dark, textDecoration: 'none', boxShadow: '0 1px 2px rgba(0,0,0,.16), 0 8px 18px rgba(18,24,40,.16)' }}>{SOCIAL_ICON.github} See how it&rsquo;s built →</a>
+              </div>
+            </div>
             <div className="nw-small" style={{ maxWidth: 460, margin: '4px auto 0', textAlign: 'center', background: '#fff', borderRadius: 16, padding: '34px 30px', boxShadow: C.cardSh }}>
               <div style={{ width: 46, height: 46, borderRadius: 12, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><LayoutGrid size={22} strokeWidth={2} /></div>
               <h3 style={{ margin: '0 0 7px', fontSize: 18, fontWeight: 700, letterSpacing: '-.01em', color: C.ink }}>Best viewed on a larger screen</h3>
