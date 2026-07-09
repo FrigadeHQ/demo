@@ -11,7 +11,7 @@ import { getUserId } from '@/lib/utils';
 import { DEMO_FLOWS } from '@/lib/demo-flows';
 import { getCalApi } from '@calcom/embed-react';
 import { useExperience } from '@/components/experience-context';
-import { VIDEO_BASE, SkillsChooser } from '@/components/skills-chooser';
+import { VIDEO_BASE, SkillsChooser, SKILL_VIDEOS } from '@/components/skills-chooser';
 
 // Cal.com popup config for the booking flows (reused from the existing demo site).
 // Each product has its own Cal event type; the toggle decides which CTA fires.
@@ -813,6 +813,21 @@ function MarketingHeader() {
   const [open, setOpen] = useState<'products' | 'login' | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const barRef = useRef<HTMLDivElement | null>(null);
+  // The two products share most nav links but not all (Engage drops How It Works and
+  // scopes Pricing), so swapping them in place makes the centered cluster snap
+  // sideways. The marketing site never shows that snap (its product switch is a full
+  // page load), so when the pill swaps products here, remount the nav and drop the
+  // links in with the same staggered motion the header dropdowns use. The first paint
+  // stays static: only actual product changes animate.
+  const prevProduct = useRef(product);
+  const [navSwaps, setNavSwaps] = useState(0);
+  useEffect(() => {
+    if (prevProduct.current === product) return;
+    prevProduct.current = product;
+    setNavSwaps((n) => n + 1);
+  }, [product]);
+  const navAnim = (i: number): React.CSSProperties =>
+    navSwaps === 0 ? {} : { animation: `mhItemIn .22s cubic-bezier(.4,0,.2,1) ${i * 0.04}s both` };
   useEffect(() => {
     if (!open) return;
     const down = (e: PointerEvent) => { if (barRef.current && !barRef.current.contains(e.target as Node)) setOpen(null); };
@@ -834,8 +849,8 @@ function MarketingHeader() {
     <header style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: '1px solid rgba(34,34,79,0.06)', flexShrink: 0 }}>
       <div ref={barRef} className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 79, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
         <div style={{ gridColumn: 1, justifySelf: 'start', display: 'inline-flex' }}>{logo}</div>
-        <nav className="mh-nav" aria-label="Frigade" style={{ gridColumn: 2, justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
-          <div style={{ position: 'relative', display: 'inline-flex' }}>
+        <nav key={navSwaps} className="mh-nav" aria-label="Frigade" style={{ gridColumn: 2, justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
+          <div style={{ position: 'relative', display: 'inline-flex', ...navAnim(0) }}>
             <button type="button" className="mh-link" aria-haspopup="menu" aria-expanded={open === 'products'} onClick={() => setOpen(open === 'products' ? null : 'products')} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'none', border: 0, padding: 0, cursor: 'pointer', fontSize: 14, fontWeight: 500, fontFamily: 'inherit', color: open === 'products' ? C.brand : C.ink }}>
               Products {chev(open === 'products')}
             </button>
@@ -846,7 +861,7 @@ function MarketingHeader() {
               </div>
             )}
           </div>
-          {nav.map((l) => <a key={l.t} className="mh-link" href={'https://frigade.com' + l.h} style={{ fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>)}
+          {nav.map((l, i) => <a key={l.t} className="mh-link" href={'https://frigade.com' + l.h} style={{ fontSize: 14, fontWeight: 500, color: C.ink, textDecoration: 'none', ...navAnim(i + 1) }}>{l.t}</a>)}
         </nav>
         <div style={{ gridColumn: 3, justifySelf: 'end', display: 'flex', alignItems: 'center' }}>
           <div className="mh-right" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -1160,11 +1175,28 @@ function LearnMoreLink({ href, label }: { href: string; label: string }) {
   );
 }
 
-// Skills feature demo: the assistant learned to drive Hacker News, Spotify, and Jira
-// with no code. Company logos are the chooser; the three short clips are stacked and
-// crossfade on switch, looping muted with no controls. Deep-linkable via #skills and
-// ?skill=<app>, which also scrolls the section into view on load.
+// Skills feature demo. The section leads with the full narrated walkthrough of skills
+// right under the header, with the same treatment as the Suggestions video: muted
+// autoplay loop with browser controls exposed, so it plays as you arrive and one click
+// brings the narration in (it used to be a fourth tab in the chooser). Then, under its
+// own small sub-heading, the assistant driving Hacker News, Spotify, and Jira with no
+// code. Company logos are the chooser; the three short clips
+// are stacked and crossfade on switch, looping muted with no controls. Deep-linkable
+// via #skills and ?skill=<app>, which also scrolls the section into view on load
+// (?skill=full-demo deep links from the old tab land here too).
 function SkillsSection() {
+  useEffect(() => {
+    if (window.location.hash) return;
+    if (new URLSearchParams(window.location.search).get('skill') !== 'full-demo') return;
+    // Layout can settle late while media loads, which strands an early scrollIntoView
+    // at the top of the page; retry until a scroll takes. scrollY > 0 means either a
+    // prior attempt landed or the user took over, and both mean stop.
+    const timers = [400, 1200, 2400].map((ms) => window.setTimeout(() => {
+      if (window.scrollY > 4) return;
+      document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, ms));
+    return () => timers.forEach((t) => window.clearTimeout(t));
+  }, []);
   return (
     <RailBand id="skills">
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
@@ -1172,7 +1204,16 @@ function SkillsSection() {
         <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
         <LearnMoreLink href="https://frigade.com/features/skills" label="Learn more about Skills" />
       </div>
-      <SkillsChooser defaultSkill="jira" scrollTargetId="skills" />
+      <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
+        <video src={VIDEO_BASE + '/videos/skills/full-demo.mp4'} poster={VIDEO_BASE + '/videos/skills/full-demo.jpg'} autoPlay muted loop playsInline controls preload="auto" aria-label="Full skills walkthrough" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '16 / 9' }} />
+      </div>
+      <div style={{ marginTop: 56 }}>
+        <div style={{ textAlign: 'center', marginBottom: 18 }}>
+          <div style={{ fontSize: 16, fontWeight: 650, color: C.ink }}>Watch skills in action</div>
+          <div style={{ fontSize: 13.5, lineHeight: 1.5, color: C.muted, marginTop: 4 }}>Each one was trained in a single sitting, without a line of code.</div>
+        </div>
+        <SkillsChooser defaultSkill="jira" scrollTargetId="skills" skills={SKILL_VIDEOS.filter((s) => s.key !== 'full-demo')} />
+      </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
         {[
           { icon: Sparkles, t: 'Learns any product', d: 'Frigade uses your product like a user, so no actions need mapping.' },
@@ -1245,7 +1286,7 @@ function AssistantSection() {
         </div>
       </RailBand>
 
-      {/* Skills: the assistant driving real apps, no code. */}
+      {/* Skills: the full walkthrough, then the assistant driving real apps, no code. */}
       <SkillsSection />
 
       {/* Suggestions demo: proactive engagement. Header + video + use-case value row. */}

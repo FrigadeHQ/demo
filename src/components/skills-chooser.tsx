@@ -1,9 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // The Skills demo: the assistant learned to drive Jira, Spotify, and Hacker News with
-// no code. Company logos are the chooser; the three short clips are stacked and
-// crossfade on switch, looping muted with no controls. Deep-linkable via ?skill=<app>.
-// Shared by the main Assistant page and the standalone /hn embed so they stay in sync.
+// no code. Company logos are the chooser; the short clips are stacked and crossfade on
+// switch, looping muted with no controls. Deep-linkable via ?skill=<app>. Shared by the
+// main Assistant page and the standalone /hn embed so they stay in sync. The `skills`
+// prop picks which tabs an instance shows: /hn keeps all four (including the narrated
+// full demo), while the main page shows the three app clips and gives the full demo its
+// own section above.
 
 // Videos live in public/videos/skills/ and are routed through VIDEO_BASE so they can be
 // swapped for a hosted CDN with a one-line change.
@@ -16,7 +19,7 @@ export const SKILL_VIDEOS: SkillVideo[] = [
   { key: 'hackernews', label: 'Hacker News', color: '#FF6600', src: '/videos/skills/hackernews.mp4' },
   { key: 'full-demo', label: 'Full demo', color: '#0155F8', src: '/videos/skills/full-demo.mp4' },
 ];
-export const isSkill = (v: unknown): v is string => typeof v === 'string' && SKILL_VIDEOS.some((s) => s.key === v);
+export const isSkill = (v: unknown, list: SkillVideo[] = SKILL_VIDEOS): v is string => typeof v === 'string' && list.some((s) => s.key === v);
 
 // The chooser sits on light surfaces in both contexts, so these tokens are fixed.
 const INK = '#1a233c';
@@ -41,7 +44,7 @@ function SkillLogo({ k }: { k: string }) {
 
 // scrollTargetId: when a ?skill= deep link arrives without a #hash, scroll this element
 // into view (used on the full page; omitted on the bare /hn embed).
-export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFullscreen = false }: { defaultSkill?: string; scrollTargetId?: string; allowFullscreen?: boolean }) {
+export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFullscreen = false, skills = SKILL_VIDEOS }: { defaultSkill?: string; scrollTargetId?: string; allowFullscreen?: boolean; skills?: SkillVideo[] }) {
   // Start on the default clip so the server and first client render match, then switch
   // to any ?skill= deep link in the mount effect below. Reading the URL after mount
   // (not in the useState initializer) keeps this a normal SSR component that always
@@ -49,7 +52,7 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
   const [active, setActive] = useState<string>(defaultSkill);
   useEffect(() => {
     const p = new URLSearchParams(window.location.search).get('skill');
-    if (isSkill(p)) setActive(p);
+    if (isSkill(p, skills)) setActive(p);
   }, []);
   const refs = useRef<Record<string, HTMLVideoElement | null>>({});
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -90,14 +93,14 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
   useEffect(() => {
     if (!scrollTargetId || window.location.hash) return;
     const p = new URLSearchParams(window.location.search).get('skill');
-    if (isSkill(p)) setTimeout(() => document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
+    if (isSkill(p, skills)) setTimeout(() => document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
   }, [scrollTargetId]);
   // Play only the active clip, restarting it from the top; pause the rest. The
   // full-demo tab is the exception: it's a real narrated demo with audio, so we
   // leave it paused for the user to hit play, and preserve currentTime across
   // tab switches so switching away and back doesn't lose their place.
   useEffect(() => {
-    SKILL_VIDEOS.forEach((s) => {
+    skills.forEach((s) => {
       const v = refs.current[s.key];
       if (!v) return;
       if (s.key === active) {
@@ -131,7 +134,7 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
         ` }} />
       )}
       <div role="tablist" aria-label="Choose a demo" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 6, marginBottom: 22 }}>
-        {SKILL_VIDEOS.map((s) => {
+        {skills.map((s) => {
           const on = s.key === active;
           return (
             <button key={s.key} role="tab" aria-selected={on} onClick={() => choose(s.key)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 14px 10px', background: 'transparent', border: 0, borderBottom: `2px solid ${on ? INK : 'transparent'}`, color: on ? INK : MUTED, fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: on ? 1 : 0.62, transition: 'color .15s ease, border-color .15s ease, opacity .15s ease' }}>
@@ -147,7 +150,7 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
         onMouseLeave={allowFullscreen ? () => { cancelHide(); overFsBtn.current = false; setFsBtnOn(false); } : undefined}
         style={{ position: 'relative', maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)', cursor: isFs && !fsBtnOn ? 'none' : undefined }}
       >
-        {SKILL_VIDEOS.map((s) => {
+        {skills.map((s) => {
           const isFullDemo = s.key === 'full-demo';
           // Full-demo tab differs from the looping app clips: no autoplay, no
           // mute (audio is the point of this clip), no loop, and browser
