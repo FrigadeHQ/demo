@@ -49,6 +49,13 @@ const FONT = 'var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", R
 const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const CARD_SH = '0 1px 2px rgba(18,24,40,.06), 0 0 0 1px rgba(18,24,40,.05)';
 const STAGE_SH = '0 1px 3px rgba(18,24,40,.05), 0 8px 26px rgba(18,24,40,.05)';
+// The demo window renders Northwind at a fixed desktop size. Narrower than DEMO_MIN
+// there's no room to drive it, so the window shows the app scaled to fit instead.
+// These feed both the JSX and the injected CSS, so the two can't drift apart.
+// DEMO_TIGHT is where the window's chrome bar, not the app, runs out of room.
+// The still preview renders a narrower desktop than the live demo on purpose: the
+// scaled app has to stay tall enough to seat a message box without crowding it.
+const DEMO_W = 1280, DEMO_H = 600, DEMO_MIN = 1000, DEMO_TIGHT = 600, DEMO_STILL_W = 1080;
 const C = {
   bg: '#f5f6f8', card: '#fff', ink: '#1a233c', ink2: '#2f3649', muted: '#6b7180',
   faint: '#9aa0b0', line: '#e6e8ee', hair: '#1b1b1d0d', brand: '#015efb', brandWeak: '#e7f0ff', dark: '#1b2230',
@@ -224,7 +231,7 @@ function PanelHead({ onClose }: { onClose: () => void }) {
 //   banner       -> contextual banner, fires once two checklist steps are done
 //   survey       -> NPS-style survey, fires when the checklist is complete
 //   tour         -> product tour with a spotlight + coachmarks
-function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; actionsRef?: React.MutableRefObject<((key: string) => void) | null> }) {
+function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; actionsRef?: React.MutableRefObject<((key: string) => void) | null>; still?: boolean }) {
   const { flow } = Frigade.useFlow(DEMO_FLOWS.changelog);
   const steps = flow ? Array.from(flow.steps.values()) : [];
   const [seen, setSeen] = useState<Set<string>>(() => new Set());
@@ -339,8 +346,11 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
   // Auto-play the opening journey (form -> welcome -> tour). It pops on every fresh
   // load until the user has finished or skipped the onboarding form, so a returning
   // visitor who never did it still gets it (instead of landing on the bare app). The
-  // ref keeps it from re-opening on re-renders within a single visit.
+  // ref keeps it from re-opening on re-renders within a single visit. Held still, the
+  // journey never opens: nobody can answer a form they can't reach, and the window is
+  // there to show the app, not a modal.
   useEffect(() => {
+    if (still) return;
     if (!fmFlow || !anFlow || !tourFlow || typeof window === 'undefined') return;
     if (autoPlayedRef.current) return;
     if (/[?&](cl|ck|an|fm|dc|tour|hint|bn|sv)=/.test(window.location.search)) return;
@@ -348,7 +358,7 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
     autoPlayedRef.current = true;
     setJourney(true); setFmStepIdx(0); setFmOpen(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fmFlow, anFlow, tourFlow]);
+  }, [fmFlow, anFlow, tourFlow, still]);
 
   const unseen = steps.filter((s: any) => !seen.has(s.id));
   const unseenCount = unseen.length;
@@ -415,6 +425,12 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
     setAnOpen(false); setFmOpen(false); setBellOpen(false); setPanelOpen(false);
     setCkOpen(false); setBannerOpen(false); setSurveyOpen(false); setTourActive(false);
   }
+  // A window dragged narrow mid-visit would otherwise strand whatever was open behind
+  // the preview scrim. Going still means going back to the default screen.
+  useEffect(() => {
+    if (still) closeAllFlows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [still]);
   // Publish the demo actions so the Engage hero pills can replay any single flow. Each
   // click resets the others first (manual mode), so nothing overlaps. One-time flows
   // (welcome/form/survey) also clear their "seen" flag so they always show again.
@@ -445,7 +461,7 @@ function NorthwindApp({ dark, setDark, actionsRef }: { dark: boolean; setDark: R
   const bnTitle = fmFirstName ? `Nice work, ${fmFirstName}` : ((bnStep && bnStep.title) || 'Nice work');
 
   return (
-    <div ref={appRef} style={{ ...cssVars(C), position: 'relative', display: 'flex', height: 600, background: C.bg, overflow: 'hidden' }}>
+    <div ref={appRef} style={{ ...cssVars(C), position: 'relative', display: 'flex', height: DEMO_H, background: C.bg, overflow: 'hidden' }}>
       <aside style={{ width: 210, flexShrink: 0, display: 'flex', flexDirection: 'column', padding: '13px 12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '4px 8px 11px' }}>
           <div style={{ width: 23, height: 23, borderRadius: 7, background: C.dark, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12.5, fontWeight: 700 }}>N</div>
@@ -733,8 +749,8 @@ function BrowserFrame({ children, dark = false }: { children: React.ReactNode; d
       <div style={{ height: 46, display: 'flex', alignItems: 'center', gap: 14, padding: '0 15px', background: C.frame, borderBottom: `1px solid ${C.frameBorder}` }}>
         <div style={{ display: 'flex', gap: 8 }}><span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} /><span style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }} /><span style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} /></div>
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: 'min(440px, 60%)', padding: '6px 13px', borderRadius: 8, background: C.card, color: C.muted, fontSize: 12.5, boxShadow: `inset 0 0 0 1px ${C.line}` }}>
-            <Lock size={12} color="#16a34a" /><span style={{ color: C.ink2 }}>app.northwind.ai</span><span>/agents</span>
+          <div className="nw-url" style={{ display: 'flex', alignItems: 'center', gap: 8, width: 'min(440px, 60%)', padding: '6px 13px', borderRadius: 8, background: C.card, color: C.muted, fontSize: 12.5, boxShadow: `inset 0 0 0 1px ${C.line}` }}>
+            <Lock size={12} color="#16a34a" /><span style={{ color: C.ink2 }}>app.northwind.ai</span><span className="nw-path">/agents</span>
           </div>
         </div>
         {/* A real link in the fake chrome: "view source" on this window opens the actual
@@ -1354,6 +1370,28 @@ export default function NorthwindPage() {
   // NorthwindApp publishes its action dispatcher here so the Engage hero pills can
   // replay any flow in the live demo and scroll it into view.
   const demoActionsRef = useRef<((key: string) => void) | null>(null);
+  // The small-screen demo window shows the app scaled down to fit. That scale is a
+  // ratio of two widths, which CSS can't divide, so it's measured here and handed
+  // over as --nw-k. `still` and `inert` track the same breakpoint the CSS uses: a
+  // demo nobody can drive shouldn't take clicks or keyboard focus, and shouldn't
+  // open its onboarding journey either.
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width:${DEMO_MIN - 1}px)`);
+    const sync = () => {
+      setStill(mq.matches);
+      const el = previewRef.current;
+      if (!el) return;
+      el.style.setProperty('--nw-k', String(el.clientWidth / DEMO_STILL_W));
+      el.inert = mq.matches;
+    };
+    sync();
+    window.addEventListener('resize', sync);
+    return () => window.removeEventListener('resize', sync);
+    // Engage is not the landing view, so the window this measures only exists once
+    // the product switches to it.
+  }, [experience]);
   const triggerDemo = (action: string) => {
     if (typeof document !== 'undefined') document.querySelector('.nw-demo')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     demoActionsRef.current?.(action);
@@ -1384,8 +1422,28 @@ export default function NorthwindPage() {
         @keyframes nwrev{to{opacity:1;transform:none}}
         .nw-rails{display:none}
         @media (min-width:1240px){.nw-rails{display:block}}
-        .nw-small{display:none}
-        @media (max-width:999px){.nw-demo{display:none}.nw-small{display:block}}
+        /* Under 1000px the demo is too cramped to drive, so the window stays and the
+           app inside it goes still: scaled to fit, held in its default state, dimmed
+           under a scrim with the message resting on top. The hero pills hide with it,
+           since each one replays a flow in a demo that is no longer yours to poke at.
+           --nw-k is the fit scale, measured in JS. */
+        .nw-stage{position:relative}
+        .nw-preview{display:none}
+        @media (max-width:${DEMO_MIN - 1}px){
+          .nw-pills{display:none!important}
+          .nw-app-scaler{height:calc(${DEMO_H}px * var(--nw-k,.33));overflow:hidden;pointer-events:none}
+          .nw-app-scaler>*{width:${DEMO_STILL_W}px;transform-origin:top left;transform:scale(var(--nw-k,.33))}
+          .nw-preview{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(180deg,rgba(17,22,38,.18) 0%,rgba(17,22,38,.38) 100%)}
+        }
+        /* Narrower still, the chrome bar itself runs out of room. The repo link goes
+           (the caption under the window already carries it), the path goes, and the
+           address hugs its text instead of taking a percentage share of a bar it can
+           no longer fit inside. The bar stays live either way: it's the app behind it
+           that's frozen, not the window. */
+        @media (max-width:${DEMO_TIGHT}px){
+          .nw-src,.nw-path{display:none!important}
+          .nw-url{width:auto!important}
+        }
         /* Marketing-header mirror: nav hover, dropdown fade + item drop-in (same
            animation frigade.com uses), pill press feedback, and the 768px collapse
            to hamburger, all matching the live site. */
@@ -1505,18 +1563,27 @@ export default function NorthwindPage() {
 
           <div className="nw-revealv" style={{ position: 'relative', zIndex: 1, marginTop: 30, padding: '0 16px 56px' }}>
             <div className="nw-demo" style={{ maxWidth: 1280, margin: '0 auto' }}>
-              <BrowserFrame dark={dark}><NorthwindApp dark={dark} setDark={setDark} actionsRef={demoActionsRef} /></BrowserFrame>
+              <BrowserFrame dark={dark}>
+                <div className="nw-stage">
+                  <div ref={previewRef} className="nw-app-scaler">
+                    <NorthwindApp dark={dark} setDark={setDark} actionsRef={demoActionsRef} still={still} />
+                  </div>
+                  {/* The message sits where the app's own modals sit, over the same
+                      kind of scrim, because that is the shape this demo is about. */}
+                  <div className="nw-preview">
+                    <div style={{ maxWidth: 'min(300px, 76%)', textAlign: 'center', background: palette(dark).card, borderRadius: 14, padding: '17px 20px', boxShadow: '0 16px 48px rgba(18,24,40,.26), 0 0 0 1px rgba(18,24,40,.07)' }}>
+                      <h3 className="nw-balance" style={{ margin: '0 0 5px', fontSize: 15.5, fontWeight: 700, letterSpacing: '-.01em', color: palette(dark).ink }}>The demo needs a bigger window.</h3>
+                      <p className="nw-balance" style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: palette(dark).muted }}>Open this page on a desktop to try it yourself.</p>
+                    </div>
+                  </div>
+                </div>
+              </BrowserFrame>
               {/* Caption under the window: the demo is its own receipt. Same dark github
                   button treatment as the "Get the skill" CTA in the skill section. */}
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '10px 16px', marginTop: 22 }}>
                 <span style={{ fontSize: 14, color: C.muted }}>This whole demo is open source.</span>
                 <a href="https://github.com/FrigadeHQ/demo" target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#fff', background: C.dark, textDecoration: 'none', boxShadow: '0 1px 2px rgba(0,0,0,.16), 0 8px 18px rgba(18,24,40,.16)' }}>{SOCIAL_ICON.github} See how it&rsquo;s built →</a>
               </div>
-            </div>
-            <div className="nw-small" style={{ maxWidth: 460, margin: '4px auto 0', textAlign: 'center', background: '#fff', borderRadius: 16, padding: '34px 30px', boxShadow: C.cardSh }}>
-              <div style={{ width: 46, height: 46, borderRadius: 12, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}><LayoutGrid size={22} strokeWidth={2} /></div>
-              <h3 style={{ margin: '0 0 7px', fontSize: 18, fontWeight: 700, letterSpacing: '-.01em', color: C.ink }}>Best viewed on a larger screen</h3>
-              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: C.muted }}>This interactive demo needs a little more room. Open it on a desktop browser to explore the full experience.</p>
             </div>
           </div>
         </section>
