@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext, createContext, useCallback, useMemo } from 'react';
 import * as Frigade from '@frigade/react';
 import {
   LayoutGrid, Bot, KeyRound, BarChart3, ScrollText, CreditCard, Settings2,
@@ -12,6 +12,7 @@ import { DEMO_FLOWS } from '@/lib/demo-flows';
 import { getCalApi } from '@calcom/embed-react';
 import { useExperience } from '@/components/experience-context';
 import { VIDEO_BASE, SkillsChooser, SKILL_VIDEOS } from '@/components/skills-chooser';
+import { FONT, MONO, C, DARK, palette, cssVars, APP_SCOPE, BTN_BRAND } from '@/lib/theme';
 
 // Cal.com popup config for the booking flows (reused from the existing demo site).
 // Each product has its own Cal event type; the toggle decides which CTA fires.
@@ -45,8 +46,6 @@ const APP_URL_ASSISTANT = 'https://app.frigade.ai/sign-up?ref=demo';
  * agent to design and ship your own flows.
  */
 
-const FONT = 'var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace';
 const CARD_SH = '0 1px 2px rgba(18,24,40,.06), 0 0 0 1px rgba(18,24,40,.05)';
 const STAGE_SH = '0 1px 3px rgba(18,24,40,.05), 0 8px 26px rgba(18,24,40,.05)';
 // The demo window renders Northwind at a fixed desktop size. Narrower than DEMO_MIN
@@ -56,23 +55,6 @@ const STAGE_SH = '0 1px 3px rgba(18,24,40,.05), 0 8px 26px rgba(18,24,40,.05)';
 // The still preview renders a narrower desktop than the live demo on purpose: the
 // scaled app has to stay tall enough to seat a message box without crowding it.
 const DEMO_W = 1280, DEMO_H = 600, DEMO_MIN = 1000, DEMO_TIGHT = 600, DEMO_STILL_W = 1080;
-const C = {
-  bg: '#f5f6f8', card: '#fff', ink: '#1a233c', ink2: '#2f3649', muted: '#6b7180',
-  faint: '#9aa0b0', line: '#e6e8ee', hair: '#1b1b1d0d', brand: '#015efb', brandWeak: '#e7f0ff', dark: '#1b2230',
-  ghost: '#e4e7ec', hover: '#f5f6f8', wash: '#eef3ff', washLine: '#e2e9f7', frame: '#eef0f3', frameBorder: '#e1e4e9', cardSh: '0 1px 2px rgba(18,24,40,.06), 0 0 0 1px rgba(18,24,40,.05)',
-};
-// Dark theme: the host app + Frigade surfaces re-skin; brand stays #015efb for fidelity.
-const DARK: typeof C = {
-  bg: '#0e1422', card: '#171f2e', ink: '#eef1f7', ink2: '#c2cad8', muted: '#8790a1',
-  faint: '#5b647a', line: '#28303f', hair: 'rgba(255,255,255,.06)', brand: '#015efb', brandWeak: '#16243f', dark: '#2b3346',
-  ghost: '#283142', hover: '#1e2738', wash: '#131c2e', washLine: '#222c40', frame: '#212a39', frameBorder: '#2b3446', cardSh: '0 1px 2px rgba(0,0,0,.35), 0 0 0 1px #2c3547',
-};
-const palette = (d: boolean) => (d ? DARK : C);
-// Expose the active palette as CSS vars on the app root, so the shared helper
-// components + injected popover CSS theme along with NorthwindApp's inline styles.
-function cssVars(p: typeof C): Record<string, string> {
-  return { '--nw-card': p.card, '--nw-ghost': p.ghost, '--nw-line': p.line, '--nw-muted': p.muted, '--nw-ink': p.ink, '--nw-ink2': p.ink2, '--nw-faint': p.faint, '--nw-brand': p.brand, '--nw-bw': p.brandWeak, '--nw-hover': p.hover, '--nw-bg': p.bg, '--nw-csh': p.cardSh };
-}
 const CTA_SECONDARY = 'inset 0 1px 0.4px rgba(255,255,255,0.9), inset 0 -2px 2px rgba(20,30,60,0.08), 0 1px 1px rgba(0,0,0,0.06), 0 2px 4px rgba(20,30,60,0.08), 0 0 0 1px rgba(18,55,105,0.1)';
 const CTA_BRAND = 'inset 0 1px 0.4px rgba(255,255,255,0.28), inset 0 -3px 2px rgba(0,0,0,0.24), 0 1px 1px rgba(0,0,0,0.14), 0 2px 4px rgba(0,30,90,0.16), 1px 4px 10px rgba(0,86,248,0.18), 0 0 0 1px rgb(13,97,255)';
 
@@ -185,11 +167,62 @@ const ASSISTANT_BENEFITS: { icon: IconType; title: string; desc: string }[] = [
 ];
 const TOUR_ANCHORS: Record<string, string> = { workspace: '[data-tour="workspace"]', 'create-agent': '[data-target="create-agent"]', theme: '[data-target="theme"]', 'cl-bell': '[data-cl-bell]', ck: '[data-ck]' };
 const GATE_LABELS: Record<string, string> = { 'create-agent': 'Click Create Agent', theme: 'Switch the theme', 'ck-open': 'Open your checklist' };
-const FORM_FIELDS: { id: string; type: string; title: string; help: string; placeholder?: string; required?: boolean; options?: string[]; short: string; ph: string }[] = [
-  { id: 'name', type: 'text', title: 'What should we call you?', help: 'We will use this to personalize your demo.', placeholder: 'Ada Lovelace', required: true, short: 'Your name', ph: 'Your full name' },
-  { id: 'role', type: 'select', title: 'What best describes you?', help: 'Frigade forms take any field type and can hand off to any flow.', required: true, options: ['Engineer', 'Product', 'Founder or exec', 'Something else'], short: 'Your role', ph: 'Pick one' },
-  { id: 'usecase', type: 'select', title: 'What interests you most?', help: 'A simple example, but Frigade forms can branch and apply logic on any answer.', required: false, options: ['Onboarding & checklists', 'Product tours', 'Announcements & changelog', 'Surveys & NPS'], short: 'Interests', ph: 'Optional' },
+// The onboarding form is a real <Frigade.Form>: its questions, options and buttons
+// all come from the flow YAML now. These are only the RIGHT panel's display strings
+// (a custom live-preview that Frigade's form can't render), keyed by field id, in
+// step order. Kept in sync with the flow's field ids.
+const FORM_PANEL: { id: string; short: string; ph: string }[] = [
+  { id: 'name', short: 'Your name', ph: 'Your full name' },
+  { id: 'role', short: 'Your role', ph: 'Pick one' },
+  { id: 'usecase', short: 'Interests', ph: 'Optional' },
 ];
+const FORM_ORDER = FORM_PANEL.map((f) => f.id);
+
+// Bridges the embedded <Frigade.Form> to the custom right panel: the form's fields
+// live inside Frigade's component, but the preview beside them needs each answer as
+// it's typed and the active step. Custom field renderers publish here; the panel
+// reads it. `values` holds display labels (what the panel shows), not raw values.
+type FormLive = { values: Record<string, string>; publish: (id: string, val: string) => void; step: number; setStep: (n: number) => void };
+const FormLiveContext = createContext<FormLive | null>(null);
+
+// Northwind's own inputs, registered as Frigade field types so the form's fields
+// render in the product's style while Frigade owns their value and validation. Each
+// one reports its value (as a display label) and its step up to FormLiveContext.
+function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
+  const live = useContext(FormLiveContext);
+  const publish = live?.publish;
+  const setStep = live?.setStep;
+  const opts = fieldData.options;
+  const idx = FORM_ORDER.indexOf(fieldData.id);
+  // This field only mounts when its step is active, so mounting = "we're on step idx".
+  // Depend on the stable callbacks (not the whole context) so unrelated value changes
+  // don't re-fire these effects.
+  useEffect(() => { if (idx >= 0) setStep?.(idx); }, [idx, setStep]);
+  // Publish the display label (option label, or the raw text) for the preview panel.
+  const display = opts ? (opts.find((o) => o.value === field.value)?.label ?? '') : (field.value ?? '');
+  useEffect(() => { publish?.(fieldData.id, display); }, [display, fieldData.id, publish]);
+
+  // Colours are var(--nw-*), not the module C, because this component renders outside
+  // NorthwindApp's themed C. That's what lets these inputs re-skin with the dark toggle.
+  if (opts && opts.length) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {opts.map((o) => {
+          const sel = field.value === o.value;
+          return (
+            <button key={o.value} type="button" onClick={() => field.onChange(o.value)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '12px 14px', borderRadius: 11, cursor: 'pointer', textAlign: 'left', border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'var(--nw-card)', boxShadow: sel ? '0 0 0 1px var(--nw-brand)' : 'none', transition: 'all .14s ease' }}>
+              <span style={{ fontSize: 13.5, fontWeight: 500, color: sel ? 'var(--nw-brand)' : 'var(--nw-ink)' }}>{o.label}</span>
+              <span style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: sel ? 'none' : '1.5px solid var(--nw-line)', background: sel ? 'var(--nw-brand)' : 'var(--nw-card)' }}>{sel && <Check size={12} color="#fff" strokeWidth={3} />}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+  return (
+    <input autoFocus className="nw-input" value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 11, border: '1px solid var(--nw-line)', background: 'var(--nw-bg)', fontSize: 14.5, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
+  );
+}
 
 // Changelog entry list (shared by the bell dropdown + slide-in panel)
 function renderEntries(steps: any[], newIds: Set<string>) {
@@ -253,12 +286,12 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   }, []);
   const ckAllSteps: any[] = gatePreview.on ? [
     ...ckSteps,
-    { id: 'connect-sso', title: 'Connect SAML SSO', isHidden: !gatePreview.enterprise, __mock: true },
-    { id: 'go-live', title: 'Take your agent live', isBlocked: !gatePreview.unlocked, __mock: true },
+    { id: 'connect-sso', title: 'Connect SAML SSO', __mock: true, $state: { visible: gatePreview.enterprise, completed: false, blocked: false } },
+    { id: 'go-live', title: 'Take your agent live', __mock: true, $state: { visible: true, completed: false, blocked: !gatePreview.unlocked } },
   ] : ckSteps;
-  // Steps whose visibilityCriteria is unmet (isHidden) never render or count.
-  const ckVisible = ckAllSteps.filter((s: any) => !s.isHidden);
-  const [done, setDone] = useState<Set<string>>(() => new Set());
+  // Steps whose visibilityCriteria is unmet never render or count. Frigade resolves
+  // that per user and hands it over as $state.visible.
+  const ckVisible = ckAllSteps.filter((s: any) => s.$state?.visible !== false);
   const [ckOpen, setCkOpen] = useState(false);
   const [activeStep, setActiveStep] = useState<string | null>(null); // checklist step whose hint is firing
   const { flow: anFlow } = Frigade.useFlow(DEMO_FLOWS.announcement);
@@ -267,14 +300,18 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const anSecondary = anStep ? ((anStep.secondaryButton && anStep.secondaryButton.title) || anStep.secondaryButtonTitle) : null;
   const [anOpen, setAnOpen] = useState(false);
   const { flow: fmFlow } = Frigade.useFlow(DEMO_FLOWS.form);
-  const fmStep: any = fmFlow ? Array.from(fmFlow.steps.values())[0] : null;
   const [fmOpen, setFmOpen] = useState(false);
   const [fmValues, setFmValues] = useState<Record<string, string>>({});
   const [fmStepIdx, setFmStepIdx] = useState(0);
+  // Live bridge from the embedded <Frigade.Form> to its custom preview panel. publish
+  // returns the same object when a value is unchanged, so the field's publish-on-render
+  // effect can't loop. Identities stay stable so fields don't re-fire on unrelated edits.
+  const publishFormValue = useCallback((id: string, val: string) => {
+    setFmValues((v) => (v[id] === val ? v : { ...v, [id]: val }));
+  }, []);
+  const formLive = useMemo<FormLive>(() => ({ values: fmValues, publish: publishFormValue, step: fmStepIdx, setStep: setFmStepIdx }), [fmValues, fmStepIdx, publishFormValue]);
   const [journey, setJourney] = useState(false); // true while the opening journey auto-plays (gates form -> welcome chain)
   const [consoleOpen, setConsoleOpen] = useState(false);
-  const { flow: bnFlow } = Frigade.useFlow(DEMO_FLOWS.banner);
-  const bnStep: any = bnFlow ? Array.from(bnFlow.steps.values())[0] : null;
   const [bannerOpen, setBannerOpen] = useState(false);
   const { flow: svFlow } = Frigade.useFlow(DEMO_FLOWS.survey);
   const svStep: any = svFlow ? Array.from(svFlow.steps.values())[0] : null;
@@ -291,11 +328,9 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const C = palette(dark); // local themed palette shadows the module light palette for this app
 
   const seenKey = 'nw-changelog-seen:' + (typeof window !== 'undefined' ? getUserId() : 'x');
-  const ckDoneKey = 'nw-checklist-done:' + (typeof window !== 'undefined' ? getUserId() : 'x');
   const bannerKey = 'nw-banner-seen:' + (typeof window !== 'undefined' ? getUserId() : 'x');
   const surveyKey = 'nw-survey-seen:' + (typeof window !== 'undefined' ? getUserId() : 'x');
   useEffect(() => { setSeen(loadSet(seenKey)); /* eslint-disable-next-line */ }, []);
-  useEffect(() => { setDone(loadSet(ckDoneKey)); /* starts at 0%; steps complete from real actions */ /* eslint-disable-next-line */ }, []);
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { setBellOpen(false); setPanelOpen(false); setCkOpen(false); setAnOpen(false); setFmOpen(false); setConsoleOpen(false); setActiveStep(null); } }
     document.addEventListener('keydown', onKey); return () => document.removeEventListener('keydown', onKey);
@@ -370,7 +405,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   }
   function toggleBell() { if (bellOpen) { setBellOpen(false); return; } setPanelOpen(false); setCkOpen(false); markSeen(); setBellOpen(true); }
   const ckTotal = ckVisible.length;
-  const ckDoneCount = ckVisible.filter((s: any) => done.has(s.id)).length;
+  const ckDoneCount = ckVisible.filter((s: any) => s.$state?.completed).length;
   const ckPct = ckTotal ? Math.round((ckDoneCount / ckTotal) * 100) : 0;
   // Contextual banner: slides into the dashboard once 2 checklist steps are done (until dismissed).
   useEffect(() => { if (ckDoneCount >= 2 && typeof window !== 'undefined' && !localStorage.getItem(bannerKey)) setBannerOpen(true); /* eslint-disable-next-line */ }, [ckDoneCount]);
@@ -380,10 +415,14 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   // real app you'd complete each step from its own product event (a key created,
   // a teammate invited) or when a linked flow finishes (the form or the tour).
   // That cross-flow, event-driven completion is what Frigade is built for.
+  // Frigade owns checklist progress: complete the step and let the new $state come
+  // back through useFlow. No local mirror, so progress follows the user across
+  // browsers instead of living in this one's localStorage.
   function completeStep(id: string | null) {
-    if (!id || done.has(id)) return;
-    const next = new Set(done); next.add(id); setDone(next); saveSet(ckDoneKey, next);
-    try { const st = ckFlow && ckFlow.steps.get(id); if (st) st.complete(); } catch {}
+    if (!id) return;
+    const st = ckFlow?.steps?.get(id);
+    if (!st || st.$state?.completed) return;
+    try { st.complete(); } catch {}
   }
   const activeStepObj: any = activeStep && ckFlow ? ckFlow.steps.get(activeStep) : null;
   const activeTarget: string | null = (activeStepObj && activeStepObj.props && activeStepObj.props.target) || null;
@@ -407,16 +446,21 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   useEffect(() => { measureTour(); const on = () => measureTour(); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on); }, [tourActive, tourIdx, tourFlow]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!tourFlow) return; const t = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tour') : null; if (t === 'open') startTour(); else if (t && /^[0-9]+$/.test(t)) { setTourIdx(Number(t)); setTourActive(true); } }, [tourFlow]); // eslint-disable-line react-hooks/exhaustive-deps
   function closeAnnouncement(complete: boolean) { setAnOpen(false); try { if (complete) anFlow?.complete?.(); else anFlow?.skip?.(); } catch {} }
-  function closeBanner() { setBannerOpen(false); try { localStorage.setItem(bannerKey, '1'); } catch {} try { bnFlow?.complete?.(); } catch {} }
+  // Frigade's Banner owns the flow's completion state (its primaryButton fires
+  // flow.complete), so this only unmounts it and records the demo-local "don't
+  // auto-show again" flag that the hero pills clear to replay it.
+  function closeBanner() { setBannerOpen(false); try { localStorage.setItem(bannerKey, '1'); } catch {} }
   function dismissSurvey() { setSurveyOpen(false); try { localStorage.setItem(surveyKey, '1'); } catch {} }
   function pickRating(n: number) { setSurveyRating(n); try { svStep?.complete?.({ rating: n }); } catch {} try { localStorage.setItem(surveyKey, '1'); } catch {} }
-  function advanceForm(isLast: boolean) { if (isLast) submitForm(); else setFmStepIdx((i) => i + 1); }
   // Finishing or skipping the form means the user has been through onboarding, so the
   // journey won't auto-pop on future loads (an Escape-close doesn't set it, so an
   // accidental dismissal still gets another chance).
   function markOnboarded() { try { localStorage.setItem('nw-onboarding-done:' + getUserId(), '1'); } catch {} }
-  function submitForm() { try { fmStep?.complete?.(fmValues); } catch {} markOnboarded(); setFmOpen(false); setFmStepIdx(0); if (journey) { setJourney(false); setAnOpen(true); } }
-  function skipForm() { try { fmFlow?.skip?.(); } catch {} markOnboarded(); setFmOpen(false); setFmStepIdx(0); if (journey) { setJourney(false); setAnOpen(true); } }
+  // Frigade.Form owns the form's own completion/skip state; this only closes the modal
+  // and hands the opening journey to the welcome announcement. Idempotent: the journey
+  // guard means a second call (skip button + onDismiss both firing) is a no-op.
+  function closeFormToJourney() { markOnboarded(); setFmOpen(false); setFmStepIdx(0); if (journey) { setJourney(false); setAnOpen(true); } }
+  function skipForm() { try { fmFlow?.skip?.(); } catch {} closeFormToJourney(); }
   // Close every Frigade surface at once. The hero pills use this to enter a "manual
   // mode": one pill shows exactly one component instead of stacking on top of whatever
   // the guided demo already had open.
@@ -458,10 +502,9 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   }
   const fmFirstName = (fmValues.name || '').trim().split(/\s+/)[0] || '';
   const welcomeTitle = fmFirstName ? `Welcome, ${fmFirstName}` : ((anStep && anStep.title) || 'Welcome to the demo');
-  const bnTitle = fmFirstName ? `Nice work, ${fmFirstName}` : ((bnStep && bnStep.title) || 'Nice work');
 
   return (
-    <div ref={appRef} style={{ ...cssVars(C), position: 'relative', display: 'flex', height: DEMO_H, background: C.bg, overflow: 'hidden' }}>
+    <div ref={appRef} className={APP_SCOPE} style={{ ...cssVars(C), position: 'relative', display: 'flex', height: DEMO_H, background: C.bg, overflow: 'hidden' }}>
       <aside style={{ width: 210, flexShrink: 0, display: 'flex', flexDirection: 'column', padding: '13px 12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '4px 8px 11px' }}>
           <div style={{ width: 23, height: 23, borderRadius: 7, background: C.dark, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12.5, fontWeight: 700 }}>N</div>
@@ -495,12 +538,12 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
             <div style={{ fontSize: 11.5, color: C.faint, padding: '0 13px 7px' }}>Pick a step and we&rsquo;ll point you to it.</div>
             <div style={{ padding: '2px 6px 4px', display: 'flex', flexDirection: 'column', gap: 1 }}>
               {ckVisible.map((s: any) => {
-                const isDone = done.has(s.id); const Ic = CK_ICONS[s.id] || Bot; const isActive = activeStep === s.id;
+                const isDone = !!s.$state?.completed; const Ic = CK_ICONS[s.id] || Bot; const isActive = activeStep === s.id;
                 // A step whose startCriteria isn't met yet renders locked: muted and
                 // not clickable, with the lock in the right status slot (ring = todo,
                 // check = done, lock = locked) and a tooltip on hover or keyboard
                 // focus saying how to open it.
-                if (!isDone && s.isBlocked) return (
+                if (!isDone && s.$state?.blocked) return (
                   <div key={s.id} className="ck-locked" tabIndex={0} aria-disabled="true" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, padding: '8px', borderRadius: 8, fontSize: 12.5, cursor: 'default', color: C.faint }}>
                     <Ic size={16} color={C.faint} />
                     <span style={{ flex: 1 }}>{s.title}</span>
@@ -540,15 +583,35 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
             </button>
           </div>
         </div>
-        {bannerOpen && bnStep && (
-          <div className="nw-banner" style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 16px 2px', padding: '12px 14px', borderRadius: 11, background: C.brandWeak, boxShadow: `inset 0 0 0 1px ${C.brand}33` }}>
-            <span style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, background: C.brand, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CheckCircle2 size={17} strokeWidth={2.2} /></span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: C.ink }}>{bnTitle}</div>
-              <div style={{ fontSize: 12, lineHeight: 1.45, color: C.ink2, marginTop: 1 }}>{bnStep.subtitle}</div>
-            </div>
-            <button onClick={closeBanner} aria-label="Dismiss" style={{ border: 0, background: 'none', color: C.brand, padding: 4, borderRadius: 6, cursor: 'pointer', display: 'flex', flexShrink: 0 }}><X size={16} /></button>
-          </div>
+        {/* Frigade's own Banner, rendering the flow's title, subtitle and its
+            primaryButton ("Got it" -> flow.complete). Colours, radius and shadow come
+            from the shared theme, so only the density and the brand wash are set here.
+            ${firstName} is interpolated by Frigade from the `variables` prop below,
+            using the name collected by the onboarding form. */}
+        {bannerOpen && (
+          <Frigade.Banner
+            flowId={DEMO_FLOWS.banner}
+            forceMount
+            variables={{ firstName: fmFirstName ? `, ${fmFirstName}` : '' }}
+            onDismiss={closeBanner}
+            onComplete={closeBanner}
+            css={{
+              // .fr-card / .fr-banner both sit on the root element, so they're styled
+              // at the top level; nested selectors only reach descendants.
+              margin: '0 16px 2px',
+              animation: 'nwslide .4s cubic-bezier(.4,0,.2,1) both',
+              background: 'var(--nw-bw)',
+              border: 0,
+              padding: '12px 14px',
+              gap: 12,
+              boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--nw-brand) 20%, transparent)',
+              '.fr-banner-title-wrapper': { gap: 1 },
+              '.fr-title': { fontSize: 13, fontWeight: 600, letterSpacing: 0 },
+              '.fr-subtitle': { fontSize: 12, lineHeight: 1.45, color: 'var(--nw-ink2)' },
+              '.fr-button-primary': { padding: '8px 14px', minHeight: 0, boxShadow: BTN_BRAND },
+              '.fr-button-title': { fontSize: 12.5, fontWeight: 600 },
+            }}
+          />
         )}
         <div style={{ padding: '4px 10px 0', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -604,7 +667,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
               {anStep.subtitle && <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: C.muted }}>{anStep.subtitle}</p>}
               <div style={{ flex: 1, minHeight: 22 }} />
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                {anPrimary && <button onClick={() => { closeAnnouncement(true); startTour(); }} style={{ background: C.brand, color: '#fff', fontSize: 13.5, fontWeight: 600, padding: '11px 20px', borderRadius: 11, border: 0, cursor: 'pointer', boxShadow: '0 1px 2px rgba(1,94,251,.35), 0 0 0 1px rgba(1,94,251,.25)' }}>{anPrimary}</button>}
+                {anPrimary && <button onClick={() => { closeAnnouncement(true); startTour(); }} style={{ background: C.brand, color: '#fff', fontSize: 13.5, fontWeight: 600, padding: '11px 20px', borderRadius: 11, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{anPrimary}</button>}
                 {anSecondary && <button onClick={() => closeAnnouncement(false)} style={{ border: 0, background: 'none', color: C.muted, fontSize: 13, fontWeight: 600, padding: '10px 8px', borderRadius: 9, cursor: 'pointer' }}>{anSecondary}</button>}
               </div>
             </div>
@@ -625,69 +688,64 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
         </>
       )}
 
-      {/* Onboarding form — wide, floating split modal with a live asset panel (headless useFlow) */}
-      {fmOpen && (() => {
-        const f = FORM_FIELDS[fmStepIdx];
-        const last = fmStepIdx >= FORM_FIELDS.length - 1;
-        const canNext = !f.required || !!((fmValues[f.id] || '').trim());
-        return (
-          <>
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,21,26,.34)', zIndex: 50 }} />
-            <div className="nw-hint" role="dialog" aria-label="Set up your workspace" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', width: 760, maxWidth: '94%', background: C.card, borderRadius: 18, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
-              <div style={{ flex: 1, minWidth: 0, padding: '26px 30px 28px', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <div style={{ display: 'flex', gap: 4 }}>{FORM_FIELDS.map((_, i) => (<span key={i} style={{ height: 4, width: 20, borderRadius: 99, background: i <= fmStepIdx ? C.brand : C.line, transition: 'background .25s ease' }} />))}</div>
-                    <span style={{ fontSize: 11.5, fontWeight: 600, color: C.faint }}>Step {fmStepIdx + 1} of {FORM_FIELDS.length}</span>
-                  </div>
-                  <button onClick={skipForm} style={{ border: 0, background: 'none', color: C.muted, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '4px 6px' }}>Skip</button>
+      {/* Onboarding form — a real <Frigade.Form> (left) inside our split modal, with a
+          custom live-preview panel (right) that Frigade can't render. The form's steps,
+          fields, options and buttons all come from the flow YAML; NwFormField renders
+          each input in Northwind's style and reports values to the preview via context. */}
+      {fmOpen && (
+        <FormLiveContext.Provider value={formLive}>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,21,26,.34)', zIndex: 50 }} />
+          <div className="nw-hint" role="dialog" aria-label="Set up your workspace" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', width: 760, maxWidth: '94%', background: C.card, borderRadius: 18, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
+            <div style={{ flex: 1, minWidth: 0, padding: '26px 30px 28px', display: 'flex', flexDirection: 'column' }}>
+              {/* Custom chrome above the form: progress the flow can't draw, and Skip. */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ display: 'flex', gap: 4 }}>{FORM_PANEL.map((_, i) => (<span key={i} style={{ height: 4, width: 20, borderRadius: 99, background: i <= fmStepIdx ? C.brand : C.line, transition: 'background .25s ease' }} />))}</div>
+                  <span style={{ fontSize: 11.5, fontWeight: 600, color: C.faint }}>Step {fmStepIdx + 1} of {FORM_PANEL.length}</span>
                 </div>
-                <h3 style={{ margin: '0 0 7px', fontSize: 22, fontWeight: 700, letterSpacing: '-.02em', color: C.ink, lineHeight: 1.2 }}>{f.title}</h3>
-                <p style={{ margin: '0 0 20px', fontSize: 13.5, lineHeight: 1.5, color: C.muted }}>{f.help}</p>
-                <div style={{ flex: 1 }}>
-                  {f.type === 'text' ? (
-                    <input autoFocus className="nw-input" value={fmValues[f.id] || ''} onChange={(e) => setFmValues((v) => ({ ...v, [f.id]: e.target.value }))} onKeyDown={(e) => { if (e.key === 'Enter' && canNext) advanceForm(last); }} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 11, border: `1px solid ${C.line}`, background: C.bg, fontSize: 14.5, color: C.ink, outline: 'none', boxSizing: 'border-box' }} />
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      {(f.options || []).map((opt) => {
-                        const sel = fmValues[f.id] === opt;
-                        return (
-                          <button key={opt} onClick={() => setFmValues((v) => ({ ...v, [f.id]: opt }))} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '12px 14px', borderRadius: 11, cursor: 'pointer', textAlign: 'left', border: `1px solid ${sel ? C.brand : C.line}`, background: sel ? C.brandWeak : C.card, boxShadow: sel ? `0 0 0 1px ${C.brand}` : 'none', transition: 'all .14s ease' }}>
-                            <span style={{ fontSize: 13.5, fontWeight: 500, color: sel ? C.brand : C.ink }}>{opt}</span>
-                            <span style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: sel ? 'none' : `1.5px solid ${C.line}`, background: sel ? C.brand : C.card }}>{sel && <Check size={12} color="#fff" strokeWidth={3} />}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 24 }}>
-                  <button onClick={() => setFmStepIdx((i) => Math.max(0, i - 1))} style={{ border: 0, background: 'none', color: fmStepIdx === 0 ? 'transparent' : C.muted, fontSize: 13, fontWeight: 600, cursor: fmStepIdx === 0 ? 'default' : 'pointer', padding: '8px 4px' }}>Back</button>
-                  <button onClick={() => advanceForm(last)} disabled={!canNext} style={{ background: canNext ? C.brand : '#aebbd6', color: '#fff', fontSize: 13.5, fontWeight: 600, padding: '11px 24px', borderRadius: 11, border: 0, cursor: canNext ? 'pointer' : 'default', boxShadow: canNext ? '0 1px 2px rgba(1,94,251,.35), 0 0 0 1px rgba(1,94,251,.25)' : 'none' }}>{last ? 'Finish setup' : 'Continue'}</button>
-                </div>
+                <button onClick={skipForm} style={{ border: 0, background: 'none', color: C.muted, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '4px 6px' }}>Skip</button>
               </div>
-              <div style={{ width: 312, flexShrink: 0, background: C.wash, borderLeft: `1px solid ${C.washLine}`, padding: '26px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                {FORM_FIELDS.map((ff, i) => {
-                  const fdone = i < fmStepIdx; const fcur = i === fmStepIdx; const val = fmValues[ff.id];
-                  return (
-                    <div key={ff.id} style={{ display: 'flex', gap: 11 }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <span style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: (fdone || fcur) ? C.brand : C.card, border: (fdone || fcur) ? 'none' : `1.5px solid ${C.line}`, color: (fdone || fcur) ? '#fff' : C.muted, fontSize: 11.5, fontWeight: 700 }}>{fdone ? <Check size={13} strokeWidth={3} /> : i + 1}</span>
-                        {i < FORM_FIELDS.length - 1 && <span style={{ width: 2, flex: 1, minHeight: 16, background: fdone ? C.brand : C.line }} />}
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0, marginBottom: i < FORM_FIELDS.length - 1 ? 8 : 0, background: C.card, borderRadius: 10, padding: '8px 11px', boxShadow: fcur ? `0 0 0 1px ${C.brand}, 0 6px 16px rgba(1,94,251,.12)` : `0 0 0 1px ${C.line}`, transition: 'box-shadow .2s ease' }}>
-                        <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: fcur ? C.brand : C.faint }}>{ff.short}</div>
-                        <div style={{ fontSize: 12.5, fontWeight: 500, color: val ? C.ink : C.faint, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{val || ff.ph}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div style={{ fontSize: 11.5, lineHeight: 1.5, color: C.muted, marginTop: 14, display: 'flex', alignItems: 'center', gap: 7 }}><DotGrid color={C.brand} size={13} />Routes on every answer, in real time.</div>
-              </div>
+              <Frigade.Form
+                flowId={DEMO_FLOWS.form}
+                forceMount
+                fieldTypes={{ text: NwFormField, select: NwFormField }}
+                onComplete={() => { closeFormToJourney(); }}
+                onDismiss={() => { closeFormToJourney(); }}
+                css={{
+                  // Frigade.Form owns the title, subtitle, fields and Continue/Back
+                  // buttons; the theme handles colour, and these match the old modal's
+                  // type scale and spacing so the swap is invisible.
+                  '.fr-card': { background: 'transparent', border: 0, boxShadow: 'none', padding: 0, gap: 0 },
+                  '.fr-form-step-header': { padding: 0, marginBottom: 20 },
+                  '.fr-title': { fontSize: 22, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.2, marginBottom: 7 },
+                  '.fr-subtitle': { fontSize: 13.5, lineHeight: 1.5, color: 'var(--nw-muted)' },
+                  '.fr-form-step-footer': { padding: 0, marginTop: 24, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center' },
+                  '.fr-button-primary': { padding: '11px 24px', minHeight: 0, boxShadow: BTN_BRAND },
+                  '.fr-button-secondary': { background: 'none', border: 0, color: 'var(--nw-muted)', fontSize: 13, fontWeight: 600, padding: '8px 4px', boxShadow: 'none' },
+                }}
+              />
             </div>
-          </>
-        );
-      })()}
+            <div style={{ width: 312, flexShrink: 0, background: C.wash, borderLeft: `1px solid ${C.washLine}`, padding: '26px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              {FORM_PANEL.map((ff, i) => {
+                const fdone = i < fmStepIdx; const fcur = i === fmStepIdx; const val = fmValues[ff.id];
+                return (
+                  <div key={ff.id} style={{ display: 'flex', gap: 11 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <span style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: (fdone || fcur) ? C.brand : C.card, border: (fdone || fcur) ? 'none' : `1.5px solid ${C.line}`, color: (fdone || fcur) ? '#fff' : C.muted, fontSize: 11.5, fontWeight: 700 }}>{fdone ? <Check size={13} strokeWidth={3} /> : i + 1}</span>
+                      {i < FORM_PANEL.length - 1 && <span style={{ width: 2, flex: 1, minHeight: 16, background: fdone ? C.brand : C.line }} />}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, marginBottom: i < FORM_PANEL.length - 1 ? 8 : 0, background: C.card, borderRadius: 10, padding: '8px 11px', boxShadow: fcur ? `0 0 0 1px ${C.brand}, 0 6px 16px rgba(1,94,251,.12)` : `0 0 0 1px ${C.line}`, transition: 'box-shadow .2s ease' }}>
+                      <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: fcur ? C.brand : C.faint }}>{ff.short}</div>
+                      <div style={{ fontSize: 12.5, fontWeight: 500, color: val ? C.ink : C.faint, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{val || ff.ph}</div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div style={{ fontSize: 11.5, lineHeight: 1.5, color: C.muted, marginTop: 14, display: 'flex', alignItems: 'center', gap: 7 }}><DotGrid color={C.brand} size={13} />Routes on every answer, in real time.</div>
+            </div>
+          </div>
+        </FormLiveContext.Provider>
+      )}
 
       {/* Product tour — custom spotlight + coachmark, action-gated, headless useFlow */}
       {tourActive && tourStep && tb && (
@@ -704,7 +762,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
               <button onClick={skipTour} style={{ border: 0, background: 'none', color: C.muted, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '6px 2px' }}>Skip tour</button>
               {tourStep.props && tourStep.props.gate
                 ? <span style={{ fontSize: 12.5, fontWeight: 600, color: C.brand, display: 'flex', alignItems: 'center', gap: 7 }}><span className="nw-gate-dot" aria-hidden />{GATE_LABELS[tourStep.props.gate] || 'Take the action'}</span>
-                : <button onClick={advanceTour} style={{ background: C.brand, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 16px', borderRadius: 9, border: 0, cursor: 'pointer', boxShadow: '0 1px 2px rgba(1,94,251,.35), 0 0 0 1px rgba(1,94,251,.25)' }}>{tourIdx >= tourSteps.length - 1 ? 'Finish' : 'Next'}</button>}
+                : <button onClick={advanceTour} style={{ background: C.brand, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 16px', borderRadius: 9, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{tourIdx >= tourSteps.length - 1 ? 'Finish' : 'Next'}</button>}
             </div>
           </div>
         </>
@@ -1515,7 +1573,6 @@ export default function NorthwindPage() {
         .nw-hint{animation:nwhintin .24s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwhintin{from{opacity:0}to{opacity:1}}
         .nw-gate-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#015efb;animation:nwpulse 1.6s infinite}
-        .nw-banner{animation:nwslide .4s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwslide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
         .nw-rise{animation:nwrise .34s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwrise{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}

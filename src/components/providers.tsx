@@ -4,11 +4,16 @@ import React, { useEffect } from 'react';
 import * as Frigade from '@frigade/react';
 import { getUserId } from '@/lib/utils';
 import { ExperienceProvider } from './experience-context';
+import { frigadeTheme, APP_SCOPE } from '@/lib/theme';
 
 // App-wide providers: the product-toggle context (Engage vs Assistant) and the
-// Frigade SDK provider. Every flow in this demo is read headless with useFlow
-// and rendered with our own UI, so the SDK just needs the public API key and a
-// stable per-browser user id.
+// Frigade SDK provider.
+//
+// Frigade is handed Northwind's own design tokens, so its surfaces render in the
+// product's colours, radii and shadows rather than as a third-party widget. The
+// tokens are `var(--nw-*)` references and themeSelector scopes Frigade's variables
+// into the app root that declares them, which is what lets the dark toggle re-skin
+// Frigade along with everything else. See src/lib/theme.ts.
 export function Providers({ children }: { children: React.ReactNode }) {
   if (typeof process.env.NEXT_PUBLIC_FRIGADE_API_KEY === 'undefined') {
     throw new Error(
@@ -29,6 +34,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
         apiKey={process.env.NEXT_PUBLIC_FRIGADE_API_KEY}
         userId={getUserId()}
         defaultCollection={false}
+        theme={frigadeTheme}
+        themeSelector={`.${APP_SCOPE}`}
       >
         {children}
       </Frigade.Provider>
