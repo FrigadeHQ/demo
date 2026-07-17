@@ -147,6 +147,10 @@ const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
   { label: 'Banner', icon: Flag, action: 'banner' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
 ];
 const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText, 'connect-sso': ShieldCheck, 'go-live': Rocket };
+// Each checklist step completes on a real user property, not an imperative call. Doing
+// the action sets the property; the flow's completionCriteria (user.property(...)) then
+// marks the step done. This is the "fires on real events" path the benefits copy claims.
+const CK_PROPERTY: Record<string, string> = { 'take-a-tour': 'tookTour', 'create-agent': 'createdAgent', 'add-key': 'addedApiKey', 'invite-team': 'invitedTeam', 'view-analytics': 'viewedAnalytics' };
 // Abridged marketing value props for the section below the demo (Engage-framed, marketing voice).
 const BENEFITS: { icon: IconType; title: string; desc: string }[] = [
   { icon: LayoutGrid, title: 'Native to your product', desc: 'Frigade surfaces inherit your design system. Type, color, and spacing, all of it. They read as part of your app, not a third-party widget.' },
@@ -274,6 +278,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const [bellOpen, setBellOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const { flow: ckFlow } = Frigade.useFlow(DEMO_FLOWS.checklist);
+  const { addProperties } = Frigade.useUser();
   const ckSteps = ckFlow ? Array.from(ckFlow.steps.values()) : [];
   // Design preview (?preview=gates): stages two proposed checklist steps
   // client-side (a visibility-gated SSO item + a criteria-locked capstone) so
@@ -420,11 +425,13 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   // Frigade owns checklist progress: complete the step and let the new $state come
   // back through useFlow. No local mirror, so progress follows the user across
   // browsers instead of living in this one's localStorage.
+  // Completing a step means recording that the user did the thing: set the property the
+  // step's completionCriteria watches, and Frigade auto-completes it. The new $state
+  // comes back through useFlow, so nothing here marks the step done by hand.
   function completeStep(id: string | null) {
     if (!id) return;
-    const st = ckFlow?.steps?.get(id);
-    if (!st || st.$state?.completed) return;
-    try { st.complete(); } catch {}
+    const prop = CK_PROPERTY[id];
+    if (prop) { try { addProperties({ [prop]: true }); } catch {} }
   }
   const activeStepObj: any = activeStep && ckFlow ? ckFlow.steps.get(activeStep) : null;
   const activeTarget: string | null = (activeStepObj && activeStepObj.props && activeStepObj.props.target) || null;
