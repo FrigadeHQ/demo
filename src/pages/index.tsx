@@ -165,7 +165,9 @@ const ASSISTANT_BENEFITS: { icon: IconType; title: string; desc: string }[] = [
   { icon: Sparkles, title: 'Deflects support', desc: 'Resolve the common questions automatically and take repetitive load off your team.' },
   { icon: CodeXml, title: 'Drop-in SDK', desc: 'Add it with a few lines and style it to match your product. No new stack to learn.' },
 ];
-const TOUR_ANCHORS: Record<string, string> = { workspace: '[data-tour="workspace"]', 'create-agent': '[data-target="create-agent"]', theme: '[data-target="theme"]', 'cl-bell': '[data-cl-bell]', ck: '[data-ck]' };
+// Tour steps carry their DOM anchor in the flow's native `selector` field now, read
+// straight off tourStep.selector. GATE_LABELS still maps a step's props.gate to the
+// hint shown while the step waits on a real user action (our custom coachmark's logic).
 const GATE_LABELS: Record<string, string> = { 'create-agent': 'Click Create Agent', theme: 'Switch the theme', 'ck-open': 'Open your checklist' };
 // The onboarding form is a real <Frigade.Form>: its questions, options and buttons
 // all come from the flow YAML now. These are only the RIGHT panel's display strings
@@ -434,7 +436,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   function advanceTour() { try { if (tourStep && tourStep.complete) tourStep.complete(); } catch {} if (tourIdx >= tourSteps.length - 1) endTour(); else setTourIdx((i) => i + 1); }
   function measureTour() {
     if (!tourStep) { setTb(null); return; }
-    const app = appRef.current; const sel = TOUR_ANCHORS[tourStep.props && tourStep.props.anchor];
+    const app = appRef.current; const sel = tourStep.selector;
     // Scope to this app instance: the page is duplicated by the responsive layout (one copy is display:none), so a document-wide query can hit the hidden phantom.
     const el = app && sel ? (app.querySelector(sel) as HTMLElement | null) : null;
     if (!el || !app) { setTb(null); return; }
