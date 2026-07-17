@@ -212,13 +212,13 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
   // NorthwindApp's themed C. That's what lets these inputs re-skin with the dark toggle.
   if (opts && opts.length) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         {opts.map((o) => {
           const sel = field.value === o.value;
           return (
-            <button key={o.value} type="button" onClick={() => field.onChange(o.value)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '12px 14px', borderRadius: 11, cursor: 'pointer', textAlign: 'left', border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'var(--nw-card)', boxShadow: sel ? '0 0 0 1px var(--nw-brand)' : 'none', transition: 'all .14s ease' }}>
-              <span style={{ fontSize: 13.5, fontWeight: 500, color: sel ? 'var(--nw-brand)' : 'var(--nw-ink)' }}>{o.label}</span>
-              <span style={{ width: 18, height: 18, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: sel ? 'none' : '1.5px solid var(--nw-line)', background: sel ? 'var(--nw-brand)' : 'var(--nw-card)' }}>{sel && <Check size={12} color="#fff" strokeWidth={3} />}</span>
+            <button key={o.value} type="button" onClick={() => field.onChange(o.value)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '9px 12px', borderRadius: 9, cursor: 'pointer', textAlign: 'left', border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'transparent', boxShadow: sel ? '0 0 0 1px var(--nw-brand)' : 'none', transition: 'all .14s ease' }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: sel ? 'var(--nw-brand)' : 'var(--nw-ink)' }}>{o.label}</span>
+              <span style={{ width: 15, height: 15, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: sel ? 'none' : '1.5px solid var(--nw-line)', background: sel ? 'var(--nw-brand)' : 'transparent' }}>{sel && <Check size={11} color="#fff" strokeWidth={3} />}</span>
             </button>
           );
         })}
@@ -226,7 +226,7 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
     );
   }
   return (
-    <input autoFocus className="nw-input" value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 11, border: '1px solid var(--nw-line)', background: 'var(--nw-bg)', fontSize: 14.5, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
+    <input autoFocus className="nw-input" value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '10px 13px', borderRadius: 9, border: '1px solid var(--nw-line)', background: 'var(--nw-bg)', fontSize: 14, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
   );
 }
 
@@ -704,10 +704,10 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
       {fmOpen && (
         <FormLiveContext.Provider value={formLive}>
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,21,26,.34)', zIndex: 50 }} />
-          <div className="nw-hint" role="dialog" aria-label="Set up your workspace" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', width: 760, maxWidth: '94%', background: C.card, borderRadius: 18, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
-            <div style={{ flex: 1, minWidth: 0, padding: '26px 30px 28px', display: 'flex', flexDirection: 'column' }}>
+          <div className="nw-hint" role="dialog" aria-label="Set up your workspace" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', width: 660, maxWidth: '94%', background: C.card, borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
+            <div style={{ flex: 1, minWidth: 0, padding: '20px 26px 22px', display: 'flex', flexDirection: 'column' }}>
               {/* Custom chrome above the form: progress the flow can't draw, and Skip. */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   <div style={{ display: 'flex', gap: 4 }}>{FORM_PANEL.map((_, i) => (<span key={i} style={{ height: 4, width: 20, borderRadius: 99, background: i <= fmStepIdx ? C.brand : C.line, transition: 'background .25s ease' }} />))}</div>
                   <span style={{ fontSize: 11.5, fontWeight: 600, color: C.faint }}>Step {fmStepIdx + 1} of {FORM_PANEL.length}</span>
@@ -722,19 +722,20 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
                 onDismiss={() => { closeFormToJourney(); }}
                 css={{
                   // Frigade.Form owns the title, subtitle, fields and Continue/Back
-                  // buttons; the theme handles colour, and these match the old modal's
-                  // type scale and spacing so the swap is invisible.
-                  '.fr-card': { background: 'transparent', border: 0, boxShadow: 'none', padding: 0, gap: 0 },
-                  '.fr-form-step-header': { padding: 0, marginBottom: 20 },
-                  '.fr-title': { fontSize: 22, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.2, marginBottom: 7 },
-                  '.fr-subtitle': { fontSize: 13.5, lineHeight: 1.5, color: 'var(--nw-muted)' },
-                  '.fr-form-step-footer': { padding: 0, marginTop: 24, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center' },
-                  '.fr-button-primary': { padding: '11px 24px', minHeight: 0, boxShadow: BTN_BRAND },
+                  // buttons; the theme handles colour. The outer panel already pads the
+                  // content, so .fr-form/.fr-card carry none of their own — otherwise the
+                  // form nests a second 20px of padding and reads as bloated.
+                  '.fr-form, .fr-card': { background: 'transparent', border: 0, boxShadow: 'none', padding: 0, gap: 0 },
+                  '.fr-form-step-header': { padding: 0, marginBottom: 14 },
+                  '.fr-title': { fontSize: 19, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.25, marginBottom: 5 },
+                  '.fr-subtitle': { fontSize: 13, lineHeight: 1.5, color: 'var(--nw-muted)' },
+                  '.fr-form-step-footer': { padding: 0, marginTop: 18, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center' },
+                  '.fr-button-primary': { padding: '9px 18px', minHeight: 0, boxShadow: BTN_BRAND },
                   '.fr-button-secondary': { background: 'none', border: 0, color: 'var(--nw-muted)', fontSize: 13, fontWeight: 600, padding: '8px 4px', boxShadow: 'none' },
                 }}
               />
             </div>
-            <div style={{ width: 312, flexShrink: 0, background: C.wash, borderLeft: `1px solid ${C.washLine}`, padding: '26px 22px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ width: 264, flexShrink: 0, background: C.wash, borderLeft: `1px solid ${C.washLine}`, padding: '22px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               {FORM_PANEL.map((ff, i) => {
                 const fdone = i < fmStepIdx; const fcur = i === fmStepIdx; const val = fmValues[ff.id];
                 return (
