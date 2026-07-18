@@ -323,7 +323,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const { flow: svFlow } = Frigade.useFlow(DEMO_FLOWS.survey);
   const svStep: any = svFlow ? Array.from(svFlow.steps.values())[0] : null;
   const [surveyOpen, setSurveyOpen] = useState(false);
-  const [surveyRating, setSurveyRating] = useState<number | null>(null);
+  const [surveyRating, setSurveyRating] = useState<string | null>(null);
   const { flow: tourFlow } = Frigade.useFlow(DEMO_FLOWS.tour);
   const tourSteps = tourFlow ? Array.from(tourFlow.steps.values()) : [];
   const [tourActive, setTourActive] = useState(false);
@@ -460,7 +460,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   // auto-show again" flag that the hero pills clear to replay it.
   function closeBanner() { setBannerOpen(false); try { localStorage.setItem(bannerKey, '1'); } catch {} }
   function dismissSurvey() { setSurveyOpen(false); try { localStorage.setItem(surveyKey, '1'); } catch {} }
-  function pickRating(n: number) { setSurveyRating(n); try { svStep?.complete?.({ rating: n }); } catch {} try { localStorage.setItem(surveyKey, '1'); } catch {} }
+  function pickRating(v: string) { setSurveyRating(v); try { svStep?.complete?.({ rating: v }); } catch {} try { localStorage.setItem(surveyKey, '1'); } catch {} }
   // Finishing or skipping the form means the user has been through onboarding, so the
   // journey won't auto-pop on future loads (an Escape-close doesn't set it, so an
   // accidental dismissal still gets another chance).
@@ -790,12 +790,14 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
           </div>
           {surveyRating === null ? (
             <>
+              {/* Scale and end labels come from the flow props, so the survey can be
+                  reshaped from the dashboard without touching this card. */}
               <div style={{ display: 'flex', gap: 6 }}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button key={n} className="nw-rate" onClick={() => pickRating(n)} style={{ flex: 1, height: 38, borderRadius: 9, border: `1px solid ${C.line}`, background: C.card, color: C.ink2, fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>{n}</button>
+                {(((svStep.props && svStep.props.options) as string[]) || ['1', '2', '3', '4', '5']).map((opt) => (
+                  <button key={opt} className="nw-rate" onClick={() => pickRating(opt)} style={{ flex: 1, height: 38, borderRadius: 9, border: `1px solid ${C.line}`, background: C.card, color: C.ink2, fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>{opt}</button>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: C.faint }}><span>Not for me</span><span>Love it</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: C.faint }}><span>{(svStep.props && svStep.props.negativeLabel) || 'Not for me'}</span><span>{(svStep.props && svStep.props.positiveLabel) || 'Love it'}</span></div>
             </>
           ) : (
             <>
