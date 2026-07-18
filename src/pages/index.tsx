@@ -729,7 +729,9 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
                   '.fr-form-step-header': { padding: 0, marginBottom: 14 },
                   '.fr-title': { fontSize: 19, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.25, marginBottom: 5 },
                   '.fr-subtitle': { fontSize: 13, lineHeight: 1.5, color: 'var(--nw-muted)' },
-                  '.fr-form-step-footer': { padding: 0, marginTop: 18, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'space-between', alignItems: 'center' },
+                  // DOM order is [Back, Continue], so a plain row puts Back left and
+                  // Continue right — the conventional wizard layout.
+                  '.fr-form-step-footer': { padding: 0, marginTop: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
                   '.fr-button-primary': { padding: '9px 18px', minHeight: 0, boxShadow: BTN_BRAND },
                   '.fr-button-secondary': { background: 'none', border: 0, color: 'var(--nw-muted)', fontSize: 13, fontWeight: 600, padding: '8px 4px', boxShadow: 'none' },
                 }}
