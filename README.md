@@ -76,3 +76,10 @@ set -a; . ./.env.local; set +a; node scripts/provision-flows.mjs
 The script is idempotent: it finds each flow by name and updates it in place, or creates it if it's
 missing, then writes the resulting slugs back to `src/lib/demo-flows.ts`. It only ever touches the
 flows it defines.
+
+## More examples
+
+For focused, copy-pasteable checklist patterns, see
+[**frigade-engage-checklist-examples**](https://github.com/FrigadeHQ/frigade-engage-checklist-examples) —
+including [org-level & user-level checklist completion](https://github.com/FrigadeHQ/frigade-engage-checklist-examples/tree/main/org-and-user-level-completion)
+([live demo](https://frigade-engage-checklist-examples.vercel.app/)).
