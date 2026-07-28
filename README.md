@@ -1,85 +1,95 @@
-<H3 align="center"><strong>Frigade Demo</strong></H3>
+<h3 align="center"><strong>Frigade Demo</strong></h3>
+<div align="center">A full, end-to-end demo of Frigade, staged inside a fictional SaaS app.</div>
+<br />
 <div align="center">
-<a href="https://frigade.com">Website</a> 
+<a href="https://frigade.com">Website</a>
 <span> · </span>
-<a href="https://demo.frigade.com">Demo</a> 
+<a href="https://demo.frigade.com">Demo</a>
 <span> · </span>
-<a href="https://docs.frigade.com">Docs</a>
+<a href="https://github.com/FrigadeHQ">GitHub</a>
 </div>
-
 
 <br />
 
-![Frigade image](https://cdn.frigade.com/0534ad31-8dc3-4061-9e53-53aae2ff3cf8.png)
+![Frigade Demo](https://cdn.frigade.com/0534ad31-8dc3-4061-9e53-53aae2ff3cf8.png)
 
-[Frigade](https://frigade.com) is the backend for product onboarding. It makes it easy to build
-better customer journeys in your product through a flexible API and SDK, pre-built UI components,
-and an easy-to-use web dashboard, all purpose-built for teams that care about design and
-customization.
+This repo is the source code for [demo.frigade.com](https://demo.frigade.com), a live demo of
+[Frigade](https://frigade.com) inside a fictional SaaS app. Its onboarding flows were built in an hour
+or two by prompting [Frigade's Claude Code skill](https://github.com/FrigadeHQ/frigade-engage-skill).
+That is how fast onboarding comes together with Frigade Engage and a coding agent.
 
-This repo is the source code for [demo.frigade.com](https://demo.frigade.com). It's a single page
-that hosts two products behind a header toggle:
+## What's inside
 
-- **Engage**: an immersive walkthrough staged inside a fictional SaaS app ("Northwind"). Every
-  surface that carries the brand blue is a real Frigade flow read **headless** with
-  `Frigade.useFlow(...)` and rendered with the app's own UI: a welcome announcement, an onboarding
-  form, a getting-started checklist, a product tour, a contextual banner, a survey, and a
-  product-updates changelog.
-- **Assistant**: a short product video.
+**Frigade Assistant** ([frigade.com](https://frigade.com)) resolves your users' questions right inside
+your product. Most tools just read your help docs; Frigade learns your product by using it, so it can
+answer in context, walk someone through a workflow on the live screen, or just do the task for them.
+This demo shows it in action.
 
-The whole page lives in [`src/pages/index.tsx`](src/pages/index.tsx).
+**Frigade Engage** ([frigade.com/engage](https://frigade.com/engage)) is the onboarding and
+feature-adoption layer you'd never want to build yourself. It owns the complicated parts of onboarding:
+flow state and completion, user and account targeting, copy and logic, per-flow analytics, and more.
+It's fully controllable from code, with no-code editing from a dashboard. Render it with pre-built
+drop-in React components, or headless with your own UI, like this demo does.
 
-## How this was built
+The demo runs a full onboarding journey through the app:
 
-This demo was built with [Claude Code](https://claude.com/claude-code) and the
-[`frigade-engage` skill](https://github.com/FrigadeHQ/frigade-engage-skill). It talks to the Frigade
-API to create and configure flows, and wires the
-[`@frigade/react`](https://docs.frigade.com) SDK into the codebase for you, so the flows you see
-here were designed in a conversation with an agent, not clicked together by hand.
-
-You can build something like it the same way:
-
-1. Grab a free API key at [frigade.com](https://frigade.com).
-2. Work with an agent (using the `frigade-engage` skill) to design and ship your own flows.
+- a welcome announcement
+- an onboarding form
+- a getting-started checklist
+- a product tour
+- a contextual banner
+- a survey
+- a product-updates changelog
 
 ## Getting started
 
-First, copy the sample environment file and add your Frigade keys:
+This repo works best as a reference. Point your coding agent at it, then use
+[Frigade's Claude Code skill](https://github.com/FrigadeHQ/frigade-engage-skill) to build and wire your
+own flows in your Frigade workspace with your own API key, the same way this demo was built.
+
+To run this demo yourself, you first need to create its seven flows in your own Frigade workspace. The
+full YAML for each one lives in [`scripts/provision-flows.mjs`](scripts/provision-flows.mjs); add your
+Frigade keys to `.env.local`, then run it to create them (or point your agent at those definitions):
 
 ```bash
-cp .env.example .env.local
+set -a; . ./.env.local; set +a; node scripts/provision-flows.mjs
 ```
 
-Then install dependencies and run the dev server:
+Then install and start the app:
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the demo. Add `?product=engage` to land
-on the Engage view; the default is Assistant.
-
-## Using your own API key and flows
-
-Set `NEXT_PUBLIC_FRIGADE_API_KEY` (your public key) in `.env.local`. The seven flows this demo reads
-are referenced by slug in [`src/lib/demo-flows.ts`](src/lib/demo-flows.ts).
-
-To recreate the flows in your own Frigade workspace, the full definitions (YAML for each flow) live
-in [`scripts/provision-flows.mjs`](scripts/provision-flows.mjs). Add your **private** key
-(`FRIGADE_API_KEY_SECRET`) to `.env.local` and run it:
-
-```bash
-set -a; . ./.env.local; set +a; node scripts/provision-flows.mjs
-```
-
-The script is idempotent: it finds each flow by name and updates it in place, or creates it if it's
-missing, then writes the resulting slugs back to `src/lib/demo-flows.ts`. It only ever touches the
-flows it defines.
+Open [http://localhost:3000](http://localhost:3000); add `?product=engage` to jump to the Engage flows.
 
 ## More examples
 
-For focused, copy-pasteable checklist patterns, see
-[**frigade-engage-checklist-examples**](https://github.com/FrigadeHQ/frigade-engage-checklist-examples) —
-including [org-level & user-level checklist completion](https://github.com/FrigadeHQ/frigade-engage-checklist-examples/tree/main/org-and-user-level-completion)
+For focused, copy-pasteable Frigade Engage examples, see
+[**frigade-engage-examples**](https://github.com/FrigadeHQ/frigade-engage-examples),
+including [org-level and user-level checklist completion](https://github.com/FrigadeHQ/frigade-engage-examples/tree/main/checklists/org-and-user-level-completion)
 ([live demo](https://frigade-engage-checklist-examples.vercel.app/)).
+
+---
+
+<div align="center">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="public/images/frigade-logo-dark.svg">
+<img src="public/images/frigade-logo.svg" alt="Frigade" width="120" />
+</picture>
+</div>
+
+<div align="center">
+<strong>Frigade</strong> helps you onboard and support users inside your own product. <strong>Frigade Engage</strong> builds in-product onboarding (checklists, product tours, and more) with the <code>@frigade/react</code> SDK. <strong>Frigade Assistant</strong> is an in-app AI assistant that answers your users' questions in context and guides them to their next step.
+</div>
+
+<br />
+
+<div align="center">
+<a href="https://frigade.com">Website</a>
+<span> · </span>
+<a href="https://demo.frigade.com">Demo</a>
+<span> · </span>
+<a href="https://github.com/FrigadeHQ">GitHub</a>
+</div>
