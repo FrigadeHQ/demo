@@ -822,7 +822,9 @@ function BrowserFrame({ children, dark = false }: { children: React.ReactNode; d
         <div style={{ display: 'flex', gap: 8 }}><span style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} /><span style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }} /><span style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} /></div>
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
           <div className="nw-url" style={{ display: 'flex', alignItems: 'center', gap: 8, width: 'min(440px, 60%)', padding: '6px 13px', borderRadius: 8, background: C.card, color: C.muted, fontSize: 12.5, boxShadow: `inset 0 0 0 1px ${C.line}` }}>
-            <Lock size={12} color="#16a34a" /><span style={{ color: C.ink2 }}>app.northwind.ai</span><span className="nw-path">/agents</span>
+            {/* .example is reserved by RFC 2606 and can never be registered, so this
+                stays a fiction no matter who buys what. */}
+            <Lock size={12} color="#16a34a" /><span style={{ color: C.ink2 }}>app.northwind.example</span><span className="nw-path">/agents</span>
           </div>
         </div>
         {/* A real link in the fake chrome: "view source" on this window opens the actual
