@@ -1376,9 +1376,6 @@ function AssistantSection() {
         </div>
       </RailBand>
 
-      {/* Skills: the full walkthrough, then the assistant driving real apps, no code. */}
-      <SkillsSection />
-
       {/* Suggestions demo: proactive engagement. Header + video + use-case value row. */}
       <RailBand id="suggestions">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
@@ -1408,6 +1405,9 @@ function AssistantSection() {
           })}
         </div>
       </RailBand>
+
+      {/* Skills: the full walkthrough, then the assistant driving real apps, no code. */}
+      <SkillsSection />
 
       {/* Shared value props. */}
       <RailBand>
