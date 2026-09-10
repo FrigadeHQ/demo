@@ -12,6 +12,7 @@ import { DEMO_FLOWS } from '@/lib/demo-flows';
 import { getCalApi } from '@calcom/embed-react';
 import { useExperience } from '@/components/experience-context';
 import { VIDEO_BASE, SkillsChooser, SKILL_VIDEOS } from '@/components/skills-chooser';
+import { ScrollingFooterCompass } from '@/components/scrolling-footer-compass';
 import { FONT, MONO, C, DARK, palette, cssVars, APP_SCOPE, BTN_BRAND } from '@/lib/theme';
 
 // Cal.com popup config for the booking flows (reused from the existing demo site).
@@ -32,12 +33,13 @@ const APP_URL_ASSISTANT = 'https://app.frigade.ai/sign-up?ref=demo';
  * The page hosts two products behind the header toggle: Engage (this immersive
  * walkthrough) and Assistant (a product video). Engage is staged inside a
  * fictional SaaS app called "Northwind." Every surface that carries the brand
- * blue (#015EFB) is a real Frigade flow read headless with Frigade.useFlow(...)
- * and rendered with this app's own UI — a welcome announcement, an onboarding
+ * blue (#015EFB) is a real Frigade flow: a welcome announcement, an onboarding
  * form, a getting-started checklist, a product tour, a contextual banner, a
- * survey, and a product-updates changelog. The host app stays deliberately
- * neutral, so you can always tell which pixels Frigade is driving from the
- * pixels that are just the product.
+ * survey, a sidebar promo card, and a product-updates changelog. Some are
+ * Frigade's own components styled with this product's tokens; the rest are read
+ * headless with Frigade.useFlow(...) and drawn with the app's own UI. The host
+ * app stays deliberately neutral, so you can always tell which pixels Frigade is
+ * driving from the pixels that are just the product.
  *
  * This demo was built with Claude Code and the frigade-engage skill
  * (https://github.com/FrigadeHQ/frigade-engage-skill), which drives the Frigade
@@ -145,6 +147,7 @@ const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
   { label: 'Onboarding form', icon: ClipboardList, action: 'form' }, { label: 'Welcome announcement', icon: Megaphone, action: 'welcome' },
   { label: 'Checklist', icon: ListChecks, action: 'checklist' }, { label: 'Product tour', icon: Route, action: 'tour' },
   { label: 'Banner', icon: Flag, action: 'banner' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
+  { label: 'Card', icon: Sparkles, action: 'card' },
 ];
 const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText, 'connect-sso': ShieldCheck, 'go-live': Rocket };
 // Each checklist step completes on a real user property, not an imperative call. Doing
@@ -230,6 +233,41 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
   );
 }
 
+// Northwind's rating buttons, registered as the `nps` field type so Frigade's
+// Survey owns the value, the validation and the step advance, while the scale
+// itself looks like the rest of the product. The numbers come from the flow's
+// own props and the end labels from the field, so both are still set from the
+// dashboard. Colours are var(--nw-*) because this renders inside Frigade's tree,
+// outside NorthwindApp's themed C, which is also what lets it follow dark mode.
+function NwNpsField({ field, fieldData, submit }: Frigade.FormFieldProps) {
+  const { flow } = Frigade.useFlow(DEMO_FLOWS.survey);
+  const opts = (fieldData.options ?? (flow?.props as any)?.options ?? []) as { label: string; value: string }[];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', marginTop: 12 }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {opts.map((o) => {
+          const sel = field.value === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              className="nw-rate"
+              onClick={() => { field.onChange(o.value); submit(); }}
+              style={{ flex: 1, height: 38, borderRadius: 9, border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'var(--nw-card)', color: sel ? 'var(--nw-brand)' : 'var(--nw-ink2)', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: 'var(--nw-faint)' }}>
+        <span>{(fieldData.negativeLabel as string) ?? ''}</span>
+        <span>{(fieldData.positiveLabel as string) ?? ''}</span>
+      </div>
+    </div>
+  );
+}
+
 // Changelog entry list (shared by the bell dropdown + slide-in panel)
 function renderEntries(steps: any[], newIds: Set<string>) {
   return steps.map((s) => {
@@ -259,17 +297,26 @@ function PanelHead({ onClose }: { onClose: () => void }) {
 }
 
 /* ---------- Northwind app (inside the browser frame) ---------- */
-// Each surface in this app is a separate Frigade flow, read headless: we take
-// the flow's steps/content via useFlow and render our own UI instead of
-// Frigade's default components. The flow IDs live in src/lib/demo-flows.ts and
-// were created by scripts/provision-flows.mjs. The flows, by what they drive:
-//   changelog    -> "Product updates" bell dropdown + slide-in panel
-//   checklist    -> getting-started checklist (steps complete from real actions)
-//   announcement -> welcome modal that kicks off the onboarding journey
-//   form         -> onboarding form that personalizes the app
+// Each surface in this app is a separate Frigade flow. Some render through
+// Frigade's own components, themed with this product's tokens; the rest are read
+// headless, taking the flow's steps/content via useFlow and drawing the app's own
+// UI. The flow IDs live in src/lib/demo-flows.ts and were created by
+// scripts/provision-flows.mjs. The flows, by what they drive:
 //   banner       -> contextual banner, fires once two checklist steps are done
-//   survey       -> NPS-style survey, fires when the checklist is complete
-//   tour         -> product tour with a spotlight + coachmarks
+//                   (Frigade.Banner)
+//   form         -> onboarding form that personalizes the app
+//                   (Frigade.Form, with Northwind inputs as custom field types)
+//   survey       -> survey, fires when the checklist is complete
+//                   (Frigade.Survey.NPS, as a Box so it stays inside the frame)
+//   card         -> sidebar promo, the one surface that sits inline rather than
+//                   over the app (Frigade.Card)
+//   changelog    -> "Product updates" bell dropdown + slide-in panel (headless)
+//   checklist    -> getting-started checklist, steps complete from real actions
+//                   (headless)
+//   announcement -> welcome modal that kicks off the onboarding journey (headless;
+//                   Frigade's own Announcement is a dialog and would portal out of
+//                   the browser frame this demo stages the app inside)
+//   tour         -> product tour with a spotlight + coachmarks (headless)
 function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; actionsRef?: React.MutableRefObject<((key: string) => void) | null>; still?: boolean }) {
   const { flow } = Frigade.useFlow(DEMO_FLOWS.changelog);
   const steps = flow ? Array.from(flow.steps.values()) : [];
@@ -320,10 +367,16 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const [journey, setJourney] = useState(false); // true while the opening journey auto-plays (gates form -> welcome chain)
   const [consoleOpen, setConsoleOpen] = useState(false);
   const [bannerOpen, setBannerOpen] = useState(false);
+  // The sidebar promo is inline chrome rather than an overlay, so it's present
+  // by default and stays put while other surfaces come and go. Dismissing it or
+  // taking its CTA completes the flow, which is why replaying has to restart it.
+  const { flow: cardFlow } = Frigade.useFlow(DEMO_FLOWS.card);
+  const [cardOpen, setCardOpen] = useState(true);
   const { flow: svFlow } = Frigade.useFlow(DEMO_FLOWS.survey);
-  const svStep: any = svFlow ? Array.from(svFlow.steps.values())[0] : null;
   const [surveyOpen, setSurveyOpen] = useState(false);
-  const [surveyRating, setSurveyRating] = useState<string | null>(null);
+  // Which survey step is showing. Frigade owns it; we only need it to keep the
+  // footer hidden on the rating step (see the css below).
+  const svIdx = svFlow?.getCurrentStepIndex?.() ?? 0;
   const { flow: tourFlow } = Frigade.useFlow(DEMO_FLOWS.tour);
   const tourSteps = tourFlow ? Array.from(tourFlow.steps.values()) : [];
   const [tourActive, setTourActive] = useState(false);
@@ -417,7 +470,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   // Contextual banner: slides into the dashboard once 2 checklist steps are done (until dismissed).
   useEffect(() => { if (ckDoneCount >= 2 && typeof window !== 'undefined' && !localStorage.getItem(bannerKey)) setBannerOpen(true); /* eslint-disable-next-line */ }, [ckDoneCount]);
   // Survey fires once the whole checklist is complete (until dismissed); also console-triggerable.
-  useEffect(() => { if (ckTotal > 0 && ckDoneCount === ckTotal && typeof window !== 'undefined' && !localStorage.getItem(surveyKey)) { setSurveyRating(null); setSurveyOpen(true); } /* eslint-disable-next-line */ }, [ckDoneCount, ckTotal]);
+  useEffect(() => { if (ckTotal > 0 && ckDoneCount === ckTotal && typeof window !== 'undefined' && !localStorage.getItem(surveyKey)) { setSurveyOpen(true); } /* eslint-disable-next-line */ }, [ckDoneCount, ckTotal]);
   // In this demo the Create Agent button advances the next checklist step. In a
   // real app you'd complete each step from its own product event (a key created,
   // a teammate invited) or when a linked flow finishes (the form or the tour).
@@ -460,7 +513,44 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   // auto-show again" flag that the hero pills clear to replay it.
   function closeBanner() { setBannerOpen(false); try { localStorage.setItem(bannerKey, '1'); } catch {} }
   function dismissSurvey() { setSurveyOpen(false); try { localStorage.setItem(surveyKey, '1'); } catch {} }
-  function pickRating(v: string) { setSurveyRating(v); try { svStep?.complete?.({ rating: v }); } catch {} try { localStorage.setItem(surveyKey, '1'); } catch {} }
+  // Replaying means putting the flow back to its first step, not just reopening
+  // the card: Frigade owns where the survey is, so a completed one would come
+  // back on the thank-you step.
+  function replayCard() {
+    try { cardFlow?.restart?.(); } catch {}
+    setCardOpen(true);
+  }
+  function replaySurvey() {
+    try { localStorage.removeItem(surveyKey); } catch {}
+    try { svFlow?.restart?.(); } catch {}
+    setSurveyOpen(true);
+  }
+  // Frigade's Survey owns the rating and the step advance. Once the visitor has
+  // rated, the flow is past step 0, which is the signal to stop auto-showing it.
+  useEffect(() => {
+    if (surveyOpen && svFlow && svFlow.getCurrentStepIndex() > 0) {
+      try { localStorage.setItem(surveyKey, '1'); } catch {}
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyOpen, svFlow, svFlow?.getCurrentStepIndex()]);
+  // The thank-you step's primary button books a call. Returning false from
+  // onPrimary preempts Frigade's own handling so the Cal.com popup opens in
+  // place instead of the step navigating away.
+  // Opens the booking popup in place. Shared by the survey's thank-you CTA and
+  // the sidebar promo, which both mean "talk to us" rather than "go somewhere".
+  async function openCalPopup() {
+    try {
+      const cal = await getCalApi({ namespace: CAL_NS });
+      (cal as any)('modal', { calLink: CAL_LINK, config: JSON.parse(CAL_CONFIG) });
+    } catch {
+      window.open(`https://cal.com/${CAL_LINK}`, '_blank', 'noreferrer');
+    }
+  }
+  async function handleSurveyPrimary(step: any) {
+    if (step?.id !== 'thanks') return;
+    await openCalPopup();
+    return false;
+  }
   // Finishing or skipping the form means the user has been through onboarding, so the
   // journey won't auto-pop on future loads (an Escape-close doesn't set it, so an
   // accidental dismissal still gets another chance).
@@ -495,8 +585,9 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
       case 'tour': startTour(); break;
       case 'checklist': setCkOpen(true); break;
       case 'banner': try { localStorage.removeItem(bannerKey); } catch {} setBannerOpen(true); break;
-      case 'survey': try { localStorage.removeItem(surveyKey); } catch {} setSurveyRating(null); setSurveyOpen(true); break;
+      case 'survey': replaySurvey(); break;
       case 'changelog': markSeen(); setBellOpen(true); break;
+      case 'card': replayCard(); break;
     }
   }
   useEffect(() => { if (actionsRef) actionsRef.current = runExperience; });
@@ -523,16 +614,48 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
           <Ghost w={18} h={18} r={6} /><Ghost w={86} h={9} /><span style={{ flex: 1 }} /><ChevronsUpDown size={14} color={C.faint} />
         </div>
         <nav style={{ flex: 1, marginTop: 3 }}>
-          <div style={{ padding: '14px 10px 6px' }}><Ghost w={44} h={6} r={3} /></div>
+          <div style={{ padding: '11px 10px 5px' }}><Ghost w={44} h={6} r={3} /></div>
           <NavGhost w={56} active /><NavGhost w={40} />
           <NavTarget target="nav-api-keys" icon={KeyRound} label="API Keys" w={52} lit={activeTarget === 'nav-api-keys'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
-          <div style={{ padding: '14px 10px 6px' }}><Ghost w={48} h={6} r={3} /></div>
+          <div style={{ padding: '11px 10px 5px' }}><Ghost w={48} h={6} r={3} /></div>
           <NavTarget target="nav-analytics" icon={BarChart3} label="Analytics" w={54} lit={activeTarget === 'nav-analytics'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
           <NavTarget target="nav-logs" icon={ScrollText} label="Logs" w={30} lit={activeTarget === 'nav-logs'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
-          <div style={{ padding: '14px 10px 6px' }}><Ghost w={42} h={6} r={3} /></div>
-          <NavGhost w={36} />
+          <div style={{ padding: '11px 10px 5px' }}><Ghost w={42} h={6} r={3} /></div>
           <NavTarget target="nav-settings" icon={Settings2} label="Settings" w={48} lit={activeTarget === 'nav-settings'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
         </nav>
+        {/* Sidebar promo — a real <Frigade.Card>, and the demo's one inline
+            surface. It renders in place inside the product's own chrome instead
+            of floating over it, which is the whole point of it being here. */}
+        {cardOpen && (
+          <Frigade.Card
+            flowId={DEMO_FLOWS.card}
+            dismissible
+            // Only the X takes the card away. Returning false from onPrimary stops
+            // Frigade completing the flow, so booking a call leaves the promo up
+            // the way a real sidebar upsell would.
+            onDismiss={() => setCardOpen(false)}
+            onPrimary={async () => { await openCalPopup(); return false; }}
+            css={{
+              // .fr-card is the root element, so its box styling goes top level.
+              marginBottom: 8,
+              background: 'var(--nw-bw)',
+              border: 0,
+              borderRadius: 11,
+              boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--nw-brand) 18%, transparent)',
+              padding: '10px 11px 11px',
+              gap: 7,
+              '.fr-card-header': { gap: 2 },
+              '.fr-title': { fontSize: 12.5, fontWeight: 600, letterSpacing: 0 },
+              '.fr-subtitle': { fontSize: 11, lineHeight: 1.45, color: 'var(--nw-ink2)' },
+              // The flow has no secondary button, but Card renders the slot
+              // regardless, so hide the empty one.
+              '.fr-button-secondary': { display: 'none' },
+              '.fr-card-footer': { justifyContent: 'stretch' },
+              '.fr-button-primary': { padding: '6px 11px', minHeight: 0, width: '100%', boxShadow: BTN_BRAND },
+              '.fr-button-title': { fontSize: 11.5, fontWeight: 600 },
+            }}
+          />
+        )}
         <div style={{ position: 'relative' }}>
           <button data-ck onClick={() => { setBellOpen(false); setPanelOpen(false); setCkOpen((o) => !o); if (tourActive && tourStep && tourStep.props && tourStep.props.gate === 'ck-open') advanceTour(); }} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 11px', border: 0, borderRadius: 10, background: C.card, boxShadow: C.cardSh, cursor: 'pointer', overflow: 'hidden' }}>
             <span className="ck-sweep" aria-hidden />
@@ -645,7 +768,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 6px' }}><DotGrid color={C.brand} size={14} /><span style={{ fontSize: 13, fontWeight: 700, color: C.ink }}>Demo controls</span></div>
           <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.06em', color: C.faint, textTransform: 'uppercase', padding: '4px 14px 7px' }}>Replay an experience</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 12px 11px' }}>
-            {([['Welcome', Megaphone, () => setAnOpen(true)], ['Form', ClipboardList, () => { setFmStepIdx(0); setFmOpen(true); }], ['Tour', Route, () => startTour()], ['Checklist', ListChecks, () => { setBellOpen(false); setPanelOpen(false); setCkOpen(true); }], ['Banner', Flag, () => { try { localStorage.removeItem(bannerKey); } catch {} setBannerOpen(true); }], ['Survey', MessageSquare, () => { try { localStorage.removeItem(surveyKey); } catch {} setSurveyRating(null); setSurveyOpen(true); }], ['Changelog', Newspaper, () => { setCkOpen(false); markSeen(); setBellOpen(true); }]] as [string, IconType, () => void][]).map(([label, Ic, fn]) => (
+            {([['Welcome', Megaphone, () => setAnOpen(true)], ['Form', ClipboardList, () => { setFmStepIdx(0); setFmOpen(true); }], ['Tour', Route, () => startTour()], ['Checklist', ListChecks, () => { setBellOpen(false); setPanelOpen(false); setCkOpen(true); }], ['Banner', Flag, () => { try { localStorage.removeItem(bannerKey); } catch {} setBannerOpen(true); }], ['Survey', MessageSquare, () => replaySurvey()], ['Changelog', Newspaper, () => { setCkOpen(false); markSeen(); setBellOpen(true); }], ['Card', Sparkles, () => replayCard()]] as [string, IconType, () => void][]).map(([label, Ic, fn]) => (
               <button key={label} onClick={() => { setConsoleOpen(false); fn(); }} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: C.ink2, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: '6px 10px', cursor: 'pointer' }}><Ic size={13} color={C.brand} strokeWidth={2} />{label}</button>
             ))}
           </div>
@@ -780,35 +903,54 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
         </>
       )}
 
-      {/* Survey — floats up from the bottom, non-blocking NPS style; self-aware copy + lead-gen CTA */}
-      {surveyOpen && svStep && (
-        <div className="nw-rise" role="dialog" aria-label="Survey" style={{ position: 'absolute', left: '50%', bottom: 18, transform: 'translateX(-50%)', width: 372, maxWidth: 'calc(100% - 32px)', background: C.card, borderRadius: 14, boxShadow: `0 18px 48px rgba(18,24,40,.28), 0 0 0 1px ${C.line}`, zIndex: 46, padding: '17px 18px 16px' }}>
-          <button onClick={dismissSurvey} aria-label="Dismiss" style={{ position: 'absolute', top: 12, right: 12, border: 0, background: 'none', color: C.faint, padding: 3, borderRadius: 6, cursor: 'pointer', display: 'flex' }}><X size={16} /></button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: surveyRating === null ? 13 : 9, paddingRight: 18 }}>
-            <span style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><MessageSquare size={16} strokeWidth={2} /></span>
-            <h3 style={{ margin: 0, fontSize: 14.5, fontWeight: 600, letterSpacing: '-.01em', color: C.ink }}>{surveyRating === null ? svStep.title : 'Thanks for the feedback'}</h3>
-          </div>
-          {surveyRating === null ? (
-            <>
-              {/* Scale and end labels come from the flow props, so the survey can be
-                  reshaped from the dashboard without touching this card. */}
-              <div style={{ display: 'flex', gap: 6 }}>
-                {(((svStep.props && svStep.props.options) as string[]) || ['1', '2', '3', '4', '5']).map((opt) => (
-                  <button key={opt} className="nw-rate" onClick={() => pickRating(opt)} style={{ flex: 1, height: 38, borderRadius: 9, border: `1px solid ${C.line}`, background: C.card, color: C.ink2, fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}>{opt}</button>
-                ))}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 10.5, color: C.faint }}><span>{(svStep.props && svStep.props.negativeLabel) || 'Not for me'}</span><span>{(svStep.props && svStep.props.positiveLabel) || 'Love it'}</span></div>
-            </>
-          ) : (
-            <>
-              {svStep.subtitle && <p style={{ margin: '0 0 14px', fontSize: 12.5, lineHeight: 1.5, color: C.muted }}>{svStep.subtitle}</p>}
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <button data-cal-link={CAL_LINK} data-cal-namespace={CAL_NS} data-cal-config={CAL_CONFIG} style={{ background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', color: '#fff', fontSize: 13, fontWeight: 600, padding: '9px 16px', borderRadius: 9, border: 0, cursor: 'pointer', boxShadow: CTA_BRAND }}>{(svStep.primaryButton && svStep.primaryButton.title) || 'Grab a time with us'}</button>
-                <a href={APP_URL} target="_blank" rel="noreferrer" style={{ color: C.ink2, fontSize: 13, fontWeight: 600, padding: '8px 13px', borderRadius: 8, border: `1px solid ${C.line}`, textDecoration: 'none' }}>{(svStep.secondaryButton && svStep.secondaryButton.title) || 'Get started'}</a>
-              </div>
-            </>
-          )}
-        </div>
+      {/* Survey — the real <Frigade.Survey.NPS>, which is Frigade.Form with an
+          `nps` field type. Rendered `as` a Box rather than its default Dialog so
+          it sits inside the Northwind window instead of over the whole page, and
+          styled here into the same floating card it replaced. NPS hides the
+          footer on the rating step and shows it on the thank-you step, which is
+          exactly the two-phase behaviour this surface had by hand. */}
+      {surveyOpen && (
+        <Frigade.Survey.NPS
+          flowId={DEMO_FLOWS.survey}
+          as={Frigade.Box}
+          fieldTypes={{ nps: NwNpsField }}
+          dismissible
+          // NPS assumes its default Dialog container and sets these two for it.
+          // Rendered as a Box they'd land on a plain div, which React warns about,
+          // so blank them out. Escape-to-skip is a Dialog behaviour anyway.
+          modal={undefined}
+          onEscapeKeyDown={undefined}
+          onDismiss={dismissSurvey}
+          onPrimary={handleSurveyPrimary}
+          css={{
+            position: 'absolute', left: '50%', bottom: 18, transform: 'translateX(-50%)',
+            width: 372, maxWidth: 'calc(100% - 32px)', zIndex: 46, alignSelf: 'auto',
+            background: 'var(--nw-card)', borderRadius: 14, border: 0,
+            boxShadow: '0 18px 48px rgba(18,24,40,.28), 0 0 0 1px var(--nw-line)',
+            animation: 'nwrise .34s cubic-bezier(.4,0,.2,1) both',
+            // .fr-form and .fr-nps sit on the root element, so their box styling
+            // belongs at the top level here; a nested selector would only reach
+            // descendants and silently do nothing.
+            padding: '17px 18px 16px',
+            minWidth: 0,
+            '.fr-card-header': { minWidth: 0 },
+            '.fr-form-step-header': { padding: 0, gap: 4 },
+            '.fr-title': { fontSize: 14.5, fontWeight: 600, letterSpacing: '-.01em' },
+            '.fr-subtitle': { fontSize: 12.5, lineHeight: 1.5, color: 'var(--nw-muted)' },
+            // NPS hides the footer on the rating step, and our nested rule would
+            // replace that wholesale, so re-state it for step 0. Reversed because
+            // the DOM order is [secondary, primary] and this surface leads with
+            // the primary CTA.
+            '.fr-form-step-footer': svIdx === 0
+              ? { display: 'none' }
+              : { padding: 0, marginTop: 14, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'flex-end', gap: 8 },
+            '.fr-button-primary': { padding: '9px 16px', minHeight: 0, height: 'auto', boxShadow: BTN_BRAND },
+            '.fr-button-secondary': { padding: '8px 13px', minHeight: 0, height: 'auto' },
+            // The title span carries a 20px line-height at 13px, which pushes the
+            // button to 40px; the hand-built version it replaced sat at ~35px.
+            '.fr-button-title': { fontSize: 13, fontWeight: 600, lineHeight: '16px' },
+          }}
+        />
       )}
     </div>
   );
@@ -1057,73 +1199,220 @@ function ProductPill() {
 // GitHub mark path, shared by the footer icon, the skill CTA, and the demo frame's
 // view-source link (each at its own size).
 const GH_PATH = 'M12 .5a11.5 11.5 0 0 0-3.63 22.43c.58.1.79-.25.79-.56v-2.18c-3.21.7-3.89-1.37-3.89-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.75.4-1.27.73-1.56-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.77.11 3.06.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.4-5.26 5.69.41.35.78 1.03.78 2.08v3.08c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z';
+const LI_PATH = 'M20.45 20.45h-3.56v-5.56c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.44-2.14 2.94v5.65H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.62 0 4.29 2.38 4.29 5.48v6.26ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.28V1.72C24 .77 23.21 0 22.22 0Z';
+const X_PATH = 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231L18.244 2.25Zm-1.16 17.52h1.833L7.084 4.126H5.117l11.967 15.644Z';
+// The old Twitter bird, kept only for the X mark's hover swap in the footer.
+const BIRD_PATH = 'M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05A4.27 4.27 0 0 0 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.52 8.52 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z';
 const SOCIAL_ICON: Record<string, React.ReactNode> = {
   github: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={GH_PATH} /></svg>,
-  linkedin: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M20.45 20.45h-3.56v-5.56c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.44-2.14 2.94v5.65H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.62 0 4.29 2.38 4.29 5.48v6.26ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.28V1.72C24 .77 23.21 0 22.22 0Z" /></svg>,
-  x: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231L18.244 2.25Zm-1.16 17.52h1.833L7.084 4.126H5.117l11.967 15.644Z" /></svg>,
+  linkedin: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={LI_PATH} /></svg>,
+  x: <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={X_PATH} /></svg>,
 };
+// The footer's own social marks: 18/18/16, matching frigade.com (the shared
+// SOCIAL_ICON set above runs a notch smaller inside the page's dark CTA
+// buttons). The X mark hides an easter egg — hover it and the old Twitter
+// bird flips in — so it's built from two stacked SVGs rather than one.
+const FOOTER_SOCIALS: { p: string; h: string; icon: React.ReactNode }[] = [
+  { p: 'github', h: 'https://github.com/FrigadeHQ', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={GH_PATH} /></svg> },
+  { p: 'linkedin', h: 'https://www.linkedin.com/company/frigade', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={LI_PATH} /></svg> },
+  {
+    p: 'x',
+    h: 'https://x.com/FrigadeHQ',
+    icon: (
+      <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16 }}>
+        <svg className="nw-ftr-x" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d={X_PATH} /></svg>
+        <svg className="nw-ftr-bird" width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="#1DA1F2" d={BIRD_PATH} /></svg>
+      </span>
+    ),
+  },
+];
 // Footer columns mirror the live Frigade marketing site's published links.
 const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
-  { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
+  { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'Generative UI', h: '/features/generative-ui' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
   { heading: 'Use Cases', links: [{ t: 'Support Deflection', h: '/use-cases/support-deflection' }, { t: 'User Activation', h: '/use-cases/user-activation' }, { t: 'Virtual CSM', h: '/use-cases/virtual-csm' }, { t: 'Feature Adoption', h: '/use-cases/feature-adoption' }, { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell' }] },
-  { heading: 'Resources', links: [{ t: 'How It Works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }] },
-  { heading: 'Compare', links: [{ t: 'vs. Intercom Fin', h: '/compare/fin' }, { t: 'vs. Pendo', h: '/compare/pendo' }, { t: 'vs. Pylon', h: '/compare/pylon' }, { t: 'vs. Zendesk', h: '/compare/zendesk' }, { t: 'vs. WalkMe', h: '/compare/walkme' }] },
+  { heading: 'Resources', links: [{ t: 'How It Works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
+  // Alphabetical by competitor, same as the published column.
+  { heading: 'Compare', links: [{ t: 'Frigade vs. Appcues', h: '/compare/appcues' }, { t: 'Frigade vs. Chameleon', h: '/compare/chameleon' }, { t: 'Frigade vs. Fin', h: '/compare/fin' }, { t: 'Frigade vs. HubSpot', h: '/compare/hubspot' }, { t: 'Frigade vs. Pendo', h: '/compare/pendo' }, { t: 'Frigade vs. Pylon', h: '/compare/pylon' }, { t: 'Frigade vs. Userflow', h: '/compare/userflow' }, { t: 'Frigade vs. Userpilot', h: '/compare/userpilot' }, { t: 'Frigade vs. WalkMe', h: '/compare/walkme' }, { t: 'Frigade vs. Whatfix', h: '/compare/whatfix' }, { t: 'Frigade vs. Zendesk', h: '/compare/zendesk' }] },
   { heading: 'Case Studies', links: [{ t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }] },
-  { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: '/contact' }, { t: 'Get a demo', h: '/demo' }] },
+  // "Contact us" opens the marketing site's contact modal via its #cta:
+  // hash deep-link (frigade.com/contact and /demo are not real routes).
+  // "Get a demo" (h: '#cal:demo') is rendered as a Cal popup trigger below,
+  // booking the same frigade-demo-call calendar as the page's other CTAs.
+  { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
 ];
-const FOOTER_PRODUCTS: { name: string; h: string; beta?: boolean }[] = [
-  { name: 'Assistant', h: '/' }, { name: 'Engage', h: '/engage' },
+// Product badges mirror the marketing footer: a colored rounded-square
+// icon (brand blue for Assistant, engage navy for Engage) next to the name.
+const FOOTER_PRODUCTS: { name: string; h: string; icon: LucideIcon; bg: string; shadowRgb: string; beta?: boolean }[] = [
+  { name: 'Assistant', h: '/', icon: Sparkles, bg: '#015EFB', shadowRgb: '1, 94, 251' },
+  { name: 'Engage', h: '/engage', icon: CodeXml, bg: '#2D4976', shadowRgb: '45, 73, 118' },
 ];
 // Faithful port of the marketing site footer (marketing-ai-experiment): light
 // link-column section + dark band with the compass, watermark, status pill, legal.
 function MarketingFooter() {
+  const { experience } = useExperience();
   const ext = (h: string) => (h.startsWith('http') ? h : 'https://frigade.com' + h);
+  // frigade.com scopes its legal pages per product, and the footer follows
+  // whichever product the page is showing. The demo's header toggle swaps
+  // products in place, so the legal links have to follow it here too.
+  const legalBase = experience === 'engage' ? '/legal/engage' : '/legal/assistant';
   const head: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: C.ink, margin: 0 };
   const link: React.CSSProperties = { fontSize: 13, color: C.ink, textDecoration: 'none' };
   const legal: React.CSSProperties = { fontSize: 12, color: '#0355f8', textDecoration: 'none' };
   return (
     <footer style={{ position: 'relative', fontFamily: FONT }}>
-      <div style={{ maxWidth: 1040, margin: '0 auto', padding: '56px 24px', borderTop: `1px solid ${C.hair}` }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 210px) 1fr', gap: 40 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16 }}>
-            <img src="/images/frigade-logo.svg" alt="Frigade" style={{ height: 25, width: 'auto', display: 'block' }} />
-            <div style={{ fontSize: 13, lineHeight: 1.55, color: C.muted }}>945 Market St.<br />San Francisco, CA 94103</div>
-            <img src="/images/aicpa-soc-badge.avif" alt="AICPA SOC for Service Organizations" width={72} height={72} style={{ width: 72, height: 72, marginTop: 6 }} />
-            <div style={{ display: 'flex', gap: 8 }}>
-              {([['github', 'https://github.com/FrigadeHQ'], ['linkedin', 'https://www.linkedin.com/company/frigade'], ['x', 'https://x.com/FrigadeHQ']] as [string, string][]).map(([p, h]) => (
-                <a key={p} href={h} aria-label={p} style={{ width: 32, height: 32, borderRadius: 999, border: `1px solid ${C.line}`, color: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{SOCIAL_ICON[p]}</a>
+      {/* Everything the port needs that an inline style can't say: the
+          marketing footer's breakpoints, its hover transitions, and the
+          status pill's echo. Class names stay footer-scoped (nw-ftr-*).
+          Set as raw HTML, like the page's other style blocks, so React
+          doesn't escape punctuation in the CSS and desync hydration. */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* rail-outer-mx + px-6 md:px-14 from the marketing footer: the content
+           sits inside the 1240 rails, then insets again from the rail edge. */
+        .nw-ftr-mx{margin-left:0;margin-right:0;padding-left:24px;padding-right:24px}
+        @media (min-width:640px){.nw-ftr-mx{margin-left:32px;margin-right:32px}}
+        @media (min-width:768px){.nw-ftr-mx{padding-left:56px;padding-right:56px}}
+        @media (min-width:1024px){.nw-ftr-mx{margin-left:100px;margin-right:100px}}
+        .nw-ftr-top{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+        @media (min-width:768px){.nw-ftr-top{grid-template-columns:minmax(0,220px) 1fr}}
+        /* Two columns until there's room for four, so the 8 link columns stack
+           rather than crush on phones and tablets. */
+        .nw-ftr-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 24px}
+        @media (min-width:1024px){.nw-ftr-cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px 32px}}
+        .nw-ftr-link{transition:color .15s ease}
+        .nw-ftr-link:hover{color:#015efb}
+        .nw-ftr-social{transition:background-color .15s ease}
+        .nw-ftr-social:hover{background:#fafafa}
+        .nw-ftr-social:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(1,94,251,.4)}
+        /* Hover the X mark and the old Twitter bird takes its place. */
+        .nw-ftr-x,.nw-ftr-bird{position:absolute}
+        .nw-ftr-x{transition:opacity .2s cubic-bezier(.32,.72,0,1),transform .2s cubic-bezier(.32,.72,0,1)}
+        .nw-ftr-bird{opacity:0;transform:translate(-4px,2px) rotate(-12deg) scale(.75);transition:opacity .3s cubic-bezier(.34,1.56,.64,1),transform .3s cubic-bezier(.34,1.56,.64,1)}
+        .nw-ftr-social:hover .nw-ftr-x,.nw-ftr-social:focus-visible .nw-ftr-x{opacity:0;transform:rotate(12deg) scale(.9)}
+        .nw-ftr-social:hover .nw-ftr-bird,.nw-ftr-social:focus-visible .nw-ftr-bird{opacity:1;transform:none}
+        .nw-ftr-legal{display:flex;flex-direction:column-reverse;align-items:center;gap:16px}
+        @media (min-width:1280px){.nw-ftr-legal{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}}
+        .nw-ftr-legal-link{transition:opacity .15s ease}
+        .nw-ftr-legal-link:hover{opacity:.8}
+        /* The page rails carry on through the dark band, hatched light-on-dark. */
+        .nw-ftr-rails{display:none}
+        @media (min-width:1240px){.nw-ftr-rails{display:block}}
+        /* Echo behind the status diamond: expands and fades on repeat, stilled
+           under reduced motion (same treatment as the header's live dot). */
+        @keyframes nwFtrPing{0%{transform:rotate(45deg) scale(1)}75%,100%{transform:rotate(45deg) scale(2);opacity:0}}
+        .nw-ftr-ping{animation:nwFtrPing 2.2s cubic-bezier(0,0,.2,1) infinite}
+        @media (prefers-reduced-motion:reduce){.nw-ftr-ping{animation:none}}
+        .nw-ftr-compass { transform: translate(-50%, -80%); width: 200%; }
+        @media (min-width: 768px) { .nw-ftr-compass { transform: translate(-50%, -88%); width: min(1440px, 140%); } }
+        .nw-ftr-fmark { height: 180px; }
+        @media (min-width: 1280px) { .nw-ftr-fmark { height: 240px; } }
+      ` }} />
+      <div style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
+        <div className="nw-ftr-mx" style={{ paddingTop: 56, paddingBottom: 56, borderTop: `1px solid ${C.hair}` }}>
+          <div className="nw-ftr-top">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16 }}>
+              {/* The wordmark doubles as the marketing site's scroll-to-top. */}
+              <button type="button" aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'inline-flex', alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/frigade-logo.svg" alt="Frigade" width={82} height={26} style={{ width: 82, height: 26, display: 'block' }} />
+              </button>
+              <div style={{ fontSize: 13, lineHeight: 1.5, color: C.muted }}>
+                <p style={{ margin: 0 }}>945 Market St.</p>
+                <p style={{ margin: 0 }}>San Francisco, CA 94103</p>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/aicpa-soc-badge.avif" alt="AICPA SOC for Service Organizations" width={72} height={72} style={{ width: 72, height: 72, marginTop: 8 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {FOOTER_SOCIALS.map((s) => (
+                  <a key={s.p} className="nw-ftr-social" href={s.h} target="_blank" rel="noreferrer" aria-label={s.p} style={{ width: 32, height: 32, borderRadius: 999, border: `1px solid ${C.line}`, color: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{s.icon}</a>
+                ))}
+              </div>
+            </div>
+            <div className="nw-ftr-cols">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <p style={head}>Product</p>
+                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {FOOTER_PRODUCTS.map((p) => {
+                    const PIcon = p.icon;
+                    return (
+                      <li key={p.name}><a className="nw-ftr-link" href={ext(p.h)} style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                        <span style={{ width: 20, height: 20, borderRadius: 7, background: p.bg, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: `0 2px 8px 0 rgba(${p.shadowRgb}, 0.3), inset 0 2.5px 1px 0 rgba(255,255,255,0.2)` }}><PIcon size={12} strokeWidth={2.25} /></span>
+                        {p.name}{p.beta && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.muted, background: '#f4f5f7', padding: '1px 6px', borderRadius: 99 }}>Beta</span>}
+                      </a></li>
+                    );
+                  })}
+                </ul>
+              </div>
+              {FOOTER_COLS.map((col) => (
+                <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <p style={head}>{col.heading}</p>
+                  <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {col.links.map((l) => (
+                      <li key={l.t}>
+                        {l.h === '#cal:demo' ? (
+                          // Native Cal popup, same as the page's "Book a call"
+                          // buttons — styled to read as a plain footer link.
+                          <button className="nw-ftr-link" data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ ...link, background: 'none', border: 0, padding: 0, margin: 0, cursor: 'pointer', fontFamily: 'inherit', lineHeight: 'inherit', textAlign: 'left' }}>{l.t}</button>
+                        ) : (
+                          <a className="nw-ftr-link" href={ext(l.h)} style={link}>{l.t}</a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '36px 24px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <p style={head}>Product</p>
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {FOOTER_PRODUCTS.map((p) => (
-                  <li key={p.name}><a href={ext(p.h)} style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 7 }}>{p.name}{p.beta && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.muted, background: '#f4f5f7', padding: '1px 6px', borderRadius: 99 }}>Beta</span>}</a></li>
-                ))}
-              </ul>
-            </div>
-            {FOOTER_COLS.map((col) => (
-              <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <p style={head}>{col.heading}</p>
-                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 7 }}>
-                  {col.links.map((l) => (<li key={l.t}><a href={ext(l.h)} style={link}>{l.t}</a></li>))}
-                </ul>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
-      <div style={{ background: '#222127' }}>
-        <div style={{ maxWidth: 1040, margin: '0 auto', padding: '30px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,.5)' }}>Built in San Francisco © Frigade Inc.</p>
-          <a href="https://status.frigade.ai/" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#0355f8', textDecoration: 'none' }}>
-            <span aria-hidden style={{ width: 8, height: 8, background: 'linear-gradient(#006eff, #0056f8)', borderRadius: 2, transform: 'rotate(45deg)', display: 'inline-block' }} />All services are operational
-          </a>
-          <div style={{ display: 'flex', gap: 24 }}>
-            <a href="https://frigade.com/legal/assistant/privacy-policy" style={legal}>Privacy Policy</a>
-            <a href="https://frigade.com/legal/assistant/terms-of-service" style={legal}>Terms of Service</a>
+      {/* Dark band — faithful port of the marketing footer's art panel:
+          the scroll-driven compass peeking from the top, diagonal stripes
+          bottom-left, a masked F-mark watermark, and a bottom gradient, all
+          on a 440px-tall #222127 field with the legal row at the top. */}
+      <div style={{ position: 'relative', isolation: 'isolate', background: '#222127', minHeight: 440, overflow: 'hidden' }}>
+        {/* The page's hatched rails don't survive an opaque dark band, so the
+            band draws its own: same 1240 canvas and 100px columns, hatched
+            light-on-dark, so the rails run unbroken to the bottom of the page
+            exactly as they do on frigade.com. */}
+        <div aria-hidden className="nw-ftr-rails" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 1240 }}>
+            <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 100, borderLeft: '1px solid rgba(255,255,255,.07)', borderRight: '1px solid rgba(255,255,255,.07)', backgroundImage: "url('/images/pattern-hatch-light.svg')", backgroundSize: '74.5px auto', backgroundRepeat: 'repeat', backgroundPosition: 'right bottom' }} />
+            <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 100, borderLeft: '1px solid rgba(255,255,255,.07)', borderRight: '1px solid rgba(255,255,255,.07)', backgroundImage: "url('/images/pattern-hatch-light.svg')", backgroundSize: '74.5px auto', backgroundRepeat: 'repeat', backgroundPosition: 'left bottom' }} />
+          </div>
+        </div>
+        <ScrollingFooterCompass
+          className="nw-ftr-compass"
+          style={{
+            position: 'absolute', left: '50%', top: 0, maxWidth: 'none', pointerEvents: 'none',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 5%, black 32%, black 68%, transparent 95%)',
+            maskImage: 'linear-gradient(to right, transparent 5%, black 32%, black 68%, transparent 95%)',
+          }}
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/footer-stripes.svg" alt="" aria-hidden style={{ position: 'absolute', bottom: 24, left: 0, width: '40%', maxWidth: 480, opacity: 0.6, pointerEvents: 'none' }} />
+        <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '40%', background: 'linear-gradient(to top, #222127, transparent)', pointerEvents: 'none' }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="nw-ftr-fmark" src="/images/frigade-f-mark-footer.svg" alt="" aria-hidden style={{ position: 'absolute', bottom: -12, left: 'calc(50% + 10px)', transform: 'translateX(-50%)', width: 'auto', opacity: 0.1, pointerEvents: 'none', WebkitMaskImage: 'linear-gradient(to top, transparent 28%, black 58%)', maskImage: 'linear-gradient(to top, transparent 28%, black 58%)', filter: 'drop-shadow(0 0 0.5px rgba(255,255,255,1)) drop-shadow(0 0 1px rgba(255,255,255,0.4))' }} />
+        <div style={{ position: 'relative', maxWidth: 1240, margin: '0 auto', width: '100%' }}>
+          <div className="nw-ftr-mx" style={{ paddingTop: 24, paddingBottom: 24 }}>
+            {/* Three-up on wide screens; below that it stacks in reverse so the
+                legal links sit closest to the bottom of the page. */}
+            <div className="nw-ftr-legal" style={{ fontSize: 12 }}>
+              <p style={{ margin: 0, color: 'rgba(255,255,255,.5)', justifySelf: 'start' }}>Built in San Francisco © Frigade Inc.</p>
+              <a className="nw-ftr-legal-link" href="https://status.frigade.ai/" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0355f8', textDecoration: 'none', justifySelf: 'center' }}>
+                {/* Three stacked diamonds: an animated echo, the fill, and a
+                    lit rim on top — the same build as the marketing site's. */}
+                <span aria-hidden style={{ position: 'relative', display: 'inline-block', width: 8, height: 8 }}>
+                  <span className="nw-ftr-ping" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(#006eff 0%, #0056f8 100%)', borderRadius: 2, transform: 'rotate(45deg)', opacity: 0.55 }} />
+                  <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(#006eff 0%, #0056f8 100%)', borderRadius: 2, transform: 'rotate(45deg)' }} />
+                  <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(#006eff 0%, #0056f8 100%)', borderRadius: 2, transform: 'rotate(45deg)', border: '1px solid rgba(255,255,255,0.07)', boxShadow: 'inset 0 0.5px 2px rgba(255,255,255,0.15), inset 0 2px 3px -1px rgba(255,255,255,0.1)' }} />
+                </span>
+                All services are operational
+              </a>
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 24 }}>
+                <a className="nw-ftr-legal-link" href={`https://frigade.com${legalBase}/privacy-policy`} style={legal}>Privacy Policy</a>
+                <a className="nw-ftr-legal-link" href={`https://frigade.com${legalBase}/terms-of-service`} style={legal}>Terms of Service</a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1590,6 +1879,12 @@ export default function NorthwindPage() {
         @keyframes nwhintin{from{opacity:0}to{opacity:1}}
         .nw-gate-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#015efb;animation:nwpulse 1.6s infinite}
         @keyframes nwslide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+        /* Frigade derives a primary button's label colour from its \`white\` token,
+           which theme.ts maps to --nw-card so the neutral surfaces re-skin. In dark
+           that turns the label #171f2e on a brand fill that deliberately stays
+           #015EFB in both themes, which lands at 3.14:1. The fill is fixed, so the
+           label should be too. Covers the banner, form, survey and sidebar card. */
+        .nw-app .fr-button-primary,.nw-app .fr-button-primary .fr-button-title{color:#fff}
         .nw-rise{animation:nwrise .34s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwrise{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
         .nw-rate{transition:border-color .14s ease,color .14s ease,background .14s ease}

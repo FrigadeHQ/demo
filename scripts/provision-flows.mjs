@@ -153,15 +153,56 @@ export const FLOWS = [
       ],
     }),
   },
-  // NPS-style survey — shown when the whole checklist is complete. The scale and
-  // its end labels come from props (options / negativeLabel / positiveLabel).
+  // Survey — rendered by <Frigade.Survey.NPS>, which is Frigade.Form with an `nps`
+  // field type registered. Two steps: the rating, then a thank-you with the CTAs.
+  // The scale lives in flow-level `props.options` because that's where the NPS
+  // component reads it from, and each option is a {label, value} pair. The end
+  // labels sit on the field itself, which takes precedence over the flow's.
   {
     key: 'survey',
     name: 'Northwind Demo Survey',
     type: 'SURVEY',
     data: YAML.stringify({
+      props: {
+        dismissible: true,
+        options: ['1', '2', '3', '4', '5'].map((n) => ({ label: n, value: n })),
+      },
       steps: [
-        { id: 'enjoy', title: 'How are you enjoying the demo?', subtitle: 'If you liked it, you can build surveys just like this one with Frigade.', props: { options: ['1', '2', '3', '4', '5'], negativeLabel: 'Not for me', positiveLabel: 'Love it' }, primaryButton: { title: 'Grab a time with us', uri: 'https://frigade.com/demo', target: '_blank', action: false }, secondaryButton: { title: 'Get started', uri: 'https://frigade.com', target: '_blank', action: false } },
+        {
+          id: 'enjoy',
+          title: 'How are you enjoying the demo?',
+          fields: [{ id: 'rating', type: 'nps', negativeLabel: 'Not for me', positiveLabel: 'Love it' }],
+        },
+        {
+          id: 'thanks',
+          title: 'Thanks for the feedback',
+          subtitle: 'If you liked it, you can build surveys just like this one with Frigade.',
+          // No uri on the primary: the app intercepts it in onPrimary to open the
+          // Cal.com popup in place, rather than sending you to another tab.
+          primaryButton: { title: 'Grab a time with us', action: false },
+          secondaryButton: { title: 'Get started', uri: 'https://app.frigade.com', target: '_blank', action: false },
+        },
+      ],
+    }),
+  },
+  // Sidebar promo — a <Frigade.Card>, the demo's one inline surface. Everything
+  // else here is an overlay of some kind; this one just sits in the product's
+  // chrome the way a real upsell card would. Card renders in place rather than
+  // portalling, which is what lets it live inside the Northwind window at all.
+  {
+    key: 'card',
+    name: 'Northwind Sidebar Promo',
+    type: 'CARD',
+    data: YAML.stringify({
+      steps: [
+        {
+          id: 'pro',
+          title: 'Try Northwind Pro',
+          subtitle: 'More agents, faster runs.',
+          // No action and no uri: the app intercepts this in onPrimary to open the
+          // booking popup, and the card stays up until it's explicitly dismissed.
+          primaryButton: { title: 'Talk to sales', action: false },
+        },
       ],
     }),
   },

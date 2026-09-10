@@ -6,5 +6,6 @@ export const DEMO_FLOWS = {
   "form": "flow_jr0RkKWy",
   "tour": "flow_K0tUF9zu",
   "banner": "flow_yrAfrzBl",
-  "survey": "flow_nHu1J5KO"
+  "survey": "flow_nHu1J5KO",
+  "card": "flow_fuASNYwi"
 } as const;
