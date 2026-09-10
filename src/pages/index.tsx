@@ -33,12 +33,13 @@ const APP_URL_ASSISTANT = 'https://app.frigade.ai/sign-up?ref=demo';
  * The page hosts two products behind the header toggle: Engage (this immersive
  * walkthrough) and Assistant (a product video). Engage is staged inside a
  * fictional SaaS app called "Northwind." Every surface that carries the brand
- * blue (#015EFB) is a real Frigade flow read headless with Frigade.useFlow(...)
- * and rendered with this app's own UI — a welcome announcement, an onboarding
+ * blue (#015EFB) is a real Frigade flow: a welcome announcement, an onboarding
  * form, a getting-started checklist, a product tour, a contextual banner, a
- * survey, and a product-updates changelog. The host app stays deliberately
- * neutral, so you can always tell which pixels Frigade is driving from the
- * pixels that are just the product.
+ * survey, a sidebar promo card, and a product-updates changelog. Some are
+ * Frigade's own components styled with this product's tokens; the rest are read
+ * headless with Frigade.useFlow(...) and drawn with the app's own UI. The host
+ * app stays deliberately neutral, so you can always tell which pixels Frigade is
+ * driving from the pixels that are just the product.
  *
  * This demo was built with Claude Code and the frigade-engage skill
  * (https://github.com/FrigadeHQ/frigade-engage-skill), which drives the Frigade
@@ -296,17 +297,26 @@ function PanelHead({ onClose }: { onClose: () => void }) {
 }
 
 /* ---------- Northwind app (inside the browser frame) ---------- */
-// Each surface in this app is a separate Frigade flow, read headless: we take
-// the flow's steps/content via useFlow and render our own UI instead of
-// Frigade's default components. The flow IDs live in src/lib/demo-flows.ts and
-// were created by scripts/provision-flows.mjs. The flows, by what they drive:
-//   changelog    -> "Product updates" bell dropdown + slide-in panel
-//   checklist    -> getting-started checklist (steps complete from real actions)
-//   announcement -> welcome modal that kicks off the onboarding journey
-//   form         -> onboarding form that personalizes the app
+// Each surface in this app is a separate Frigade flow. Some render through
+// Frigade's own components, themed with this product's tokens; the rest are read
+// headless, taking the flow's steps/content via useFlow and drawing the app's own
+// UI. The flow IDs live in src/lib/demo-flows.ts and were created by
+// scripts/provision-flows.mjs. The flows, by what they drive:
 //   banner       -> contextual banner, fires once two checklist steps are done
-//   survey       -> NPS-style survey, fires when the checklist is complete
-//   tour         -> product tour with a spotlight + coachmarks
+//                   (Frigade.Banner)
+//   form         -> onboarding form that personalizes the app
+//                   (Frigade.Form, with Northwind inputs as custom field types)
+//   survey       -> survey, fires when the checklist is complete
+//                   (Frigade.Survey.NPS, as a Box so it stays inside the frame)
+//   card         -> sidebar promo, the one surface that sits inline rather than
+//                   over the app (Frigade.Card)
+//   changelog    -> "Product updates" bell dropdown + slide-in panel (headless)
+//   checklist    -> getting-started checklist, steps complete from real actions
+//                   (headless)
+//   announcement -> welcome modal that kicks off the onboarding journey (headless;
+//                   Frigade's own Announcement is a dialog and would portal out of
+//                   the browser frame this demo stages the app inside)
+//   tour         -> product tour with a spotlight + coachmarks (headless)
 function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; actionsRef?: React.MutableRefObject<((key: string) => void) | null>; still?: boolean }) {
   const { flow } = Frigade.useFlow(DEMO_FLOWS.changelog);
   const steps = flow ? Array.from(flow.steps.values()) : [];

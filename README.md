@@ -29,7 +29,7 @@ This demo shows it in action.
 feature-adoption layer you'd never want to build yourself. It owns the complicated parts of onboarding:
 flow state and completion, user and account targeting, copy and logic, per-flow analytics, and more.
 It's fully controllable from code, with no-code editing from a dashboard. Render it with pre-built
-drop-in React components, or headless with your own UI, like this demo does.
+drop-in React components, or headless with your own UI. This demo does both.
 
 The demo runs a full onboarding journey through the app:
 
@@ -39,6 +39,7 @@ The demo runs a full onboarding journey through the app:
 - a product tour
 - a contextual banner
 - a survey
+- a sidebar promo card
 - a product-updates changelog
 
 ## Getting started
@@ -47,7 +48,7 @@ This repo works best as a reference. Point your coding agent at it, then use
 [Frigade's Claude Code skill](https://github.com/FrigadeHQ/frigade-engage-skill) to build and wire your
 own flows in your Frigade workspace with your own API key, the same way this demo was built.
 
-To run this demo yourself, you first need to create its seven flows in your own Frigade workspace. The
+To run this demo yourself, you first need to create its eight flows in your own Frigade workspace. The
 full YAML for each one lives in [`scripts/provision-flows.mjs`](scripts/provision-flows.mjs); add your
 Frigade keys to `.env.local`, then run it to create them (or point your agent at those definitions):
 
