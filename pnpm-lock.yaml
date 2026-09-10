@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@react-aria/i18n': 3.12.4
-
 importers:
 
   .:
