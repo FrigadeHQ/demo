@@ -3,7 +3,7 @@ import * as Frigade from '@frigade/react';
 import {
   LayoutGrid, Bot, KeyRound, BarChart3, ScrollText, CreditCard, Settings2,
   Search, Bell, Plus, ChevronsUpDown, HelpCircle, Megaphone, Sun, Moon, Lock, ChevronUp, ChevronDown, Menu,
-  Sparkles, CodeXml, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
+  Sparkles, CodeXml, Braces, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
   UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw, Rocket, ShieldCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -24,7 +24,9 @@ const CAL_NS_ASSISTANT = 'frigade-demo-call';
 const CAL_CONFIG = '{"layout":"month_view","useSlotsViewOnSmallScreen":"true"}';
 // Each product points at its own app + marketing page. Engage lives on
 // frigade.com/engage and app.frigade.com; Assistant on frigade.com and frigade.ai.
-const APP_URL = 'https://app.frigade.com';
+// Bare host, matching the marketing site's Engage navCta (lib/products.ts), plus
+// the same ?ref=demo attribution the Assistant link already carried.
+const APP_URL = 'https://app.frigade.com?ref=demo';
 const APP_URL_ASSISTANT = 'https://app.frigade.ai/sign-up?ref=demo';
 
 /**
@@ -59,6 +61,14 @@ const STAGE_SH = '0 1px 3px rgba(18,24,40,.05), 0 8px 26px rgba(18,24,40,.05)';
 const DEMO_W = 1280, DEMO_H = 600, DEMO_MIN = 1000, DEMO_TIGHT = 600, DEMO_STILL_W = 1080;
 const CTA_SECONDARY = 'inset 0 1px 0.4px rgba(255,255,255,0.9), inset 0 -2px 2px rgba(20,30,60,0.08), 0 1px 1px rgba(0,0,0,0.06), 0 2px 4px rgba(20,30,60,0.08), 0 0 0 1px rgba(18,55,105,0.1)';
 const CTA_BRAND = 'inset 0 1px 0.4px rgba(255,255,255,0.28), inset 0 -3px 2px rgba(0,0,0,0.24), 0 1px 1px rgba(0,0,0,0.14), 0 2px 4px rgba(0,30,90,0.16), 1px 4px 10px rgba(0,86,248,0.18), 0 0 0 1px rgb(13,97,255)';
+// Engage's CTAs take the product's navy rather than the brand blue, matching the
+// marketing site's `engage` CtaButton variant (its --color-engage-btn-gradient-*
+// tokens). Bright blue on an Engage page reads as the Assistant's colour.
+const CTA_ENGAGE = 'inset 0 1px 0.4px rgba(255,255,255,0.18), inset 0 -3px 2px rgba(0,0,0,0.28), 0 1px 1px rgba(0,0,0,0.14), 0 2px 4px rgba(20,30,50,0.18), 1px 4px 10px rgba(45,73,118,0.22), 0 0 0 1px rgb(33,55,90)';
+const CTA_FILL: Record<'assistant' | 'engage', { background: string; boxShadow: string }> = {
+  assistant: { background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND },
+  engage: { background: 'linear-gradient(rgb(61,91,139) 0%, rgb(45,73,118) 100%)', boxShadow: CTA_ENGAGE },
+};
 
 type IconType = LucideIcon;
 
@@ -1107,7 +1117,7 @@ function MarketingHeader() {
                 </div>
               )}
             </div>
-            <a href={getStartedHref} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
+            <a href={getStartedHref} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', ...CTA_FILL[product], textDecoration: 'none' }}>Get Started</a>
           </div>
           <button type="button" className="mh-burger" aria-label="Open menu" onClick={() => setMobileOpen(true)} style={{ display: 'none', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: 8, background: 'none', border: 0, color: C.ink, cursor: 'pointer' }}><Menu size={22} strokeWidth={2} /></button>
         </div>
@@ -1135,7 +1145,7 @@ function MarketingHeader() {
           </div>
           <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 12, padding: '20px 24px', borderTop: '1px solid rgba(34,34,79,0.06)' }}>
             <a href={PRODUCT_META[product].signIn} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Login</a>
-            <a href={getStartedHref} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get Started</a>
+            <a href={getStartedHref} style={{ display: 'inline-flex', alignItems: 'center', height: 34, padding: '0 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', ...CTA_FILL[product], textDecoration: 'none' }}>Get Started</a>
           </div>
         </div>
       )}
@@ -1143,56 +1153,87 @@ function MarketingHeader() {
   );
 }
 
-// The frigade.com hero pill, reused as the demo's product switcher: identical
-// look, but picking a product swaps the demo variant in place (?product=)
-// instead of navigating to another page.
+// The demo's product switcher. frigade.com shows a dropdown pill here, and this
+// mirrored it exactly — but the two have different jobs. There, the pill labels
+// which product page you're on. Here it's the only route to half the demo, and a
+// dropdown hides the alternative behind a click, so a visitor who never opens it
+// never learns the second demo exists. Both products are named at rest instead.
+//
+// Shape and motion follow the marketing site's ProductToggle: a recessed track
+// with a raised white key that slides between the options. Only `translate`
+// transitions, so the slide is interruptible and stays on the compositor, and
+// both tile states carry the same two shadow layers (glow + inset highlight, at
+// zero when inactive) so box-shadow interpolates instead of snapping.
+const SEG_EASE = 'cubic-bezier(.32,.72,0,1)';
+
 function ProductPill() {
   const { experience, setExperience } = useExperience();
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!open) return;
-    const down = (e: PointerEvent) => { if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false); };
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    document.addEventListener('pointerdown', down);
-    document.addEventListener('keydown', key);
-    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
-  }, [open]);
   const cur: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
+  const keys = Object.keys(PRODUCT_META) as ProductKey[];
+  const idx = keys.indexOf(cur);
   return (
     // The hero's entrance animations (fill: forwards on opacity/transform) leave every
-    // sibling a stacking context, so without an explicit z-index the open menu paints
-    // underneath the headline. Raise the whole pill above its hero siblings.
-    <div ref={wrapRef} style={{ position: 'relative', zIndex: 30, display: 'inline-flex', justifyContent: 'center' }}>
-      <button type="button" className="mh-pill" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 8, background: '#fff', border: `1px solid ${C.line}`, cursor: 'pointer', fontFamily: 'inherit' }}>
-        <ProductTile k={cur} size={20} radius={7} iconSize={12} />
-        <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)' }}>{PRODUCT_META[cur].label}</span>
-        <ChevronDown size={14} strokeWidth={2.2} color="#8b93a5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .18s ease' }} />
-      </button>
-      {open && (
-        // Sized like frigade.com's pill menu (min 152px, grows to fit): a fixed width
-        // makes the longer Assistant row overflow into its own padding and shove the
-        // active marker off the edge.
-        <div className="mh-panel" role="menu" style={{ position: 'absolute', top: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)', width: 'max-content', minWidth: 152, padding: 5, borderRadius: 12, background: '#fff', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 14px 36px rgba(18,24,40,.16), 0 3px 9px rgba(18,24,40,.07)', zIndex: 20 }}>
-          {(Object.keys(PRODUCT_META) as ProductKey[]).map((k, i) => (
-            <button key={k} type="button" role="menuitem" className="mh-item" onClick={() => { setExperience(k); setOpen(false); }} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 8, background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit', animation: `mhItemIn .22s cubic-bezier(.4,0,.2,1) ${i * 0.04}s both` }}>
-              <ProductTile k={k} size={20} radius={7} iconSize={12} />
-              <span style={{ fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)' }}>{PRODUCT_META[k].label}</span>
-              <span style={{ flex: 1, minWidth: 12 }} />
-              {/* Active marker, mirrored from frigade.com's pill menu: a 6px gradient
-                  diamond with a second copy behind it that pings outward, so the
-                  current product reads as live. */}
-              {cur === k && (
-                <span aria-hidden style={{ position: 'relative', width: 6, height: 6, flexShrink: 0 }}>
-                  <span className="mh-live" style={{ position: 'absolute', inset: 0, borderRadius: 1.5, background: 'linear-gradient(rgb(1,94,251) 0%, rgba(1,94,251,.92) 100%)' }} />
-                  <span style={{ position: 'absolute', inset: 0, borderRadius: 1.5, transform: 'rotate(45deg)', background: 'linear-gradient(rgb(1,94,251) 0%, rgba(1,94,251,.92) 100%)' }} />
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+    // sibling a stacking context, so keep the explicit z-index the dropdown needed.
+    <div
+      role="tablist"
+      aria-label="Choose a demo"
+      style={{ position: 'relative', zIndex: 30, display: 'grid', gridTemplateColumns: '1fr 1fr', width: 322, padding: 5, borderRadius: 15, background: '#f4f5f8', border: '1px solid rgba(34,34,79,0.07)', boxShadow: 'inset 0 1px 2px rgba(15,23,42,.05)' }}
+    >
+      {/* The key. Sized to one column and moved by its own width, so it lands
+          exactly on the second option without measuring anything. */}
+      <span
+        aria-hidden
+        className="nw-seg-key"
+        style={{ position: 'absolute', top: 5, bottom: 5, left: 5, width: 'calc(50% - 5px)', borderRadius: 11, background: '#fff', boxShadow: '0 1px 2px rgba(15,23,42,.09), 0 10px 22px -10px rgba(15,23,42,.22), inset 0 0 0 1px rgba(15,23,42,.03)', translate: idx === 1 ? '100% 0' : '0 0' }}
+      />
+      {keys.map((k) => {
+        const on = k === cur;
+        const Icon = PRODUCT_META[k].icon;
+        return (
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={on}
+            className="nw-seg-opt"
+            onClick={() => { if (!on) setExperience(k); }}
+            style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '7px 10px', borderRadius: 11, border: 0, background: 'none', cursor: on ? 'default' : 'pointer', fontFamily: 'inherit' }}
+          >
+            <span
+              className="nw-seg-tile"
+              style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: on ? PRODUCT_META[k].tile : '#fff', border: `1px solid ${on ? PRODUCT_META[k].tile : 'rgba(34,34,79,0.10)'}`, color: on ? '#fff' : '#98a0b0', boxShadow: on ? `0 2px 8px 0 ${PRODUCT_META[k].tile}4d, inset 0 2.5px 1px 0 rgba(255,255,255,.2)` : '0 0 0 0 rgba(1,94,251,0), inset 0 0 0 0 rgba(255,255,255,0)' }}
+            >
+              <Icon size={13} strokeWidth={2.4} aria-hidden />
+            </span>
+            <span className="nw-seg-label" style={{ fontSize: 14, fontWeight: on ? 600 : 500, color: on ? 'rgb(26,27,47)' : '#727a8b' }}>{PRODUCT_META[k].label}</span>
+          </button>
+        );
+      })}
     </div>
+  );
+}
+
+// The other demo, offered where a page ends. A visitor who reads all the way down
+// has scrolled well past the switcher, so this is the last chance to say the second
+// demo exists — which is why it's a card now and not the grey footnote it was.
+function OtherDemoCard({ to }: { to: ProductKey }) {
+  const { setExperience } = useExperience();
+  const m = PRODUCT_META[to];
+  return (
+    <button
+      type="button"
+      className="nw-otherdemo"
+      onClick={() => { setExperience(to); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }}
+      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', maxWidth: 520, margin: '34px auto 0', padding: '15px 18px', borderRadius: 14, background: '#fff', border: `1px solid ${C.line}`, boxShadow: '0 1px 2px rgba(18,24,40,.05)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+    >
+      <ProductTile k={to} size={38} radius={11} iconSize={19} />
+      <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>
+        <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '.07em', textTransform: 'uppercase', color: C.faint }}>The other demo</span>
+        <span style={{ fontSize: 15, fontWeight: 600, color: C.ink, letterSpacing: '-.01em' }}>{m.label}</span>
+        <span style={{ fontSize: 13, lineHeight: 1.45, color: C.muted }}>{m.desc}</span>
+      </span>
+      <span className="nw-otherdemo-cta" style={{ flexShrink: 0, color: C.brand, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>Try it &rarr;</span>
+    </button>
   );
 }
 
@@ -1228,10 +1269,11 @@ const FOOTER_SOCIALS: { p: string; h: string; icon: React.ReactNode }[] = [
 ];
 // Footer columns mirror the live Frigade marketing site's published links.
 const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
-  { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'Generative UI', h: '/features/generative-ui' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
+  { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'Generative UI', h: '/features/generative-ui' }, { t: 'Mobile', h: '/features/mobile' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
   { heading: 'Use Cases', links: [{ t: 'Support Deflection', h: '/use-cases/support-deflection' }, { t: 'User Activation', h: '/use-cases/user-activation' }, { t: 'Virtual CSM', h: '/use-cases/virtual-csm' }, { t: 'Feature Adoption', h: '/use-cases/feature-adoption' }, { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell' }] },
-  { heading: 'Resources', links: [{ t: 'How It Works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
+  { heading: 'Resources', links: [{ t: 'How It Works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Glossary', h: '/glossary' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
   // Alphabetical by competitor, same as the published column.
+  { heading: 'Guides', links: [{ t: 'Adoption platforms', h: '/blog/ten-digital-adoption-platforms-2026' }, { t: 'Ticket deflection', h: '/blog/how-to-deflect-support-tickets' }, { t: 'Support AI tools', h: '/blog/eight-customer-support-ai-tools-2026' }] },
   { heading: 'Compare', links: [{ t: 'Frigade vs. Appcues', h: '/compare/appcues' }, { t: 'Frigade vs. Chameleon', h: '/compare/chameleon' }, { t: 'Frigade vs. Fin', h: '/compare/fin' }, { t: 'Frigade vs. HubSpot', h: '/compare/hubspot' }, { t: 'Frigade vs. Pendo', h: '/compare/pendo' }, { t: 'Frigade vs. Pylon', h: '/compare/pylon' }, { t: 'Frigade vs. Userflow', h: '/compare/userflow' }, { t: 'Frigade vs. Userpilot', h: '/compare/userpilot' }, { t: 'Frigade vs. WalkMe', h: '/compare/walkme' }, { t: 'Frigade vs. Whatfix', h: '/compare/whatfix' }, { t: 'Frigade vs. Zendesk', h: '/compare/zendesk' }] },
   { heading: 'Case Studies', links: [{ t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }] },
   // "Contact us" opens the marketing site's contact modal via its #cta:
@@ -1240,10 +1282,32 @@ const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
   // booking the same frigade-demo-call calendar as the page's other CTAs.
   { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
 ];
+// The marketing footer splits its columns on intent rather than order. The top
+// row is what a visitor came to do (what we sell, who we are, how to evaluate
+// it); everything below is the SEO surface, which is most of the link count and
+// little of the intent. That's why Company moves up and Features moves down.
+// Headings not named here fall to the second tier, so a new column is quiet by
+// default rather than silently landing in the top row. Industries is listed but
+// absent from FOOTER_COLS: all four of its pages are drafts on the live site.
+const FOOTER_TIER_ONE = ['Company', 'Resources', 'Case Studies'];
+const FOOTER_TIER_TWO = ['Features', 'Use Cases', 'Compare', 'Industries'];
+const pickCols = (order: string[]) =>
+  order.map((h) => FOOTER_COLS.find((c) => c.heading === h)).filter((c): c is (typeof FOOTER_COLS)[number] => Boolean(c));
+const FOOTER_COLS_PRIMARY = pickCols(FOOTER_TIER_ONE);
+const FOOTER_COLS_SECONDARY = [
+  ...pickCols(FOOTER_TIER_TWO),
+  ...FOOTER_COLS.filter((c) => !FOOTER_TIER_ONE.includes(c.heading) && !FOOTER_TIER_TWO.includes(c.heading)),
+];
+
 // Product badges mirror the marketing footer: a colored rounded-square
 // icon (brand blue for Assistant, engage navy for Engage) next to the name.
-const FOOTER_PRODUCTS: { name: string; h: string; icon: LucideIcon; bg: string; shadowRgb: string; beta?: boolean }[] = [
+// Only the products the live marketing footer actually links. Knowledge is
+// `unlisted` there (reachable by URL, never linked) and Demo is `draft`, so both
+// appear in marketing's dev build behind a yellow draft highlight and in neither
+// production footer. Assist API shares the Assistant's brand blue by design.
+const FOOTER_PRODUCTS: { name: string; h: string; icon: LucideIcon; bg: string; shadowRgb: string; tag?: string }[] = [
   { name: 'Assistant', h: '/', icon: Sparkles, bg: '#015EFB', shadowRgb: '1, 94, 251' },
+  { name: 'Assist API', h: '/assist-api', icon: Braces, bg: '#015EFB', shadowRgb: '1, 94, 251', tag: 'New' },
   { name: 'Engage', h: '/engage', icon: CodeXml, bg: '#2D4976', shadowRgb: '45, 73, 118' },
 ];
 // Faithful port of the marketing site footer (marketing-ai-experiment): light
@@ -1257,6 +1321,27 @@ function MarketingFooter() {
   const legalBase = experience === 'engage' ? '/legal/engage' : '/legal/assistant';
   const head: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: C.ink, margin: 0 };
   const link: React.CSSProperties = { fontSize: 13, color: C.ink, textDecoration: 'none' };
+  // Second tier steps down in size and colour, same hover.
+  const head2: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: C.ink2, margin: 0 };
+  const link2: React.CSSProperties = { fontSize: 12.5, color: C.ink2, textDecoration: 'none' };
+  const renderFooterCol = (col: (typeof FOOTER_COLS)[number], secondary: boolean) => (
+    <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: secondary ? 10 : 12 }}>
+      <p style={secondary ? head2 : head}>{col.heading}</p>
+      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {col.links.map((l) => (
+          <li key={l.t}>
+            {l.h === '#cal:demo' ? (
+              // Native Cal popup, same as the page's "Book a call" buttons —
+              // styled to read as a plain footer link.
+              <button className="nw-ftr-link" data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ ...(secondary ? link2 : link), background: 'none', border: 0, padding: 0, margin: 0, cursor: 'pointer', fontFamily: 'inherit', lineHeight: 'inherit', textAlign: 'left' }}>{l.t}</button>
+            ) : (
+              <a className="nw-ftr-link" href={ext(l.h)} style={secondary ? link2 : link}>{l.t}</a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
   const legal: React.CSSProperties = { fontSize: 12, color: '#0355f8', textDecoration: 'none' };
   return (
     <footer style={{ position: 'relative', fontFamily: FONT }}>
@@ -1276,6 +1361,7 @@ function MarketingFooter() {
         @media (min-width:768px){.nw-ftr-top{grid-template-columns:minmax(0,220px) 1fr}}
         /* Two columns until there's room for four, so the 8 link columns stack
            rather than crush on phones and tablets. */
+        .nw-ftr-more{margin:0;font-family:${MONO};font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:${C.faint}}
         .nw-ftr-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 24px}
         @media (min-width:1024px){.nw-ftr-cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px 32px}}
         .nw-ftr-link{transition:color .15s ease}
@@ -1330,39 +1416,37 @@ function MarketingFooter() {
             <div className="nw-ftr-cols">
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <p style={head}>Product</p>
-                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {FOOTER_PRODUCTS.map((p) => {
                     const PIcon = p.icon;
                     return (
                       <li key={p.name}><a className="nw-ftr-link" href={ext(p.h)} style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ width: 20, height: 20, borderRadius: 7, background: p.bg, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: `0 2px 8px 0 rgba(${p.shadowRgb}, 0.3), inset 0 2.5px 1px 0 rgba(255,255,255,0.2)` }}><PIcon size={12} strokeWidth={2.25} /></span>
-                        {p.name}{p.beta && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.muted, background: '#f4f5f7', padding: '1px 6px', borderRadius: 99 }}>Beta</span>}
+                        {p.name}{p.tag && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.muted, background: '#f4f5f7', padding: '1px 6px', borderRadius: 99 }}>{p.tag}</span>}
                       </a></li>
                     );
                   })}
                 </ul>
               </div>
-              {FOOTER_COLS.map((col) => (
-                <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  <p style={head}>{col.heading}</p>
-                  <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {col.links.map((l) => (
-                      <li key={l.t}>
-                        {l.h === '#cal:demo' ? (
-                          // Native Cal popup, same as the page's "Book a call"
-                          // buttons — styled to read as a plain footer link.
-                          <button className="nw-ftr-link" data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ ...link, background: 'none', border: 0, padding: 0, margin: 0, cursor: 'pointer', fontFamily: 'inherit', lineHeight: 'inherit', textAlign: 'left' }}>{l.t}</button>
-                        ) : (
-                          <a className="nw-ftr-link" href={ext(l.h)} style={link}>{l.t}</a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              {FOOTER_COLS_PRIMARY.map((col) => renderFooterCol(col, false))}
             </div>
           </div>
         </div>
+        {/* Second tier as its own closed section rather than an indented block.
+            Its border-t is the fourth side (the rails draw left and right, the
+            section above supplies the top) and sits on the same inset as that
+            border so it runs the full width instead of reading as a floating
+            divider. Same 220px/1fr track, so Features lands under Product. */}
+        {FOOTER_COLS_SECONDARY.length > 0 && (
+          <div className="nw-ftr-mx" style={{ borderTop: `1px solid ${C.hair}`, paddingTop: 40, paddingBottom: 40 }}>
+            <div className="nw-ftr-top">
+              <p className="nw-ftr-more">More from Frigade</p>
+              <div className="nw-ftr-cols">
+                {FOOTER_COLS_SECONDARY.map((col) => renderFooterCol(col, true))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {/* Dark band — faithful port of the marketing footer's art panel:
           the scroll-driven compass peeking from the top, diagonal stripes
@@ -1453,7 +1537,7 @@ function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: 
 function RichCtaCard({ title, subtext, children, flush }: { title: string; subtext: string; children: React.ReactNode; flush?: boolean }) {
   return (
     <div style={{ maxWidth: 1016, margin: flush ? '0 auto' : '76px auto 0' }}>
-      <div style={{ borderRadius: 20, border: '1px solid #1b1b1d0d', background: '#fbfcfe', boxShadow: '0 1px 2px rgba(15,23,42,.04), 0 22px 48px -28px rgba(1,94,251,.18)' }}>
+      <div style={{ borderRadius: 20, border: '1px solid #1b1b1d0a', background: '#fbfcfe', boxShadow: '0 1px 2px rgba(15,23,42,.04), 0 22px 48px -28px rgba(1,94,251,.18)' }}>
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
           <h2 className="nw-h2" style={{ margin: 0, maxWidth: 560, fontWeight: 700, color: C.ink }}>{title}</h2>
           <p className="nw-balance" style={{ margin: 0, maxWidth: 480, fontSize: 15, lineHeight: 1.6, color: C.muted }}>{subtext}</p>
@@ -1535,7 +1619,7 @@ function RailBand({ children, top = 80, bottom = 80, id }: { children: React.Rea
   return (
     <section id={id} style={{ position: 'relative', zIndex: 1, scrollMarginTop: 72 }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-        <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: top, paddingBottom: bottom }}>
+        <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: top, paddingBottom: bottom }}>
           {children}
         </div>
       </div>
@@ -1618,14 +1702,11 @@ function SkillsSection() {
 // The Assistant view is a stack of feature-demo sections: Suggestions (the video up
 // top) and Skills (the app chooser), then the shared value props + closing CTA.
 function AssistantSection() {
-  const { setExperience } = useExperience();
   return (
     <>
       {/* Page hero. */}
-      <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
-        <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
-        <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '56px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
-          <ProductPill />
+      <section style={{ position: 'relative', overflow: 'clip visible' }}>
+        <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '16px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
           <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See the assistant in action.</h2>
           <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>AI that learns your product and stays up to date on its own.</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
@@ -1717,10 +1798,7 @@ function AssistantSection() {
           <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
           <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
         </RichCtaCard>
-        <p style={{ textAlign: 'center', margin: '34px 0 0', fontSize: 14.5, lineHeight: 1.5, color: C.muted }}>
-          Looking for Engage, our SDK to build onboarding in code?{' '}
-          <button onClick={() => { setExperience('engage'); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: C.brand, fontWeight: 600, cursor: 'pointer' }}>See Engage &rarr;</button>
-        </p>
+        <OtherDemoCard to="engage" />
       </RailBand>
     </>
   );
@@ -1729,7 +1807,7 @@ function AssistantSection() {
 export default function NorthwindPage() {
   const [dark, setDark] = useState(false);
   // Which product is showing, synced to ?product= in the URL via the context.
-  const { experience, setExperience } = useExperience();
+  const { experience } = useExperience();
   // NorthwindApp publishes its action dispatcher here so the Engage hero pills can
   // replay any flow in the live demo and scroll it into view.
   const demoActionsRef = useRef<((key: string) => void) | null>(null);
@@ -1822,6 +1900,17 @@ export default function NorthwindPage() {
         @keyframes mhPing{0%{transform:rotate(45deg) scale(1);opacity:.5}70%,100%{transform:rotate(45deg) scale(2.2);opacity:0}}
         .mh-live{animation:mhPing 1.8s cubic-bezier(0,0,.2,1) infinite}
         @media (prefers-reduced-motion:reduce){.mh-live{animation:none;opacity:0}}
+        .nw-seg-key{transition:translate 260ms cubic-bezier(.32,.72,0,1);will-change:transform}
+        .nw-seg-opt{transition:transform .15s ease}
+        .nw-seg-opt:active{transform:scale(.985)}
+        .nw-seg-tile{transition:background-color 260ms cubic-bezier(.32,.72,0,1),border-color 260ms cubic-bezier(.32,.72,0,1),color 260ms cubic-bezier(.32,.72,0,1),box-shadow 260ms cubic-bezier(.32,.72,0,1)}
+        .nw-seg-label{transition:color 200ms ease,font-weight 200ms ease}
+        .nw-seg-opt[aria-selected="false"]:hover .nw-seg-label{color:rgb(26,27,47)}
+        .nw-seg-opt[aria-selected="false"]:hover .nw-seg-tile{border-color:rgba(34,34,79,0.18);color:#6b7180}
+        @media(prefers-reduced-motion:reduce){.nw-seg-key,.nw-seg-tile,.nw-seg-label{transition:none}}
+        .nw-otherdemo{transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
+        .nw-otherdemo:hover{border-color:#d9dde6;box-shadow:0 4px 14px rgba(18,24,40,.08)}
+        .nw-otherdemo:active{transform:scale(.995)}
         .mh-pill{transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
         .mh-pill:hover{border-color:#d9dde6;box-shadow:0 2px 8px rgba(18,24,40,.06)}
         .mh-pill:active{transform:scale(.97)}
@@ -1906,21 +1995,36 @@ export default function NorthwindPage() {
       {/* PageRails — hatched outer columns on the 1240 canvas (≥1240px), full content height */}
       <div aria-hidden className="nw-rails" style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 1240 }}>
-          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 100, borderLeft: `1px solid ${C.hair}`, borderRight: `1px solid ${C.hair}`, backgroundImage: "url('/images/pattern-hatch-dark.svg')", backgroundSize: '74.5px auto', backgroundRepeat: 'repeat', backgroundPosition: 'right bottom' }} />
-          <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 100, borderLeft: `1px solid ${C.hair}`, borderRight: `1px solid ${C.hair}`, backgroundImage: "url('/images/pattern-hatch-dark.svg')", backgroundSize: '74.5px auto', backgroundRepeat: 'repeat', backgroundPosition: 'left bottom' }} />
+          <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: 100, borderLeft: `1px solid ${C.hair}`, borderRight: `1px solid ${C.hair}`, backgroundImage: "url('/images/pattern-hatch-soft.svg')", backgroundSize: '74.5px auto', backgroundRepeat: 'repeat', backgroundPosition: 'right bottom' }} />
+          <div style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 100, borderLeft: `1px solid ${C.hair}`, borderRight: `1px solid ${C.hair}`, backgroundImage: "url('/images/pattern-hatch-soft.svg')", backgroundSize: '74.5px auto', backgroundRepeat: 'repeat', backgroundPosition: 'left bottom' }} />
         </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 1 }}>
         <MarketingHeader />
 
-        {experience === 'engage' ? (
-        <>
+        {/* Hero top, shared by both products. The switcher lives out here rather
+            than inside either hero for two reasons. It has to survive the swap:
+            a remounted element has no previous value to transition from, so the
+            sliding key would jump to its new side instead of sliding there. And
+            it sits outside .nw-reveal so it doesn't replay the entrance
+            animation on every switch. Same split the marketing site's
+            ProductToggle uses. The compass is up here too because both heroes
+            drew an identical one at the same offset. */}
         <section style={{ position: 'relative', overflow: 'clip visible', paddingTop: 16 }}>
           <img src="/images/hero-compass-base.svg" alt="" aria-hidden style={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)', width: 'min(1000px, 92%)', zIndex: 0, opacity: 0.5, pointerEvents: 'none', WebkitMaskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)', maskImage: 'radial-gradient(62% 78% at 50% 32%, #000 0%, transparent 76%)' }} />
-          <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '46px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 15 }}>
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '56px 24px 0' }}>
             <ProductPill />
-            <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32', maxWidth: 760 }}>See what Engage can do.</h2>
+          </div>
+        </section>
+        {experience === 'engage' ? (
+        <>
+        <section style={{ position: 'relative', overflow: 'clip visible' }}>
+          {/* Same 1080 as the Assistant hero. At 760 this headline missed one line
+              by six pixels (it needs 766), so switching products changed the h2
+              from one line to two and shoved the whole page down 68px. */}
+          <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '16px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
+            <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See what Engage can do.</h2>
             <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Real onboarding, tours, and checklists, all built with Frigade Engage.</p>
           </div>
 
@@ -1960,7 +2064,7 @@ export default function NorthwindPage() {
             hairline separator and an 80px vertical rhythm, mirroring frigade.com/engage. */}
         <section style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: 80, paddingBottom: 80 }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 80, paddingBottom: 80 }}>
               <BenefitsSection
                 title="Everything you just saw, from one SDK."
                 subtitle="Native to your product and driven by real events. This is what powers it."
@@ -1972,7 +2076,7 @@ export default function NorthwindPage() {
 
         <section style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: 80, paddingBottom: 80 }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 80, paddingBottom: 80 }}>
               <BuiltWithSkill />
             </div>
           </div>
@@ -1980,19 +2084,16 @@ export default function NorthwindPage() {
 
         <section style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0d', paddingTop: 64, paddingBottom: 96 }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 64, paddingBottom: 96 }}>
               <RichCtaCard
                 flush
                 title="The backend for product onboarding."
                 subtext="Build the experiences you want and ship them fast. This whole demo was built with Frigade and an AI agent, using the frigade-engage skill, in less than an afternoon."
               >
-                <a href={APP_URL} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
+                <a href={APP_URL} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', ...CTA_FILL.engage, textDecoration: 'none' }}>Get started</a>
                 <button data-cal-link={CAL_LINK} data-cal-namespace={CAL_NS} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
               </RichCtaCard>
-              <p style={{ textAlign: 'center', margin: '34px 0 0', fontSize: 14.5, lineHeight: 1.5, color: C.muted }}>
-                Looking for the AI assistant that learns your product on its own?{' '}
-                <button onClick={() => { setExperience('assistant'); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: C.brand, fontWeight: 600, cursor: 'pointer' }}>See Assistant &rarr;</button>
-              </p>
+              <OtherDemoCard to="assistant" />
             </div>
           </div>
         </section>

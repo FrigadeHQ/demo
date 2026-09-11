@@ -6,7 +6,7 @@ export const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "
 
 export const C = {
   bg: '#f5f6f8', card: '#fff', ink: '#1a233c', ink2: '#2f3649', muted: '#6b7180',
-  faint: '#9aa0b0', line: '#e6e8ee', hair: '#1b1b1d0d', brand: '#015efb', brandWeak: '#e7f0ff', dark: '#1b2230',
+  faint: '#9aa0b0', line: '#e6e8ee', hair: '#1b1b1d0a', brand: '#015efb', brandWeak: '#e7f0ff', dark: '#1b2230',
   ghost: '#e4e7ec', hover: '#f5f6f8', wash: '#eef3ff', washLine: '#e2e9f7', frame: '#eef0f3', frameBorder: '#e1e4e9',
   cardSh: '0 1px 2px rgba(18,24,40,.06), 0 0 0 1px rgba(18,24,40,.05)',
 };
