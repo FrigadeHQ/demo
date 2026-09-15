@@ -1029,8 +1029,11 @@ type MktCell = {
   logo?: string;
   logoAlt?: string;
   icon?: LucideIcon;
-  title: string;
+  title?: string;
   subtitle?: string;
+  /** Pull-quote cell: the customer's own words instead of a headline. */
+  quote?: string;
+  attribution?: string;
   href: string;
   footer: { label: string; sublabel: string; href: string };
 };
@@ -1069,8 +1072,8 @@ const MKT_FEATURES: MktMenu = {
   cell: {
     chip: 'Demo',
     icon: MonitorPlay,
-    title: 'See every part of Frigade running in a real app.',
-    subtitle: 'A full walkthrough on our demo site. No signup.',
+    title: 'Frigade running in a working app.',
+    subtitle: 'Our demo site. No signup.',
     href: 'https://demo.frigade.com',
     footer: {
       label: 'Try Frigade in your product',
@@ -1114,11 +1117,12 @@ const MKT_WHY: MktMenu = {
     chip: 'Customer story',
     logo: '/images/hotplate.svg',
     logoAlt: 'Hotplate',
-    title: 'How Hotplate onboards food creators with Frigade',
+    quote: 'Frigade lets us run support like a product, not a cost center.',
+    attribution: 'Ben Klenk, CEO',
     href: `${MKT}/case-studies/hotplate`,
     footer: {
       label: 'Read the Valley story',
-      sublabel: 'Activation without the support load',
+      sublabel: 'Activation without the tickets',
       href: `${MKT}/case-studies/valley`,
     },
   },
@@ -1212,8 +1216,17 @@ function MktCellView({ cell, onGo }: { cell: MktCell; onGo: () => void }) {
             <Icon size={18} strokeWidth={2} />
           </span>
         ) : null}
-        <span style={{ marginTop: 20, maxWidth: '15ch', fontSize: 21, fontWeight: 600, lineHeight: 1.22, letterSpacing: '-0.012em', color: MK.ink, textWrap: 'balance' }}>{cell.title}</span>
-        {cell.subtitle ? <span style={{ marginTop: 12, maxWidth: '32ch', fontSize: 13, lineHeight: 1.5, color: MK.ink500 }}>{cell.subtitle}</span> : null}
+        {cell.quote ? (
+          <>
+            <span style={{ marginTop: 24, maxWidth: '26ch', fontSize: 18, fontWeight: 500, lineHeight: 1.38, letterSpacing: '-0.006em', color: MK.ink, textWrap: 'balance' }}>&ldquo;{cell.quote}&rdquo;</span>
+            {cell.attribution ? <span style={{ marginTop: 14, fontSize: 12.5, lineHeight: 1.4, color: MK.ink500 }}>{cell.attribution}</span> : null}
+          </>
+        ) : (
+          <>
+            <span style={{ marginTop: 20, maxWidth: '15ch', fontSize: 21, fontWeight: 600, lineHeight: 1.22, letterSpacing: '-0.012em', color: MK.ink, textWrap: 'balance' }}>{cell.title}</span>
+            {cell.subtitle ? <span style={{ marginTop: 12, maxWidth: '32ch', fontSize: 13, lineHeight: 1.5, color: MK.ink500 }}>{cell.subtitle}</span> : null}
+          </>
+        )}
         {/* Dot field, same construction as the marketing cell: a static lattice
             under a mask that drifts, so dots wink out and back rather than the
             field sliding. */}
@@ -2208,7 +2221,7 @@ export default function NorthwindPage() {
            deliberately different pitch is slid across it as a mask: dots drop
            out and return at different moments instead of the field sliding.
            Two layers on different clocks keep the beat from reading as a band. */
-        .mh-dots-wrap{position:absolute;bottom:0;right:0;width:144px;height:128px;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(130px 100px at 100% 100%,#000 0%,transparent 72%);mask-image:radial-gradient(130px 100px at 100% 100%,#000 0%,transparent 72%)}
+        .mh-dots-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(86% 78% at 50% 40%,transparent 44%,rgba(0,0,0,.45) 78%,#000 100%);mask-image:radial-gradient(86% 78% at 50% 40%,transparent 44%,rgba(0,0,0,.45) 78%,#000 100%)}
         .mh-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(27,27,29,.55) 1px,transparent 1px);background-size:7px 7px;animation-timing-function:linear;animation-iteration-count:infinite}
         .mh-dots-a{opacity:.34;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:7.5px 7.5px;mask-size:7.5px 7.5px;animation-name:mhDotsA;animation-duration:26s}
         .mh-dots-b{opacity:.26;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:8.3px 8.3px;mask-size:8.3px 8.3px;animation-name:mhDotsB;animation-duration:37s}

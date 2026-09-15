@@ -3,15 +3,12 @@
   - Environments: .env.local
 
  [32m[1m✓[22m[39m Starting...
- [32m[1m✓[22m[39m Ready in 1253ms
+ [32m[1m✓[22m[39m Ready in 1016ms
  [37m[1m○[22m[39m Compiling / ...
- [32m[1m✓[22m[39m Compiled / in 1705ms (600 modules)
- [32m[1m✓[22m[39m Compiled in 79ms (600 modules)
- GET / [32m200[39m in 2045ms
- GET / [32m200[39m in 79ms
- GET / [32m200[39m in 49ms
- GET / [32m200[39m in 29ms
- GET / [32m200[39m in 30ms
- GET / [32m200[39m in 34ms
- GET / [32m200[39m in 33ms
- GET / [32m200[39m in 39ms
+ [32m[1m✓[22m[39m Compiled / in 1930ms (600 modules)
+ [32m[1m✓[22m[39m Compiled in 107ms (600 modules)
+ GET / [32m200[39m in 2293ms
+ GET / [32m200[39m in 17ms
+ GET / [32m200[39m in 65ms
+ GET / [32m200[39m in 68ms
+ GET / [32m200[39m in 28ms
