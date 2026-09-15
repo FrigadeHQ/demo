@@ -1,0 +1,17 @@
+  [1m[38;2;173;127;168m▲ Next.js 14.2.5[39m[22m
+  - Local:        http://localhost:3082
+  - Environments: .env.local
+
+ [32m[1m✓[22m[39m Starting...
+ [32m[1m✓[22m[39m Ready in 1253ms
+ [37m[1m○[22m[39m Compiling / ...
+ [32m[1m✓[22m[39m Compiled / in 1705ms (600 modules)
+ [32m[1m✓[22m[39m Compiled in 79ms (600 modules)
+ GET / [32m200[39m in 2045ms
+ GET / [32m200[39m in 79ms
+ GET / [32m200[39m in 49ms
+ GET / [32m200[39m in 29ms
+ GET / [32m200[39m in 30ms
+ GET / [32m200[39m in 34ms
+ GET / [32m200[39m in 33ms
+ GET / [32m200[39m in 39ms

@@ -1,0 +1,16 @@
+<svg width="85" height="18" viewBox="2.8 5.6 85 17.7" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#E26A60" stroke-width="1.3" fill="none" stroke-linecap="round">
+    <ellipse cx="13" cy="9.5" rx="8.5" ry="2.4" transform="rotate(-9 13 9.5)"/>
+    <ellipse cx="13" cy="14.5" rx="9" ry="2.6"/>
+    <ellipse cx="13" cy="19.5" rx="8.5" ry="2.4" transform="rotate(7 13 19.5)"/>
+  </g>
+  <text
+    x="28"
+    y="19.5"
+    font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="16"
+    font-weight="500"
+    fill="#1B1B1D"
+    letter-spacing="-0.2"
+  >hotplate</text>
+</svg>
