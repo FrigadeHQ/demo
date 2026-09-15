@@ -1045,27 +1045,27 @@ const MKT_FEATURES: MktMenu = {
     {
       heading: 'What it does',
       items: [
-        { t: 'AI-Generated Tours', h: '/features/ai-generated-tours', icon: Route, d: 'Tours that survive a deploy' },
-        { t: 'Tool Calls', h: '/features/tool-calls', icon: Wrench, d: 'Actions you wire in' },
-        { t: 'Suggestions', h: '/features/suggestions', icon: Lightbulb, d: "Reaches users who don't ask" },
+        { t: 'AI-Generated Tours', h: '/features/ai-generated-tours', icon: Route, d: 'Generated live, never stale' },
+        { t: 'Tool Calls', h: '/features/tool-calls', icon: Wrench, d: 'Wire in your own functions' },
+        { t: 'Suggestions', h: '/features/suggestions', icon: Lightbulb, d: 'Help before they ask' },
         { t: 'Generative UI', h: '/features/generative-ui', icon: LayoutTemplate, d: 'Answers users can act on' },
-        { t: 'Skills', h: '/features/skills', icon: Zap, d: 'Actions it learned itself' },
+        { t: 'Skills', h: '/features/skills', icon: Zap, d: 'Real actions, no code' },
       ],
     },
     {
       heading: 'How it stays right',
       items: [
         { t: 'Always Accurate', h: '/features/always-accurate', icon: RefreshCw, d: 'Retrains when you ship' },
-        { t: 'Feedback', h: '/features/feedback', icon: MessageSquare, d: 'Your team coaches answers' },
+        { t: 'Feedback', h: '/features/feedback', icon: MessageSquare, d: 'Sharper every time you coach' },
         { t: 'Insights', h: '/features/insights', icon: BarChart3, d: 'Why users get stuck' },
       ],
     },
     {
       heading: 'Fits your stack',
       items: [
-        { t: 'Integrations', h: '/features/integrations', icon: Blocks, d: 'Hands off with full context' },
+        { t: 'Integrations', h: '/features/integrations', icon: Blocks, d: 'Fits the stack you run' },
         { t: 'Developer', h: '/features/developer', icon: Terminal, d: 'API, controls, and docs' },
-        { t: 'Mobile', h: '/features/mobile', icon: Smartphone, d: 'Knows your app on a phone' },
+        { t: 'Mobile Web', h: '/features/mobile', icon: Smartphone, d: 'Made for the mobile browser' },
       ],
     },
   ],
@@ -1098,9 +1098,9 @@ const MKT_WHY: MktMenu = {
     {
       heading: 'Compare',
       items: [
-        { t: 'Frigade vs. WalkMe', h: '/compare/walkme', icon: Scale, d: 'Manual overlay editor' },
-        { t: 'Frigade vs. Userflow', h: '/compare/userflow', icon: Scale, d: 'No-code flow builder' },
-        { t: 'Frigade vs. Fin', h: '/compare/fin', icon: Scale, d: 'Support AI in Intercom' },
+        { t: 'WalkMe', h: '/compare/walkme', icon: Scale, d: 'Overlays your team maintains' },
+        { t: 'Userflow', h: '/compare/userflow', icon: Scale, d: 'Flows your team authors' },
+        { t: 'Fin', h: '/compare/fin', icon: Scale, d: 'Answers from your help docs' },
         { t: 'All comparisons', h: '/compare', icon: Layers, d: 'Eleven tools, side by side' },
       ],
     },
@@ -1109,7 +1109,7 @@ const MKT_WHY: MktMenu = {
       items: [
         { t: 'About', h: '/about', icon: Building2, d: 'Why we build this' },
         { t: 'Updates', h: '/updates', icon: Megaphone, d: 'What shipped this week' },
-        { t: 'Blog', h: '/blog', icon: Newspaper, d: 'Long-form on product and AI' },
+        { t: 'Blog', h: '/blog', icon: Newspaper, d: 'Notes on agents and product' },
       ],
     },
   ],
@@ -1131,9 +1131,9 @@ const MKT_WHY: MktMenu = {
 // The three launched products, in nav order. Knowledge and Demo are gated off
 // on the marketing site, so they are absent here too.
 const MKT_PRODUCTS: { t: string; h: string; icon: LucideIcon; tile: string; shadow: string; d: string; tag?: string }[] = [
-  { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'AI that learns your product and guides users in real time.' },
-  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Make the agent you already built an expert in your product.', tag: 'New' },
-  { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Drop-in React components for onboarding and product tours.' },
+  { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'Learns your product as you ship it, then guides your users through it. UI included.' },
+  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Everything the Assistant knows, plus generated guides, as a tool call in your own agent.', tag: 'New' },
+  { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Drop-in React components for onboarding and activation, shipped as code you review.' },
 ];
 
 // Flat links, i.e. everything in the bar that is not a band trigger. Pricing is
@@ -1146,8 +1146,8 @@ const MKT_NAV: Record<ProductKey, { t: string; h: string }[]> = {
 
 // Copy, colors, and destinations lifted verbatim from the live frigade.com header.
 const PRODUCT_META = {
-  assistant: { label: 'Assistant', tile: '#015efb', icon: Sparkles, desc: 'AI that learns your product and guides users in real time.', mkt: 'https://frigade.com/', signIn: 'https://app.frigade.ai/sign-in', signInDesc: 'Manage your AI assistant' },
-  engage: { label: 'Engage', tile: '#2d4976', icon: CodeXml, desc: 'Drop-in React components for onboarding and product tours.', mkt: 'https://frigade.com/engage', signIn: 'https://app.frigade.com/sign-in', signInDesc: 'Build onboarding flows' },
+  assistant: { label: 'Assistant', tile: '#015efb', icon: Sparkles, desc: 'Learns your product as you ship it, then guides your users through it. UI included.', mkt: 'https://frigade.com/', signIn: 'https://app.frigade.ai/sign-in', signInDesc: 'Manage your AI assistant' },
+  engage: { label: 'Engage', tile: '#2d4976', icon: CodeXml, desc: 'Drop-in React components for onboarding and activation, shipped as code you review.', mkt: 'https://frigade.com/engage', signIn: 'https://app.frigade.com/sign-in', signInDesc: 'Build onboarding flows' },
 } as const;
 type ProductKey = keyof typeof PRODUCT_META;
 
