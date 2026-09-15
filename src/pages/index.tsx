@@ -1045,11 +1045,11 @@ const MKT_FEATURES: MktMenu = {
     {
       heading: 'What it does',
       items: [
-        { t: 'Skills', h: '/features/skills', icon: Zap, d: 'Actions it learned itself' },
         { t: 'Tool Calls', h: '/features/tool-calls', icon: Wrench, d: 'Actions you wire in' },
         { t: 'AI-Generated Tours', h: '/features/ai-generated-tours', icon: Route, d: 'Tours that survive a deploy' },
         { t: 'Suggestions', h: '/features/suggestions', icon: Lightbulb, d: "Reaches users who don't ask" },
         { t: 'Generative UI', h: '/features/generative-ui', icon: LayoutTemplate, d: 'Answers users can act on' },
+        { t: 'Skills', h: '/features/skills', icon: Zap, d: 'Actions it learned itself' },
       ],
     },
     {

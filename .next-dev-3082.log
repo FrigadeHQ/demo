@@ -3,12 +3,4 @@
   - Environments: .env.local
 
  [32m[1m✓[22m[39m Starting...
- [32m[1m✓[22m[39m Ready in 1016ms
- [37m[1m○[22m[39m Compiling / ...
- [32m[1m✓[22m[39m Compiled / in 1930ms (600 modules)
- [32m[1m✓[22m[39m Compiled in 107ms (600 modules)
- GET / [32m200[39m in 2293ms
- GET / [32m200[39m in 17ms
- GET / [32m200[39m in 65ms
- GET / [32m200[39m in 68ms
- GET / [32m200[39m in 28ms
+ [32m[1m✓[22m[39m Ready in 1315ms
