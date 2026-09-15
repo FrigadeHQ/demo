@@ -1210,11 +1210,11 @@ function MktRow({ item, i, instant, noRule, onGo }: { item: MktItem; i: number; 
       href={MKT + item.h}
       className="mh-row"
       onClick={onGo}
-      style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 24px', background: '#fff', textDecoration: 'none', borderBottom: noRule ? 'none' : `1px solid ${MK.hair}`, animation: instant ? undefined : `rdItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 22}ms backwards` }}
+      style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 24px', textDecoration: 'none', borderBottom: noRule ? 'none' : `1px solid ${MK.hair}`, animation: instant ? undefined : `rdItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 22}ms backwards` }}
     >
-      <Icon size={15} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0, color: MK.ink400 }} className="mh-row-icon" />
+      <Icon size={15} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0 }} className="mh-row-icon" />
       <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-        <span className="mh-row-label" style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: MK.ink }}>{item.t}</span>
+        <span className="mh-row-label" style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.25 }}>{item.t}</span>
         <span style={{ fontSize: 13, lineHeight: 1.45, color: MK.ink500 }}>{item.d}</span>
       </span>
     </a>
@@ -1230,7 +1230,7 @@ function MktCellView({ cell, onGo }: { cell: MktCell; onGo: () => void }) {
       <a href={cell.href.startsWith('http') ? cell.href : MKT + cell.href} onClick={onGo} className="mh-cell" style={{ position: 'relative', display: 'flex', flex: 1, flexDirection: 'column', padding: '20px 24px 28px', textDecoration: 'none', overflow: 'hidden' }}>
         <span style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
           <span style={{ borderRadius: 999, background: 'rgba(1,94,251,0.1)', padding: '4px 10px', fontFamily: MONO, fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.1em', color: MK.brand }}>{cell.chip}</span>
-          <ArrowUpRight size={16} strokeWidth={2} className="mh-cell-arrow" style={{ flexShrink: 0, color: MK.ink300 }} />
+          <ArrowUpRight size={16} strokeWidth={2} className="mh-cell-arrow" style={{ flexShrink: 0 }} />
         </span>
         {cell.logo ? (
           <img src={cell.logo} alt={cell.logoAlt ?? ''} style={{ marginTop: 28, height: 20, width: 'auto', alignSelf: 'flex-start' }} />
@@ -1259,9 +1259,9 @@ function MktCellView({ cell, onGo }: { cell: MktCell; onGo: () => void }) {
         </span>
       </a>
       <a href={cell.footer.href.startsWith('http') ? cell.footer.href : MKT + cell.footer.href} onClick={onGo} className="mh-hub" style={{ display: 'flex', width: '100%', alignItems: 'flex-start', gap: 10, borderTop: `1px solid ${MK.hair}`, padding: '16px 24px', textDecoration: 'none' }}>
-        <ArrowRight size={16} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0, color: MK.ink400 }} className="mh-hub-icon" />
+        <ArrowRight size={16} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0 }} className="mh-hub-icon" />
         <span style={{ display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-          <span className="mh-hub-label" style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.25, color: MK.ink }}>{cell.footer.label}</span>
+          <span className="mh-hub-label" style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>{cell.footer.label}</span>
           <span style={{ fontSize: 12.5, lineHeight: 1.4, color: MK.ink500 }}>{cell.footer.sublabel}</span>
         </span>
       </a>
@@ -1428,7 +1428,11 @@ function MarketingHeader() {
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: `1px solid ${MK.hair}`, flexShrink: 0 }}>
       <MarketingBanner />
-      <div ref={barRef} className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 80, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
+      {/* 79, not 80: over there the bar is `h-20` on a border-box header whose
+          own rule eats the last pixel, so the row measures 79 and the header
+          measures 80 with the rule counted. Matching the 80 here instead would
+          push every band down a pixel relative to frigade.com. */}
+      <div ref={barRef} className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 79, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
         <div style={{ gridColumn: 1, justifySelf: 'start', display: 'inline-flex' }}>{logo}</div>
         <nav className="mh-nav" aria-label="Frigade" style={{ gridColumn: 2, justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
           {trigger('products', 'Products')}
@@ -1477,7 +1481,7 @@ function MarketingHeader() {
         aria-hidden
         onMouseEnter={closeNow}
         onClick={closeNow}
-        style={{ position: 'absolute', left: 0, right: 0, top: '100%', height: '100vh', background: 'rgba(27,27,29,0.22)', transition: `opacity ${instant ? 0 : 200}ms ease-out`, opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none', zIndex: 39 }}
+        style={{ position: 'absolute', left: 0, right: 0, top: 'calc(100% + 1px)', height: '100vh', background: 'rgba(27,27,29,0.22)', transition: `opacity ${instant ? 0 : 200}ms ease-out`, opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none', zIndex: 39 }}
       />
 
       {/* The band. Unfolds by clip-path, which is off the main thread and costs
@@ -1486,7 +1490,7 @@ function MarketingHeader() {
         className="mh-band"
         onMouseEnter={clearTimers}
         onMouseLeave={hoverClose}
-        style={{ position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 40, background: '#fff', borderBottom: `1px solid ${MK.hair}`, clipPath: open ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)', transition: `clip-path ${instant ? 0 : 220}ms cubic-bezier(.32,.72,0,1)`, visibility: open ? 'visible' : 'hidden', willChange: open ? 'clip-path' : undefined }}
+        style={{ position: 'absolute', left: 0, right: 0, top: 'calc(100% + 1px)', zIndex: 40, background: '#fff', borderBottom: `1px solid ${MK.hair}`, clipPath: open ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)', transition: `clip-path ${instant ? 0 : 220}ms cubic-bezier(.32,.72,0,1)`, visibility: open ? 'visible' : 'hidden', willChange: open ? 'clip-path' : undefined }}
       >
         <div className="mh-rail">
           <div className={open === 'products' ? 'mh-rail-inner mh-grid mh-grid-3' : 'mh-rail-inner mh-grid mh-grid-4'}>
@@ -1496,7 +1500,7 @@ function MarketingHeader() {
                 {MKT_PRODUCTS.map((p, i) => {
                   const Icon = p.icon;
                   return (
-                    <a key={p.t} href={MKT + p.h} onClick={closeNow} className="mh-prod" style={{ display: 'flex', flexDirection: 'column', gap: 12, background: '#fff', padding: '20px 24px', textDecoration: 'none', animation: instant ? undefined : `rdItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 22}ms backwards` }}>
+                    <a key={p.t} href={MKT + p.h} onClick={closeNow} className="mh-prod" style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 24px', textDecoration: 'none', animation: instant ? undefined : `rdItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 22}ms backwards` }}>
                       <span style={{ display: 'inline-flex', height: 32, width: 32, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: p.tile, color: '#fff', outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: `0 2px 8px 0 rgba(${p.shadow}, 0.28), inset 0 2px 1px 0 rgba(255,255,255,0.2)` }}>
                         <Icon size={16} strokeWidth={2} />
                       </span>
@@ -2409,19 +2413,19 @@ export default function NorthwindPage() {
            opaque so the ground never shows through as a tint. An empty grid
            area is not an empty cell, it is a grey slab, which is why the
            spacer row below the lattice is filled with white cells. */
-        .mh-grid{display:grid;gap:1px;background:#1b1b1d0a;border-left:1px solid #1b1b1d0a;border-right:1px solid #1b1b1d0a}
-        @media(min-width:1240px){.mh-grid{border-left:0;border-right:0}}
+        .mh-grid{box-sizing:border-box;display:grid;gap:1px;background:#1b1b1d0a;border-left:1px solid #1b1b1d0a;border-right:1px solid #1b1b1d0a}
         .mh-grid-3{grid-template-columns:repeat(3,1fr)}
         .mh-grid-4{grid-template-columns:repeat(2,1fr)}
         @media(min-width:1024px){.mh-grid-4{grid-template-columns:repeat(4,1fr)}}
         .mh-spacer{height:28px}
         .mh-heading{background:#fff;border-bottom:1px solid #1b1b1d0a;padding:16px 24px;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.13em;color:#9aa0b0}
-        .mh-row,.mh-prod,.mh-cell,.mh-hub{transition:background-color .15s ease}
-        .mh-row:hover,.mh-prod:hover,.mh-cell:hover,.mh-hub:hover{background:rgba(250,250,250,.6)}
-        .mh-cell-arrow{transition:color .15s ease}
+        .mh-row,.mh-prod,.mh-cell,.mh-hub{background:#fff;transition:background-color .15s ease}
+        .mh-row:hover,.mh-prod:hover,.mh-cell:hover,.mh-hub:hover{background-color:rgba(250,250,250,.6)}
+        .mh-cell-arrow{color:#c9cdd7;transition:color .15s ease}
         .mh-cell:hover .mh-cell-arrow{color:#6b7180}
-        .mh-row-label,.mh-row-icon,.mh-hub-label,.mh-hub-icon{transition:color .15s ease}
-        .mh-row:hover .mh-row-label,.mh-row:hover .mh-row-icon,.mh-hub:hover .mh-hub-label,.mh-hub:hover .mh-hub-icon{color:#015efb}
+        .mh-row-label,.mh-hub-label{color:#1a233c;transition:color .15s ease}
+        .mh-row-icon,.mh-hub-icon{color:#9aa0b0;transition:color .15s ease}
+        .mh-row:hover .mh-row-label,.mh-row:focus-visible .mh-row-label,.mh-row:hover .mh-row-icon,.mh-row:focus-visible .mh-row-icon,.mh-hub:hover .mh-hub-label,.mh-hub:focus-visible .mh-hub-label,.mh-hub:hover .mh-hub-icon,.mh-hub:focus-visible .mh-hub-icon{color:#015efb}
         @keyframes rdItemIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
         /* Dot field on the cell that closes a band. Animating ~700 dots is not
            an option, so the lattice is drawn once and a second lattice at a
