@@ -7,3 +7,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * frigade.com renders every glyph with antialiased smoothing (Tailwind's
+ * `antialiased` on its body). Without it macOS falls back to subpixel AA,
+ * which lays down visibly thicker strokes at the same weight - the demo's
+ * type read about one weight heavier than the site it mirrors, most
+ * obviously in the 13px announcement bar sitting right at the top.
+ */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
