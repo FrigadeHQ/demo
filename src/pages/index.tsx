@@ -1057,7 +1057,7 @@ const MKT_FEATURES: MktMenu = {
       items: [
         { t: 'Always Accurate', h: '/features/always-accurate', icon: RefreshCw, d: 'Retrains when you ship' },
         { t: 'Feedback', h: '/features/feedback', icon: MessageSquare, d: 'Sharper every time you coach' },
-        { t: 'Insights', h: '/features/insights', icon: BarChart3, d: 'Why users get stuck' },
+        { t: 'Insights', h: '/features/insights', icon: BarChart3, d: 'Friction you can actually fix' },
       ],
     },
     {
@@ -1107,7 +1107,7 @@ const MKT_WHY: MktMenu = {
     {
       heading: 'Company',
       items: [
-        { t: 'About', h: '/about', icon: Building2, d: 'Why we build this' },
+        { t: 'About', h: '/about', icon: Building2, d: 'Who we are, and how we ship' },
         { t: 'Updates', h: '/updates', icon: Megaphone, d: 'What shipped this week' },
         { t: 'Blog', h: '/blog', icon: Newspaper, d: 'Notes on agents and product' },
       ],
@@ -1440,7 +1440,7 @@ function MarketingHeader() {
             </div>
             <p style={{ margin: '32px 0 0', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', color: '#8b93a5' }}>Explore</p>
             <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column' }}>
-              {[...nav, { t: 'Features', h: '/features/skills' }, { t: 'Why Frigade', h: '/compare' }].map((l) => (
+              {[{ t: 'Features', h: '/features/skills' }, { t: 'Why Frigade', h: '/compare' }, ...nav].map((l) => (
                 <a key={l.t} href={MKT + l.h} style={{ padding: '10px 0', fontSize: 16, fontWeight: 500, color: C.ink, textDecoration: 'none' }}>{l.t}</a>
               ))}
             </div>
