@@ -1112,9 +1112,9 @@ const MKT_WHY: MktMenu = {
     {
       heading: 'Compare',
       items: [
-        { t: 'WalkMe', h: '/compare/walkme', icon: Scale, d: 'Overlays your team maintains' },
-        { t: 'Userflow', h: '/compare/userflow', icon: Scale, d: 'Flows your team authors' },
-        { t: 'Fin', h: '/compare/fin', icon: Scale, d: 'Answers from your help docs' },
+        { t: 'Frigade vs. WalkMe', h: '/compare/walkme', icon: Scale, d: 'Overlays your team maintains' },
+        { t: 'Frigade vs. Userflow', h: '/compare/userflow', icon: Scale, d: 'Flows your team authors' },
+        { t: 'Frigade vs. Fin', h: '/compare/fin', icon: Scale, d: 'Support AI inside Intercom' },
         { t: 'All comparisons', h: '/compare', icon: Layers, d: 'Eleven tools, side by side' },
       ],
     },
