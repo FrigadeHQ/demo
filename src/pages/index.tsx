@@ -1146,7 +1146,7 @@ const MKT_WHY: MktMenu = {
 // on the marketing site, so they are absent here too.
 const MKT_PRODUCTS: { t: string; h: string; icon: LucideIcon; tile: string; shadow: string; d: string; tag?: string }[] = [
   { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'Learns your product as you ship it, then guides your users through it. UI included.' },
-  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Everything the Assistant knows, plus generated guides, as a tool call in your own agent.', tag: 'New' },
+  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Let your own agent generate product guides and answer questions as your product changes.', tag: 'New' },
   { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Drop-in React components for onboarding and activation, shipped as code you review.' },
 ];
 
