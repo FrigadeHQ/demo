@@ -6,7 +6,7 @@ import {
   Sparkles, CodeXml, Braces, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
   UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw, Rocket, ShieldCheck,
   Wrench, Lightbulb, LayoutTemplate, RefreshCw, Blocks, Terminal, Smartphone, UserCheck,
-  TrendingUp, Scale, Layers, Building2, MonitorPlay, ArrowUpRight, ArrowRight, BookOpen,
+  TrendingUp, Scale, Layers, Building2, MonitorPlay, ArrowUpRight, ArrowRight, BookOpen, MousePointerClick,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { getUserId } from '@/lib/utils';
@@ -14,6 +14,7 @@ import { DEMO_FLOWS } from '@/lib/demo-flows';
 import { getCalApi } from '@calcom/embed-react';
 import { useExperience } from '@/components/experience-context';
 import { VIDEO_BASE, SkillsChooser, SKILL_VIDEOS } from '@/components/skills-chooser';
+import { MARKETING_VIDEO_FRAME } from '@/lib/marketing-styles';
 import { ScrollingFooterCompass } from '@/components/scrolling-footer-compass';
 import { FONT, MONO, C, DARK, palette, cssVars, APP_SCOPE, BTN_BRAND } from '@/lib/theme';
 
@@ -1431,7 +1432,7 @@ function OtherDemoCard({ to }: { to: ProductKey }) {
       type="button"
       className="nw-otherdemo"
       onClick={() => { setExperience(to); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }}
-      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', maxWidth: 520, margin: '34px auto 0', padding: '20px 24px', borderRadius: 0, background: '#fff', border: `1px solid ${C.line}`, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 14, width: 'calc(100% - 40px)', maxWidth: 520, margin: '34px auto 0', padding: '20px 24px', borderRadius: 0, background: '#fff', border: `1px solid ${C.line}`, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
     >
       <ProductTile k={to} size={36} radius={9} iconSize={16} glow />
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>
@@ -1439,7 +1440,7 @@ function OtherDemoCard({ to }: { to: ProductKey }) {
         <span style={{ fontSize: 15, fontWeight: 600, color: C.ink, letterSpacing: '-.01em' }}>{m.label}</span>
         <span style={{ fontSize: 13, lineHeight: 1.45, color: C.muted }}>{m.desc}</span>
       </span>
-      <span className="nw-otherdemo-cta" style={{ flexShrink: 0, color: C.brand, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>Explore &rarr;</span>
+      <span className="nw-otherdemo-cta nw-arrow-link" style={{ flexShrink: 0, color: C.brand, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}><span className="nw-arrow-label">Explore</span><ArrowRight className="nw-arrow-glyph" size={16} aria-hidden /></span>
     </button>
   );
 }
@@ -1663,12 +1664,12 @@ function MarketingFooter() {
 // The shared value-prop grid uses the marketing site's square, ruled cells.
 function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: string; items: { icon: IconType; title: string; desc: string }[] }) {
   return (
-    <div style={{ maxWidth: 1016, margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 40px' }}>
+    <div className="nw-benefits" style={{ width: '100%' }}>
+      <div style={{ textAlign: 'center', maxWidth: 688, margin: '0 auto 40px', padding: '0 24px' }}>
         <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>{title}</h2>
         <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>{subtitle}</p>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 1, background: MK.hair, border: `1px solid ${MK.hair}` }}>
+      <div className="nw-benefits-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 1, background: MK.hair, borderTop: `1px solid ${MK.hair}` }}>
         {items.map((b) => {
           const Icon = b.icon;
           return (
@@ -1684,19 +1685,38 @@ function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: 
   );
 }
 
-// Closing CTA follows the same square frame as the marketing sections.
-function RichCtaCard({ title, subtext, children, flush }: { title: string; subtext: string; children: React.ReactNode; flush?: boolean }) {
-  return (
-    <div style={{ maxWidth: 1016, margin: flush ? '0 auto' : '76px auto 0' }}>
-      <div style={{ borderRadius: 0, border: `1px solid ${MK.hair}`, background: '#fafbfc' }}>
-        <div style={{ maxWidth: 860, margin: '0 auto', padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
-          <h2 className="nw-h2" style={{ margin: 0, maxWidth: 560, fontWeight: 700, color: C.ink }}>{title}</h2>
-          <p className="nw-balance" style={{ margin: 0, maxWidth: 480, fontSize: 15, lineHeight: 1.6, color: C.muted }}>{subtext}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>{children}</div>
-        </div>
+// The same product-colored closer as frigade.com: square panel, white primary,
+// animated dot texture and a quiet link to the existing booking flow.
+function ProductCta({ title, subtext, product }: { title: string; subtext: string; product: ProductKey }) {
+  const engage = product === 'engage';
+  const palette = engage
+    ? { panel: 'linear-gradient(159deg, rgb(61,91,139) 0%, rgb(45,73,118) 100%)', glow: 'rgba(214,224,240,.5)', label: '#2d4976' }
+    : { panel: 'linear-gradient(159deg, rgb(0,110,255) 0%, rgb(0,82,242) 100%)', glow: 'rgba(198,228,255,.6)', label: '#015efb' };
+  const icons = [engage ? CodeXml : Sparkles, Zap, Route, MousePointerClick];
+  const slots: React.CSSProperties[] = [
+    { left: '7%', top: '22%', width: 44, height: 44, transform: 'rotate(-8deg)' },
+    { left: '15%', bottom: '16%', width: 40, height: 40, transform: 'rotate(10deg)' },
+    { right: '8%', top: '18%', width: 44, height: 44, transform: 'rotate(7deg)' },
+    { right: '14%', bottom: '19%', width: 40, height: 40, transform: 'rotate(-9deg)' },
+  ];
+  const motion = [{ duration: '6s', delay: '0s', direction: 'normal' }, { duration: '7.5s', delay: '-2.5s', direction: 'reverse' }, { duration: '6.8s', delay: '-1.2s', direction: 'reverse' }, { duration: '8s', delay: '-4s', direction: 'normal' }];
+  return <div className="nw-product-cta" data-product={product} style={{ position: 'relative', isolation: 'isolate', overflow: 'hidden', background: palette.panel }}>
+    <span aria-hidden className="nw-cta-dots nw-cta-dots-a" /><span aria-hidden className="nw-cta-dots nw-cta-dots-b" />
+    <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: '-40%', height: '80%', pointerEvents: 'none', background: `radial-gradient(58% 100% at 50% 100%, ${palette.glow}, rgba(255,255,255,0) 70%)` }} />
+    {icons.map((Icon, i) => <span key={i} className="nw-cta-tile" aria-hidden style={{ position: 'absolute', pointerEvents: 'none', ...slots[i] }}>
+      <span className="nw-cta-tile-float" style={{ display: 'grid', placeItems: 'center', width: '100%', height: '100%', borderRadius: 13, border: '1px solid rgba(255,255,255,.15)', background: 'rgba(255,255,255,.07)', color: 'rgba(255,255,255,.8)', animationDuration: motion[i].duration, animationDelay: motion[i].delay, animationDirection: motion[i].direction }}><Icon size={19} strokeWidth={1.75} /></span>
+    </span>)}
+    <div style={{ position: 'relative', maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+      <h2 className="nw-cta-title">{title}</h2>
+      <p style={{ margin: '20px 0 0', maxWidth: 480, fontSize: 16, lineHeight: 1.6, color: 'rgba(255,255,255,.85)', textWrap: 'balance' }}>{subtext}</p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '12px 20px', marginTop: 32 }}>
+        <a className="nw-cta-primary" href={engage ? APP_URL : APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ color: palette.label }}>Get started</a>
+        <button className="nw-cta-booking nw-arrow-link" data-cal-link={engage ? CAL_LINK : CAL_LINK_ASSISTANT} data-cal-namespace={engage ? CAL_NS : CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG}>
+          <span className="nw-arrow-label">Book a call</span><ArrowRight className="nw-arrow-glyph" size={14} aria-hidden />
+        </button>
       </div>
     </div>
-  );
+  </div>;
 }
 
 // "Built with a Claude skill" section for the Engage page. This whole demo was
@@ -1766,11 +1786,11 @@ function BuiltWithSkill() {
 
 // Reusable rail band: content framed in the 1240 rails with a hairline separator and
 // vertical rhythm, matching the Engage sections. Page chrome, always light.
-function RailBand({ children, top = 80, bottom = 80, id }: { children: React.ReactNode; top?: number; bottom?: number; id?: string }) {
+function RailBand({ children, top = 80, bottom = 80, id, flush = false }: { children: React.ReactNode; top?: number; bottom?: number; id?: string; flush?: boolean }) {
   return (
     <section id={id} style={{ position: 'relative', zIndex: 1, scrollMarginTop: 72 }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-        <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: top, paddingBottom: bottom }}>
+        <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: top, paddingBottom: bottom, paddingInline: flush ? 0 : undefined }}>
           {children}
         </div>
       </div>
@@ -1818,7 +1838,7 @@ function SkillsSection() {
         <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
         <LearnMoreLink href="https://frigade.com/features/skills" label="Learn more about Skills" />
       </div>
-      <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', background: '#0d1424', border: `1px solid ${MK.hair}`, boxShadow: '0 8px 24px rgba(18,24,40,.04)' }}>
+      <div style={{ ...MARKETING_VIDEO_FRAME }}>
         <video src={VIDEO_BASE + '/videos/skills/full-demo.mp4'} poster={VIDEO_BASE + '/videos/skills/full-demo.jpg'} autoPlay muted loop playsInline controls preload="auto" aria-label="Full skills walkthrough" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '16 / 9' }} />
       </div>
       <div style={{ marginTop: 56 }}>
@@ -1874,7 +1894,7 @@ function AssistantSection() {
           <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, the way a power user would. That context is what lets it actually help your users, guiding them through real workflows instead of pointing at a help article.</p>
           <LearnMoreLink href="https://frigade.com/features/ai-generated-tours" label="Learn more about product tours" />
         </div>
-        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', border: `1px solid ${MK.hair}`, boxShadow: '0 8px 24px rgba(18,24,40,.04)' }}>
+        <div style={{ ...MARKETING_VIDEO_FRAME, aspectRatio: '16 / 9' }}>
           <video src={VIDEO_BASE + '/videos/airbnb.mp4'} poster={VIDEO_BASE + '/videos/airbnb.jpg'} autoPlay muted loop playsInline preload="auto" aria-label="Airbnb assistant demo" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
@@ -1904,7 +1924,7 @@ function AssistantSection() {
           <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Suggestions proactively onboard new users, drive feature adoption, and nudge the next step at the moment that matters. The impact of an account exec on every account, with almost none of the effort.</p>
           <LearnMoreLink href="https://frigade.com/features/suggestions" label="Learn more about Suggestions" />
         </div>
-        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', background: '#fff', border: `1px solid ${MK.hair}`, boxShadow: '0 8px 24px rgba(18,24,40,.04)' }}>
+        <div style={{ ...MARKETING_VIDEO_FRAME }}>
           <video data-hero-video src="/videos/hero.mp4" autoPlay muted loop playsInline controls preload="auto" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '1566 / 1080' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
@@ -1931,7 +1951,7 @@ function AssistantSection() {
       <SkillsSection />
 
       {/* Shared value props. */}
-      <RailBand>
+      <RailBand flush bottom={0}>
         <BenefitsSection
           title="Support that scales with your product."
           subtitle="Trained on your product and always up to date. Here's what that unlocks."
@@ -1940,15 +1960,12 @@ function AssistantSection() {
       </RailBand>
 
       {/* Closing CTA. */}
-      <RailBand top={64} bottom={96}>
-        <RichCtaCard
-          flush
+      <RailBand flush top={64} bottom={96}>
+        <ProductCta
+          product="assistant"
           title="AI that actually knows your product."
           subtext="Frigade Assistant learns your product and stays up to date automatically. Add it to yours in an afternoon."
-        >
-          <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
-          <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
-        </RichCtaCard>
+        />
         <OtherDemoCard to="engage" />
       </RailBand>
     </>
@@ -2163,6 +2180,39 @@ export default function NorthwindPage() {
         .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-label{color:rgb(26,27,47)}
         .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-tile{border-color:rgba(34,34,79,0.18);color:#6b7180}
         @media(prefers-reduced-motion:reduce){.nw-seg-key,.nw-seg-tile,.nw-seg-label{transition:none}}
+        /* Product closers mirror the marketing site's palette, texture and spacing. */
+        .nw-product-cta{padding:80px 32px}
+        .nw-cta-title{margin:0;color:#fff;font-size:32px;font-weight:700;line-height:1.03;letter-spacing:-.02em;text-wrap:balance}
+        .nw-cta-primary{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:#fff;padding:10px 20px;font-size:14.5px;font-weight:600;text-decoration:none;box-shadow:0 10px 30px -10px rgba(0,26,80,.5);transition:transform 150ms cubic-bezier(.23,1,.32,1),box-shadow 150ms cubic-bezier(.23,1,.32,1)}
+        .nw-cta-primary:active{transform:scale(.97)}
+        .nw-cta-booking{padding:10px 0;border:0;background:transparent;color:rgba(255,255,255,.85);font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+        .nw-cta-booking:hover{color:#fff}
+        .nw-cta-primary:focus-visible,.nw-cta-booking:focus-visible{outline:2px solid #fff;outline-offset:5px}
+        .nw-cta-dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.95) 1px,transparent 1px);background-size:22px 22px;animation-timing-function:linear;animation-iteration-count:infinite}
+        .nw-cta-dots-a{opacity:.22;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:23.5px 23.5px;mask-size:23.5px 23.5px;animation-name:nwCtaDotsA;animation-duration:26s}
+        .nw-cta-dots-b{opacity:.16;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:26px 26px;mask-size:26px 26px;animation-name:nwCtaDotsB;animation-duration:37s}
+        .nw-cta-tile{display:none}
+        .nw-cta-tile-float{animation-name:nwCtaFloat;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+        .nw-sr:not(.nw-sr-in) .nw-cta-dots,.nw-sr:not(.nw-sr-in) .nw-cta-tile-float{animation-play-state:paused}
+        @keyframes nwCtaDotsA{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:235px -188px;mask-position:235px -188px}}
+        @keyframes nwCtaDotsB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-260px 208px;mask-position:-260px 208px}}
+        @keyframes nwCtaFloat{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}30%{transform:translate3d(6px,-13px,0) rotate(2.5deg)}65%{transform:translate3d(-5px,6px,0) rotate(-1.5deg)}}
+        @media(max-width:359px){.nw-cta-title{font-size:28px}}
+        @media(min-width:768px){.nw-product-cta{padding:96px 48px}.nw-cta-title{font-size:52px}.nw-cta-tile{display:block}}
+        /* A drawn rule and 3px arrow nudge match the main site's text links. */
+        .nw-arrow-link{display:inline-flex;align-items:center;gap:4px}
+        .nw-arrow-label{position:relative}
+        .nw-arrow-label::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.7;transform:scaleX(0);transform-origin:left;transition:transform 240ms cubic-bezier(.32,.72,0,1)}
+        .nw-arrow-glyph{flex-shrink:0;transition:transform 240ms cubic-bezier(.32,.72,0,1)}
+        @media(hover:hover) and (pointer:fine){
+          .nw-otherdemo:hover .nw-arrow-glyph,.nw-cta-booking:hover .nw-arrow-glyph{transform:translateX(3px)}
+          .nw-otherdemo:hover .nw-arrow-label::after,.nw-cta-booking:hover .nw-arrow-label::after{transform:scaleX(1)}
+          .nw-cta-primary:hover{transform:scale(1.02);box-shadow:0 14px 36px -10px rgba(0,26,80,.55)}
+          .nw-cta-primary:active{transform:scale(.97)}
+        }
+        .nw-otherdemo:focus-visible{outline:2px solid #015efb;outline-offset:3px}
+        .nw-otherdemo:focus-visible .nw-arrow-label::after,.nw-cta-booking:focus-visible .nw-arrow-label::after{transform:scaleX(1);transition:none}
+        @media(prefers-reduced-motion:reduce){.nw-cta-dots,.nw-cta-tile-float{animation:none}.nw-arrow-label::after,.nw-arrow-glyph,.nw-cta-primary{transition:none}.nw-otherdemo .nw-arrow-glyph,.nw-cta-booking .nw-arrow-glyph,.nw-cta-primary{transform:none!important}}
         .nw-otherdemo{transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
         .nw-otherdemo:hover{border-color:#d9dde6;background:#fafafa!important}
         .nw-otherdemo:active{transform:scale(.995)}
@@ -2319,7 +2369,7 @@ export default function NorthwindPage() {
             hairline separator and an 80px vertical rhythm, mirroring frigade.com/engage. */}
         <section style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 80, paddingBottom: 80 }}>
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 80, paddingBottom: 0, paddingInline: 0 }}>
               <BenefitsSection
                 title="Everything you just saw, from one SDK."
                 subtitle="Native to your product and driven by real events. This is what powers it."
@@ -2339,15 +2389,12 @@ export default function NorthwindPage() {
 
         <section style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 64, paddingBottom: 96 }}>
-              <RichCtaCard
-                flush
+            <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 64, paddingBottom: 96, paddingInline: 0 }}>
+              <ProductCta
+                product="engage"
                 title="The backend for product onboarding."
                 subtext="Build the experiences you want and ship them fast. This whole demo was built with Frigade and an AI agent, using the frigade-engage skill, in less than an afternoon."
-              >
-                <a href={APP_URL} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', ...CTA_FILL.engage, textDecoration: 'none' }}>Get started</a>
-                <button data-cal-link={CAL_LINK} data-cal-namespace={CAL_NS} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
-              </RichCtaCard>
+              />
               <OtherDemoCard to="assistant" />
             </div>
           </div>

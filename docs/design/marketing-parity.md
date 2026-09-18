@@ -36,3 +36,14 @@ The Northwind application, Frigade flow definitions, product query context, prov
 Local production preview: `http://localhost:3217/` and `http://localhost:3217/?product=engage`.
 
 This demo-site pass is ready for visual review and has not been deployed. The separate Assist API illustration correction remains a follow-up: the ping flies to its destination, lands, and then emits its pulse; the previous Assist implementation should be used as the motion reference.
+
+## CTA and frame refinements
+
+| Before | After | Why |
+| --- | --- | --- |
+| Inset near-white closing card | Rail-to-rail product CTA: bright Assistant blue or Engage slate blue, dot texture, drifting icons, white primary button | Match each corresponding product page and retain its visual hierarchy. |
+| Benefit grid capped at 1016px, with mobile gutters | Grid fills its rail wrapper and reaches both edges on mobile | Keep the square cells attached to the page grid. |
+| Translucent borders over dark video backgrounds | All four video surfaces share a square, white-backed frame with zero border | Remove the dark strokes and prevent the frames from drifting apart. |
+| Static Explore arrow | Drawn underline and 3px arrow movement on hover, with immediate keyboard focus treatment and reduced-motion support | Match the main site's small action links. |
+
+Fresh rendered checks confirmed desktop CTA and grid widths of 1040px, matching their rail wrappers exactly. On mobile they both start at x=0 and fill the content viewport without horizontal overflow. All video frames report 0px borders and 0px radii. Assistant and Engage retain their respective signup attribution and Cal booking destinations. Mobile CTA type is adjusted to avoid isolating “knows” on its own line.
