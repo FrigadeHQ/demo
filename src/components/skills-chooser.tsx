@@ -148,7 +148,7 @@ export function SkillsChooser({ defaultSkill = 'jira', scrollTargetId, allowFull
         className={allowFullscreen ? 'sc-stage' : undefined}
         onMouseMove={allowFullscreen ? wakeFsBtn : undefined}
         onMouseLeave={allowFullscreen ? () => { cancelHide(); overFsBtn.current = false; setFsBtnOn(false); } : undefined}
-        style={{ position: 'relative', maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)', cursor: isFs && !fsBtnOn ? 'none' : undefined }}
+        style={{ position: 'relative', maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', border: '1px solid rgba(27,27,29,.04)', boxShadow: '0 8px 24px rgba(18,24,40,.04)', cursor: isFs && !fsBtnOn ? 'none' : undefined }}
       >
         {skills.map((s) => {
           const isFullDemo = s.key === 'full-demo';

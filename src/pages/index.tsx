@@ -6,7 +6,7 @@ import {
   Sparkles, CodeXml, Braces, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
   UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw, Rocket, ShieldCheck,
   Wrench, Lightbulb, LayoutTemplate, RefreshCw, Blocks, Terminal, Smartphone, UserCheck,
-  TrendingUp, Scale, Layers, Building2, MonitorPlay, ArrowUpRight, ArrowRight,
+  TrendingUp, Scale, Layers, Building2, MonitorPlay, ArrowUpRight, ArrowRight, BookOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { getUserId } from '@/lib/utils';
@@ -1039,7 +1039,6 @@ const MK_SHEET_RULE = 'rgba(34,34,79,0.06)';
 type MktItem = { t: string; h: string; icon: LucideIcon; d: string };
 type MktCol = { heading: string; items: MktItem[] };
 type MktCell = {
-  chip: string;
   logo?: string;
   logoAlt?: string;
   icon?: LucideIcon;
@@ -1052,116 +1051,75 @@ type MktCell = {
   footer: { label: string; sublabel: string; href: string };
 };
 type MktMenu = { cols: MktCol[]; cell: MktCell };
-type MktMenuKey = 'products' | 'features' | 'why';
+type MktMenuKey = 'products' | 'features' | 'resources';
 
 const MKT_FEATURES: MktMenu = {
   cols: [
-    {
-      heading: 'What it does',
-      items: [
-        { t: 'AI-Generated Tours', h: '/features/ai-generated-tours', icon: Route, d: 'Generated live, never stale' },
-        { t: 'Tool Calls', h: '/features/tool-calls', icon: Wrench, d: 'Wire in your own functions' },
-        { t: 'Suggestions', h: '/features/suggestions', icon: Lightbulb, d: 'Help before they ask' },
-        { t: 'Generative UI', h: '/features/generative-ui', icon: LayoutTemplate, d: 'Answers users can act on' },
-        { t: 'Skills', h: '/features/skills', icon: Zap, d: 'Real actions, no code' },
-      ],
-    },
-    {
-      heading: 'How it stays right',
-      items: [
-        { t: 'Always Accurate', h: '/features/always-accurate', icon: RefreshCw, d: 'Retrains when you ship' },
-        { t: 'Feedback', h: '/features/feedback', icon: MessageSquare, d: 'Sharper every time you coach' },
-        { t: 'Insights', h: '/features/insights', icon: BarChart3, d: 'Friction you can actually fix' },
-      ],
-    },
-    {
-      heading: 'Fits your stack',
-      items: [
-        { t: 'Integrations', h: '/features/integrations', icon: Blocks, d: 'Fits the stack you run' },
-        { t: 'Developer', h: '/features/developer', icon: Terminal, d: 'API, controls, and docs' },
-        { t: 'Mobile Web', h: '/features/mobile', icon: Smartphone, d: 'Made for the mobile browser' },
-      ],
-    },
+    { heading: "Help users take action", items: [
+      { t: "AI-Generated Tours", h: "/features/ai-generated-tours", icon: Route, d: "Walkthroughs on the live screen" },
+      { t: "Suggestions", h: "/features/suggestions", icon: Lightbulb, d: "Help before users ask" },
+      { t: "Generative UI", h: "/features/generative-ui", icon: LayoutTemplate, d: "Answers users can act on" },
+      { t: "Skills", h: "/features/skills", icon: Zap, d: "Complete tasks inside your product" }
+    ] },
+    { heading: "Improve the experience", items: [
+      { t: "Always Accurate", h: "/features/always-accurate", icon: RefreshCw, d: "Re-learns as your product changes" },
+      { t: "Feedback", h: "/features/feedback", icon: MessageSquare, d: "Coach answers without code" },
+      { t: "Insights", h: "/features/insights", icon: BarChart3, d: "See where users need help" },
+      { t: "Mobile Web", h: "/features/mobile", icon: Smartphone, d: "Guide users on smaller screens" }
+    ] },
+    { heading: "Connect to your stack", items: [
+      { t: "Integrations", h: "/features/integrations", icon: Blocks, d: "Connect your team's knowledge" },
+      { t: "Tool Calls", h: "/features/tool-calls", icon: Wrench, d: "Give the agent your own tools" },
+      { t: "Developer", h: "/features/developer", icon: Terminal, d: "APIs, SDKs, and controls" }
+    ] }
   ],
-  cell: {
-    chip: 'Demo',
-    icon: MonitorPlay,
-    title: 'Frigade running in a working app.',
-    subtitle: 'Our demo site. No signup.',
-    href: 'https://demo.frigade.com',
-    footer: {
-      label: 'Try Frigade in your product',
-      sublabel: 'Send a URL, we set it up',
-      href: `${MKT}/#cta:demo-custom`,
-    },
-  },
+  cell: {"title": "See Frigade in action.", "subtitle": "Explore the demo. No signup required.", "href": "https://demo.frigade.com", "footer": {"label": "Try Frigade in your product", "sublabel": "Send us a URL to get started", "href": "https://frigade.com/#cta:demo-custom"}, "icon": MonitorPlay}
 };
 
-const MKT_WHY: MktMenu = {
+const MKT_RESOURCES: MktMenu = {
   cols: [
-    {
-      heading: 'Use cases',
-      items: [
-        { t: 'Support Deflection', h: '/use-cases/support-deflection', icon: ShieldCheck, d: 'Answer before a ticket opens' },
-        { t: 'User Activation', h: '/use-cases/user-activation', icon: Rocket, d: 'Guide setup, step by step' },
-        { t: 'Virtual CSM', h: '/use-cases/virtual-csm', icon: UserCheck, d: 'Guidance at every tier' },
-        { t: 'Feature Adoption', h: '/use-cases/feature-adoption', icon: Sparkles, d: 'Surface what shipped' },
-        { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell', icon: TrendingUp, d: 'Grow accounts in the product' },
-      ],
-    },
-    {
-      heading: 'Compare',
-      items: [
-        { t: 'Frigade vs. WalkMe', h: '/compare/walkme', icon: Scale, d: 'Overlays your team maintains' },
-        { t: 'Frigade vs. Userflow', h: '/compare/userflow', icon: Scale, d: 'Flows your team authors' },
-        { t: 'Frigade vs. Fin', h: '/compare/fin', icon: Scale, d: 'Support AI inside Intercom' },
-        { t: 'All comparisons', h: '/compare', icon: Layers, d: 'Eleven tools, side by side' },
-      ],
-    },
-    {
-      heading: 'Company',
-      items: [
-        { t: 'About', h: '/about', icon: Building2, d: 'Who we are, and how we ship' },
-        { t: 'Updates', h: '/updates', icon: Megaphone, d: 'What shipped this week' },
-        { t: 'Blog', h: '/blog', icon: Newspaper, d: 'Notes on agents and product' },
-      ],
-    },
+    { heading: "Learn", items: [
+      { t: "How it works", h: "/how-it-works", icon: BookOpen, d: "From learning to helping users" },
+      { t: "Blog", h: "/blog", icon: Newspaper, d: "Ideas for better product adoption" },
+      { t: "Updates", h: "/updates", icon: Megaphone, d: "The latest from Frigade" },
+      { t: "Engage docs", h: "https://engage-docs.frigade.com", icon: Terminal, d: "Build onboarding with Engage" }
+    ] },
+    { heading: "Use cases", items: [
+      { t: "Support Deflection", h: "/use-cases/support-deflection", icon: ShieldCheck, d: "Help users resolve questions" },
+      { t: "User Activation", h: "/use-cases/user-activation", icon: Rocket, d: "Guide users through setup" },
+      { t: "Feature Adoption", h: "/use-cases/feature-adoption", icon: Sparkles, d: "Help users discover what's new" },
+      { t: "Virtual CSM", h: "/use-cases/virtual-csm", icon: UserCheck, d: "Guide customers as they grow" },
+      { t: "Expansion & Upsell", h: "/use-cases/expansion-upsell", icon: TrendingUp, d: "Introduce the right upgrade" }
+    ] },
+    { heading: "Get to know Frigade", items: [
+      { t: "About", h: "/about", icon: Building2, d: "Meet the team" },
+      { t: "Compare Frigade", h: "/compare", icon: Scale, d: "Find the right fit for your team" },
+      { t: "Glossary", h: "/glossary", icon: BookOpen, d: "Product adoption, explained" }
+    ] }
   ],
-  cell: {
-    chip: 'Customer story',
-    logo: '/images/hotplate.svg',
-    logoAlt: 'Hotplate',
-    quote: 'Frigade lets us run support like a product, not a cost center.',
-    attribution: 'Ben Klenk, CEO',
-    href: `${MKT}/case-studies/hotplate`,
-    footer: {
-      label: 'Read the Valley story',
-      sublabel: 'Activation without the tickets',
-      href: `${MKT}/case-studies/valley`,
-    },
-  },
+  cell: {"logo": "/images/hotplate.svg", "logoAlt": "Hotplate", "quote": "Frigade lets us run support like a product, not a cost center.", "attribution": "Ben Klenk, CEO", "href": "https://frigade.com/case-studies/hotplate", "footer": {"label": "Read the Valley story", "sublabel": "In-product help at Valley", "href": "https://frigade.com/case-studies/valley"}}
 };
 
 // The three launched products, in nav order. Knowledge and Demo are gated off
 // on the marketing site, so they are absent here too.
 const MKT_PRODUCTS: { t: string; h: string; icon: LucideIcon; tile: string; shadow: string; d: string; tag?: string }[] = [
-  { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'Learns your product as you ship it, then guides your users through it. UI included.' },
-  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Let your own agent generate product guides and answer questions as your product changes.', tag: 'New' },
-  { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Drop-in React components for onboarding and activation, shipped as code you review.' },
+  { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'Product answers and guidance in a ready-made assistant.' },
+  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Add product answers and guidance to your own agent.', tag: 'New' },
+  { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Build onboarding flows your team controls in React.' },
 ];
 
 // Flat links, i.e. everything in the bar that is not a band trigger. Pricing is
 // the one link that changes per product: Engage has its own pricing page, so
 // the marketing site retargets the same slot rather than adding a link.
 const MKT_NAV: Record<ProductKey, { t: string; h: string }[]> = {
-  assistant: [{ t: 'How it works', h: '/how-it-works' }, { t: 'Pricing', h: '/pricing' }],
-  engage: [{ t: 'How it works', h: '/how-it-works' }, { t: 'Pricing', h: '/engage/pricing' }],
+  assistant: [{ t: 'Pricing', h: '/pricing' }],
+  engage: [{ t: 'Pricing', h: '/engage/pricing' }],
 };
 
 // Copy, colors, and destinations lifted verbatim from the live frigade.com header.
 const PRODUCT_META = {
-  assistant: { label: 'Assistant', tile: '#015efb', shadow: '1, 94, 251', icon: Sparkles, desc: 'Learns your product as you ship it, then guides your users through it. UI included.', mkt: 'https://frigade.com/', signIn: 'https://app.frigade.ai/sign-in', signInDesc: 'Manage your AI assistant' },
-  engage: { label: 'Engage', tile: '#2d4976', shadow: '45, 73, 118', icon: CodeXml, desc: 'Drop-in React components for onboarding and activation, shipped as code you review.', mkt: 'https://frigade.com/engage', signIn: 'https://app.frigade.com/sign-in', signInDesc: 'Build onboarding flows' },
+  assistant: { label: 'Assistant', tile: '#015efb', shadow: '1, 94, 251', icon: Sparkles, desc: 'Product answers and guidance in a ready-made assistant.', mkt: 'https://frigade.com/', signIn: 'https://app.frigade.ai/sign-in', signInDesc: 'Manage your AI assistant' },
+  engage: { label: 'Engage', tile: '#2d4976', shadow: '45, 73, 118', icon: CodeXml, desc: 'Build onboarding flows your team controls in React.', mkt: 'https://frigade.com/engage', signIn: 'https://app.frigade.com/sign-in', signInDesc: 'Build onboarding flows' },
 } as const;
 type ProductKey = keyof typeof PRODUCT_META;
 
@@ -1181,92 +1139,70 @@ function ProductTile({ k, size, radius, iconSize, glow = false, stroke = 2.4 }: 
   );
 }
 
-// One row inside the Login dropdown: icon tile + title + description. Products
-// is a band now, so this is the only floating panel left in the header.
-function MktPanelItem({ k, i, open }: { k: ProductKey; i: number; open: boolean }) {
-  const m = PRODUCT_META[k];
-  return (
-    <a href={m.signIn} className="mh-item" role="menuitem" tabIndex={open ? 0 : -1} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '8px 10px', borderRadius: 12, textDecoration: 'none', animation: open ? `mhItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 32}ms backwards` : undefined }}>
-      <span className="mh-item-tile" style={{ marginTop: 2, display: 'inline-flex' }}>
-        <ProductTile k={k} size={28} radius={9} iconSize={16} glow stroke={2.25} />
-      </span>
-      <span style={{ display: 'flex', flex: 1, flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-        <span style={{ fontSize: 13.5, fontWeight: 600, color: MK.ink, lineHeight: 1.3 }}>{m.label}</span>
-        <span style={{ fontSize: 12, lineHeight: 1.45, color: MK.ink500 }}>{m.signInDesc}</span>
-      </span>
-    </a>
-  );
-}
+// Shared destination rows keep the same hit area and neutral hover as frigade.com.
+const marketingHref = (href: string) => href.startsWith('http') ? href : MKT + href;
 
-const MKT_PANEL_CHROME: React.CSSProperties = { position: 'absolute', top: 'calc(100% + 8px)', padding: 6, borderRadius: 16, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(230,232,238,0.8)', boxShadow: '0 16px 40px -12px rgba(27,27,29,.18), 0 4px 12px -4px rgba(27,27,29,.06)', zIndex: 60 };
-
-// Row inside a band column. Every row is a ruled cell, same as the marketing
-// site: the lattice is gap:1px over a line-coloured ground, so the rules are
-// gaps and the cells have to stay opaque or the ground reads as a tint.
-function MktRow({ item, i, instant, noRule, onGo }: { item: MktItem; i: number; instant: boolean; noRule: boolean; onGo: () => void }) {
+function MktRow({ item, onGo }: { item: MktItem; onGo: () => void }) {
   const Icon = item.icon;
-  return (
-    <a
-      href={MKT + item.h}
-      className="mh-row"
-      onClick={onGo}
-      style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '14px 24px', textDecoration: 'none', borderBottom: noRule ? 'none' : `1px solid ${MK.hair}`, animation: instant ? undefined : `rdItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 22}ms backwards` }}
-    >
-      <Icon size={15} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0 }} className="mh-row-icon" />
-      <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-        <span className="mh-row-label" style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.25 }}>{item.t}</span>
-        <span style={{ fontSize: 13, lineHeight: 1.45, color: MK.ink500 }}>{item.d}</span>
-      </span>
-    </a>
-  );
+  return <a href={marketingHref(item.h)} className="mh-row" onClick={onGo} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 24px', textDecoration: 'none' }}>
+    <Icon size={15} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0 }} className="mh-row-icon" />
+    <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+      <span className="mh-row-label" style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>{item.t}</span>
+      <span style={{ fontSize: 13, lineHeight: 1.45, color: MK.ink500 }}>{item.d}</span>
+    </span>
+  </a>;
 }
 
-// The cell that closes a band: a destination, not more navigation. Two links,
-// the story (or the demo) and a second row under a rule.
 function MktCellView({ cell, onGo }: { cell: MktCell; onGo: () => void }) {
   const Icon = cell.icon;
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: '#fff' }}>
-      <a href={cell.href.startsWith('http') ? cell.href : MKT + cell.href} onClick={onGo} className="mh-cell" style={{ position: 'relative', display: 'flex', flex: 1, flexDirection: 'column', padding: '20px 24px 28px', textDecoration: 'none', overflow: 'hidden' }}>
-        <span style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-          <span style={{ borderRadius: 999, background: 'rgba(1,94,251,0.1)', padding: '4px 10px', fontFamily: MONO, fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.1em', color: MK.brand }}>{cell.chip}</span>
-          <ArrowUpRight size={16} strokeWidth={2} className="mh-cell-arrow" style={{ flexShrink: 0 }} />
-        </span>
-        {cell.logo ? (
-          <img src={cell.logo} alt={cell.logoAlt ?? ''} style={{ marginTop: 28, height: 20, width: 'auto', alignSelf: 'flex-start' }} />
-        ) : Icon ? (
-          <span style={{ marginTop: 32, display: 'inline-flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 10, background: MK.brand, color: '#fff', outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: '0 2px 8px 0 rgba(1,94,251,0.28), inset 0 2px 1px 0 rgba(255,255,255,0.2)' }}>
-            <Icon size={18} strokeWidth={2} />
-          </span>
-        ) : null}
-        {cell.quote ? (
-          <>
-            <span style={{ marginTop: 24, maxWidth: '26ch', fontSize: 18, fontWeight: 500, lineHeight: 1.38, letterSpacing: '-0.006em', color: MK.ink, textWrap: 'balance' }}>&ldquo;{cell.quote}&rdquo;</span>
-            {cell.attribution ? <span style={{ marginTop: 14, fontSize: 12.5, lineHeight: 1.4, color: MK.ink500 }}>{cell.attribution}</span> : null}
-          </>
-        ) : (
-          <>
-            <span style={{ marginTop: 20, maxWidth: '15ch', fontSize: 21, fontWeight: 600, lineHeight: 1.22, letterSpacing: '-0.012em', color: MK.ink, textWrap: 'balance' }}>{cell.title}</span>
-            {cell.subtitle ? <span style={{ marginTop: 12, maxWidth: '32ch', fontSize: 13, lineHeight: 1.5, color: MK.ink500 }}>{cell.subtitle}</span> : null}
-          </>
-        )}
-        {/* Dot field, same construction as the marketing cell: a static lattice
-            under a mask that drifts, so dots wink out and back rather than the
-            field sliding. */}
-        <span aria-hidden className="mh-dots-wrap">
-          <span className="mh-dots mh-dots-a" />
-          <span className="mh-dots mh-dots-b" />
-        </span>
-      </a>
-      <a href={cell.footer.href.startsWith('http') ? cell.footer.href : MKT + cell.footer.href} onClick={onGo} className="mh-hub" style={{ display: 'flex', width: '100%', alignItems: 'flex-start', gap: 10, borderTop: `1px solid ${MK.hair}`, padding: '16px 24px', textDecoration: 'none' }}>
-        <ArrowRight size={16} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0 }} className="mh-hub-icon" />
-        <span style={{ display: 'flex', flexDirection: 'column', gap: 2, textAlign: 'left' }}>
-          <span className="mh-hub-label" style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>{cell.footer.label}</span>
-          <span style={{ fontSize: 12.5, lineHeight: 1.4, color: MK.ink500 }}>{cell.footer.sublabel}</span>
-        </span>
-      </a>
-    </div>
-  );
+  return <a href={marketingHref(cell.href)} onClick={onGo} className="mh-cell" style={{ position: 'relative', display: 'flex', flexDirection: 'column', padding: '24px 24px 28px', textDecoration: 'none', overflow: 'hidden' }}>
+    <ArrowUpRight size={16} strokeWidth={2} className="mh-cell-arrow" style={{ alignSelf: 'flex-end', flexShrink: 0 }} />
+    {cell.logo ? <img src={cell.logo} alt={cell.logoAlt ?? ''} style={{ marginTop: 16, height: 23, width: 'auto', alignSelf: 'flex-start' }} /> : Icon ?
+      <span style={{ marginTop: 16, display: 'inline-flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: MK.brand, color: '#fff', outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: '0 2px 8px rgba(1,94,251,.28), inset 0 2px 1px rgba(255,255,255,.2)' }}><Icon size={18} /></span> : null}
+    {cell.quote ? <>
+      <span style={{ marginTop: 24, fontSize: 18, fontWeight: 500, lineHeight: 1.38, letterSpacing: '-.006em', color: MK.ink, textWrap: 'balance' }}>&ldquo;{cell.quote}&rdquo;</span>
+      <span style={{ marginTop: 14, fontSize: 12.5, lineHeight: 1.4, color: MK.ink500 }}>{cell.attribution}</span>
+    </> : <>
+      <span style={{ marginTop: 20, maxWidth: '15ch', fontSize: 21, fontWeight: 600, lineHeight: 1.22, letterSpacing: '-.012em', color: MK.ink, textWrap: 'balance' }}>{cell.title}</span>
+      <span style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: MK.ink500 }}>{cell.subtitle}</span>
+    </>}
+    <span aria-hidden className="mh-dots-wrap"><span className="mh-dots mh-dots-a" /><span className="mh-dots mh-dots-b" /></span>
+  </a>;
+}
+
+function MktMenuFooter({ action, onGo }: { action: { label: string; sublabel?: string; href: string }; onGo: () => void }) {
+  return <a className="mh-hub" href={marketingHref(action.href)} onClick={onGo} style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 64, padding: '16px 24px', textDecoration: 'none', borderLeft: `1px solid ${MK.hair}`, borderRight: `1px solid ${MK.hair}` }}>
+    <span style={{ display: 'flex', flex: 1, flexWrap: 'wrap', alignItems: 'baseline', gap: '4px 16px' }}>
+      <span className="mh-hub-label" style={{ fontSize: 14, fontWeight: 500 }}>{action.label}</span>
+      {action.sublabel && <span style={{ color: MK.ink500, fontSize: 13 }}>{action.sublabel}</span>}
+    </span><ArrowRight size={16} className="mh-hub-icon" />
+  </a>;
+}
+
+function MktLogin({ mobile = false }: { mobile?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
+  const id = React.useId();
+  useEffect(() => {
+    if (!open) return;
+    const outside = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('pointerdown', outside);
+    return () => document.removeEventListener('pointerdown', outside);
+  }, [open]);
+  return <div ref={ref} style={{ position: 'relative' }} onKeyDown={(e) => {
+    if (e.key === 'Escape' && open) { e.preventDefault(); e.stopPropagation(); setOpen(false); button.current?.focus(); }
+  }}>
+    <button ref={button} type="button" className="mh-login-button" aria-label="Log in. Choose product to sign in to." aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} style={{ width: mobile ? '100%' : undefined }}>
+      Log in <ChevronDown size={12} style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform 150ms ease-out' }} />
+    </button>
+    {open && <div id={id} className="mh-login-panel" style={{ position: 'absolute', ...(mobile ? { bottom: 'calc(100% + 12px)', left: 0 } : { top: 'calc(100% + 12px)', right: 0 }), width: 300, maxWidth: 'calc(100vw - 48px)', padding: 8, borderRadius: 8, background: '#fff', border: `1px solid ${MK.hair}`, boxShadow: '0 16px 40px -12px rgba(27,27,29,.18), 0 4px 12px -4px rgba(27,27,29,.06)', zIndex: 60 }}>
+      {(Object.keys(PRODUCT_META) as ProductKey[]).map((k) => <a key={k} className="mh-item" href={PRODUCT_META[k].signIn} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 6, textDecoration: 'none' }}>
+        <ProductTile k={k} size={28} radius={7} iconSize={15} glow />
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontSize: 14, fontWeight: 500, color: MK.ink }}>{PRODUCT_META[k].label}</span><span style={{ fontSize: 12, color: MK.ink500 }}>{PRODUCT_META[k].signInDesc}</span></span>
+      </a>)}
+    </div>}
+  </div>;
 }
 
 // The announcement bar above the nav, mirrored from frigade.com's
@@ -1304,85 +1240,58 @@ function MarketingBanner() {
 function MarketingHeader() {
   const { experience } = useExperience();
   const product: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
-  const nav = MKT_NAV[product];
-  // Same CTA targets the marketing header uses on each product's page.
   const getStartedHref = product === 'engage' ? APP_URL : APP_URL_ASSISTANT;
-  // One band, whose contents swap. The marketing site gets to the same place by
-  // handing over between three bands; with a single element there is nothing to
-  // hand over, so moving between triggers changes the content inside a band that
-  // never went away.
   const [open, setOpen] = useState<MktMenuKey | null>(null);
   const [instant, setInstant] = useState(false);
-  const [login, setLogin] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const barRef = useRef<HTMLDivElement | null>(null);
-  const sheetRef = useRef<HTMLDivElement | null>(null);
-  const burgerRef = useRef<HTMLButtonElement | null>(null);
-  const sheetCloseRef = useRef<HTMLButtonElement | null>(null);
+  const triggers = useRef<Partial<Record<MktMenuKey, HTMLButtonElement | null>>>({});
+  const headerRef = useRef<HTMLElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const sheetCloseRef = useRef<HTMLButtonElement>(null);
   const wasOpenRef = useRef(false);
-  // Past this much scroll the marketing header gives the Login slot's width
-  // back to Get Started, so the CTA is the only thing left in the corner.
-  const [tight, setTight] = useState(false);
-  // Whether the pointer is inside a trigger. A band opened by hover must not
-  // close when you click its trigger: you are already looking at it, so the
-  // click reads as "go there", never "put it away".
-  const hovering = useRef(false);
-  // Hover only counts as intent if the pointer actually moved recently.
-  // Without this, scrolling a trigger under a parked cursor opens a band.
   const lastMove = useRef(0);
-  const openT = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const closeT = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const clearTimers = () => {
-    if (openT.current) { clearTimeout(openT.current); openT.current = null; }
-    if (closeT.current) { clearTimeout(closeT.current); closeT.current = null; }
+  const openTimer = useRef<ReturnType<typeof setTimeout>>();
+  const closeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const clearTimers = useCallback(() => { clearTimeout(openTimer.current); clearTimeout(closeTimer.current); }, []);
+  const closeNow = useCallback(() => { clearTimers(); setOpen(null); setInstant(false); }, [clearTimers]);
+  const openNow = (key: MktMenuKey) => { clearTimers(); if (open === key) return; setInstant(open !== null); setOpen(key); };
+  const hoverOpen = (key: MktMenuKey) => {
+    if (performance.now() - lastMove.current > 150) return;
+    clearTimers();
+    if (open !== key) openTimer.current = setTimeout(() => openNow(key), 60);
   };
-  const openNow = (k: MktMenuKey) => { setInstant((prev) => prev || open !== null); setOpen(k); };
-  // 60ms before opening so brushing past a trigger on the way somewhere else
-  // does not flash the band; 320ms before closing so crossing the gap between
-  // two triggers keeps it open.
-  const hoverOpen = (k: MktMenuKey) => { if (performance.now() - lastMove.current > 150) return; clearTimers(); if (open === k) return; openT.current = setTimeout(() => openNow(k), 60); };
-  const hoverClose = () => { clearTimers(); closeT.current = setTimeout(() => { setOpen(null); setInstant(false); }, 320); };
-  const closeNow = () => { clearTimers(); setOpen(null); setInstant(false); };
-  useEffect(() => {
-    if (!login) return;
-    const down = (e: PointerEvent) => { if (barRef.current && !barRef.current.contains(e.target as Node)) setLogin(false); };
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') setLogin(false); };
-    document.addEventListener('pointerdown', down);
-    document.addEventListener('keydown', key);
-    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
-  }, [login]);
-  useEffect(() => {
-    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') closeNow(); };
-    document.addEventListener('keydown', key);
-    return () => document.removeEventListener('keydown', key);
-  }, []);
+  const hoverClose = () => { clearTimers(); closeTimer.current = setTimeout(closeNow, 240); };
   useEffect(() => {
     const move = () => { lastMove.current = performance.now(); };
     window.addEventListener('pointermove', move, { passive: true });
-    return () => window.removeEventListener('pointermove', move);
-  }, []);
-  // A band left hanging over content it no longer belongs to reads as stuck.
-  // Close on the first scroll, whatever the pointer is doing.
+    return () => { window.removeEventListener('pointermove', move); clearTimers(); };
+  }, [clearTimers]);
   useEffect(() => {
     if (!open) return;
-    const onScroll = () => closeNow();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [open]);
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); closeNow(); triggers.current[open]?.focus(); }
+    };
+    const scroll = () => closeNow();
+    const focus = (e: FocusEvent) => { if (!headerRef.current?.contains(e.target as Node)) closeNow(); };
+    document.addEventListener('keydown', key);
+    document.addEventListener('focusin', focus);
+    window.addEventListener('scroll', scroll, { passive: true });
+    return () => { document.removeEventListener('keydown', key); document.removeEventListener('focusin', focus); window.removeEventListener('scroll', scroll); };
+  }, [open, closeNow]);
   useEffect(() => {
-    const onScroll = () => setTight(window.scrollY > 960);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-  // The collapsed slot must not leave its panel hovering over the page.
-  useEffect(() => { if (tight) setLogin(false); }, [tight]);
-  // The mobile overlay owns the viewport while open, so park page scroll and
-  // keep Tab inside it: the page underneath is hidden from screen readers, so
-  // a keyboard user walking out of the dialog would be navigating blind.
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const sync = () => { if (desktop.matches) setMobileOpen(false); else closeNow(); };
+    desktop.addEventListener('change', sync);
+    return () => desktop.removeEventListener('change', sync);
+  }, [closeNow]);
   useEffect(() => {
-    if (!mobileOpen) return;
-    const prev = document.body.style.overflow;
+    if (!mobileOpen) {
+      if (wasOpenRef.current) { burgerRef.current?.focus({ preventScroll: true }); wasOpenRef.current = false; }
+      return;
+    }
+    wasOpenRef.current = true;
+    const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     sheetCloseRef.current?.focus();
     const key = (e: KeyboardEvent) => {
@@ -1390,225 +1299,72 @@ function MarketingHeader() {
       if (e.key !== 'Tab') return;
       const root = sheetRef.current;
       if (!root) return;
-      const items = Array.from(root.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'));
-      if (!items.length) return;
+      const items = Array.from(root.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), summary, [tabindex="0"]')).filter(el => el.getClientRects().length > 0);
       const first = items[0], last = items[items.length - 1];
-      const active = document.activeElement as HTMLElement | null;
-      if (e.shiftKey && (active === first || !root.contains(active))) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+      if (e.shiftKey && (document.activeElement === first || !root.contains(document.activeElement))) { e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
     };
     window.addEventListener('keydown', key);
-    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', key); };
+    return () => { document.body.style.overflow = previous; window.removeEventListener('keydown', key); };
   }, [mobileOpen]);
-  // Closing hands focus back to the hamburger, so a keyboard user lands where
-  // they left. Guarded on a previous open so mount does not steal focus.
-  useEffect(() => {
-    if (mobileOpen) { wasOpenRef.current = true; return; }
-    if (wasOpenRef.current) burgerRef.current?.focus({ preventScroll: true });
-  }, [mobileOpen]);
-  // 12px on ink-500, turned on the iOS curve. The Login chooser's chevron also
-  // takes the brand colour while open, the one place the marketing site tints it.
-  const chev = (on: boolean, tint = false) => <ChevronDown size={12} strokeWidth={2.25} style={{ flexShrink: 0, color: tint && on ? MK.brand : MK.ink500, transform: on ? 'rotate(180deg)' : 'none', transition: 'transform 200ms cubic-bezier(.32,.72,0,1), color 200ms cubic-bezier(.32,.72,0,1)' }} />;
-  const logo = <a href="https://frigade.com" aria-label="Frigade" style={{ display: 'inline-flex' }}><img src="/images/frigade-logo.svg" alt="Frigade" width={95} height={32} style={{ display: 'block' }} /></a>;
-  const trigger = (k: MktMenuKey, label: string) => (
-    <button
-      type="button"
-      className="mh-trigger"
-      data-on={open === k ? 'true' : 'false'}
-      aria-haspopup="menu"
-      aria-expanded={open === k}
-      onMouseEnter={() => { hovering.current = true; hoverOpen(k); }}
-      onMouseLeave={() => { hovering.current = false; hoverClose(); }}
-      onClick={() => { if (hovering.current || open !== k) openNow(k); else closeNow(); }}
-    >
-      <span>{label}</span>{chev(open === k)}
-    </button>
-  );
-  const menu: MktMenu | null = open === 'features' ? MKT_FEATURES : open === 'why' ? MKT_WHY : null;
-  return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: `1px solid ${MK.hair}`, flexShrink: 0 }}>
-      <MarketingBanner />
-      {/* 79, not 80: over there the bar is `h-20` on a border-box header whose
-          own rule eats the last pixel, so the row measures 79 and the header
-          measures 80 with the rule counted. Matching the 80 here instead would
-          push every band down a pixel relative to frigade.com. */}
-      <div ref={barRef} className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 79, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
-        <div style={{ gridColumn: 1, justifySelf: 'start', display: 'inline-flex' }}>{logo}</div>
-        <nav className="mh-nav" aria-label="Frigade" style={{ gridColumn: 2, justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
-          {trigger('products', 'Products')}
-          {trigger('features', 'Features')}
-          {trigger('why', 'Why Frigade')}
-          {/* Flat links carry no hover chip over there: the chip marks a band
-              trigger, and the label turning brand marks a link. */}
-          {nav.map((l) => (
-            <a key={l.t} className="mh-flat" href={MKT + l.h} onMouseEnter={closeNow}>{l.t}</a>
-          ))}
-        </nav>
-        <div style={{ gridColumn: 3, justifySelf: 'end', display: 'flex', alignItems: 'center' }}>
-          <div className="mh-right" style={{ display: 'flex', alignItems: 'center' }}>
-            {/* Two layered animations, as on the marketing site: the outer
-                grid collapses its column 1fr -> 0fr, which is the layout move
-                that slides Get Started left; the inner fades. Nothing is
-                clipped, because the secondary button's shadow halo sits
-                outside its box and would be cropped at rest. */}
-            <div className="mh-login" data-tight={tight ? 'true' : 'false'} aria-hidden={tight} {...(tight ? { inert: '' as any } : {})}>
-              <div className="mh-login-inner">
-                <div style={{ position: 'relative', display: 'inline-flex' }}>
-                  <button type="button" className="mh-cta mh-cta-secondary" aria-haspopup="menu" aria-expanded={login && !tight} aria-label="Login. Choose product to sign in to." onClick={() => setLogin(!login)} onMouseEnter={closeNow} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 16px', lineHeight: 1.6, borderRadius: 6, fontSize: 14, fontWeight: 500, fontFamily: 'inherit', color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>
-                    Login {chev(login && !tight, true)}
-                  </button>
-                  {/* Kept mounted so it can animate out, and pinned to its
-                      top-right corner so it reads as opening downward from
-                      the button rather than floating in from elsewhere. */}
-                  <div className="mh-panel" data-open={login && !tight ? 'true' : 'false'} role="menu" aria-hidden={!login || tight} style={{ ...MKT_PANEL_CHROME, right: 0, width: 340 }}>
-                    <MktPanelItem k="assistant" i={0} open={login && !tight} /><MktPanelItem k="engage" i={1} open={login && !tight} />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <a href={getStartedHref} className="mh-cta" onMouseEnter={closeNow} style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 16px', lineHeight: 1.6, borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', ...CTA_FILL[product], textDecoration: 'none' }}>Get Started</a>
-          </div>
-          <button ref={burgerRef} type="button" className="mh-burger mh-iconbtn" aria-label="Open menu" aria-expanded={mobileOpen} onClick={() => setMobileOpen(true)}>
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden><path d="M3 6h16 M3 11h16 M3 16h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-          </button>
+  const menu = open === 'features' ? MKT_FEATURES : open === 'resources' ? MKT_RESOURCES : null;
+  const logo = <a href={MKT} aria-label="Frigade"><img src="/images/frigade-logo.svg" alt="Frigade" width={95} height={32} style={{ display: 'block' }} /></a>;
+  const trigger = (key: MktMenuKey, label: string) => <button ref={el => { triggers.current[key] = el; }} type="button" className="mh-trigger" data-on={open === key} aria-expanded={open === key} aria-controls="marketing-menu" onMouseEnter={() => hoverOpen(key)} onMouseLeave={hoverClose} onClick={(e) => { if (open === key && e.detail === 0) closeNow(); else openNow(key); }}>
+    {label}<ChevronDown size={12} style={{ color: MK.ink500, transform: open === key ? 'rotate(180deg)' : undefined, transition: 'transform 150ms ease-out' }} />
+  </button>;
+  return <header ref={headerRef} style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: `1px solid ${MK.hair}`, flexShrink: 0 }}>
+    <MarketingBanner />
+    <div className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 79, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
+      <div style={{ justifySelf: 'start' }}>{logo}</div>
+      <nav className="mh-nav" aria-label="Frigade" style={{ justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
+        {trigger('products', 'Products')}{trigger('features', 'Features')}{trigger('resources', 'Resources')}
+        {MKT_NAV[product].map(link => <a key={link.t} href={marketingHref(link.h)} className="mh-flat" onMouseEnter={closeNow} onFocus={closeNow}>{link.t}</a>)}
+      </nav>
+      <div style={{ gridColumn: 3, justifySelf: 'end' }}>
+        <div className="mh-right" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div onMouseEnter={closeNow} onFocus={closeNow}><MktLogin /></div>
+          <a href={getStartedHref} className="mh-cta" style={{ display: 'inline-flex', padding: '6px 16px', lineHeight: 1.6, borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', whiteSpace: 'nowrap', ...CTA_FILL[product], textDecoration: 'none' }}>Get Started</a>
+        </div>
+        <button ref={burgerRef} type="button" className="mh-burger mh-iconbtn" aria-label="Open menu" aria-expanded={mobileOpen} onClick={() => { closeNow(); setMobileOpen(true); }}><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden><path d="M3 6h16 M3 11h16 M3 16h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg></button>
+      </div>
+    </div>
+    <div aria-hidden onMouseEnter={closeNow} onClick={closeNow} style={{ position: 'absolute', left: 0, right: 0, top: '100%', height: '100vh', background: 'rgba(27,27,29,.12)', transition: `opacity ${instant ? 0 : 180}ms ease-out`, opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none', zIndex: 39 }} />
+    <div id="marketing-menu" role="region" aria-label={open ? { products: 'Products', features: 'Features', resources: 'Resources' }[open] : 'Navigation'} aria-hidden={!open} {...(!open ? { inert: '' as any } : {})} className="mh-band" data-open={!!open} onMouseEnter={clearTimers} onMouseLeave={hoverClose} style={{ position: 'absolute', left: 0, right: 0, top: '100%', zIndex: 40, background: '#fff', borderTop: `1px solid ${MK.hair}`, borderBottom: `1px solid ${MK.hair}`, clipPath: open ? 'inset(0)' : 'inset(0 0 100% 0)', transition: `clip-path ${instant ? 0 : 180}ms cubic-bezier(.32,.72,0,1)`, visibility: open ? 'visible' : 'hidden', maxHeight: 'calc(100dvh - 116px)', overflowY: 'auto' }}>
+      <div className="mh-rail"><div className={`mh-rail-inner mh-grid ${open === 'products' ? 'mh-grid-3' : 'mh-grid-4'}`}>
+        {open === 'products' ? MKT_PRODUCTS.map(p => {
+          const Icon = p.icon;
+          return <a key={p.t} href={marketingHref(p.h)} className="mh-prod" onClick={closeNow} style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '28px 32px', textDecoration: 'none' }}>
+            <span style={{ display: 'inline-flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: p.tile, color: '#fff', outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: `0 2px 8px rgba(${p.shadow},.28), inset 0 2px 1px rgba(255,255,255,.2)` }}><Icon size={16} /></span>
+            <span style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><span style={{ display: 'flex', alignItems: 'center', gap: 8, color: MK.ink, fontSize: 18, fontWeight: 600 }}>{p.t}{p.tag && <span className="mh-new">{p.tag}</span>}</span><span className="mh-product-desc" style={{ lineHeight: 1.5, color: MK.ink500 }}>{p.d}</span></span>
+          </a>;
+        }) : menu ? <>{menu.cols.map(col => <div key={col.heading} style={{ background: '#fff', paddingBottom: 16 }}><p className="mh-heading">{col.heading}</p>{col.items.map(item => <MktRow key={item.h} item={item} onGo={closeNow} />)}</div>)}<MktCellView cell={menu.cell} onGo={closeNow} /></> : null}
+      </div></div>
+      <div style={{ borderTop: `1px solid ${MK.hair}` }}><div className="mh-rail"><div className="mh-rail-inner"><MktMenuFooter action={menu?.cell.footer ?? { label: 'How Frigade learns your product', href: '/how-it-works' }} onGo={closeNow} /></div></div></div>
+    </div>
+    <div ref={sheetRef} role="dialog" aria-modal="true" aria-label="Site navigation" aria-hidden={!mobileOpen} {...(!mobileOpen ? { inert: '' as any } : {})} className="mh-sheet" data-open={mobileOpen}>
+      <div style={{ height: 80, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', borderBottom: `1px solid ${MK_SHEET_RULE}` }}>
+        {logo}<button ref={sheetCloseRef} type="button" className="mh-iconbtn" aria-label="Close menu" onClick={() => setMobileOpen(false)}><X size={22} strokeWidth={1.5} /></button>
+      </div>
+      <div className="mh-sheet-body">
+        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 24px 24px' }}>
+          {MKT_PRODUCTS.map(p => { const Icon = p.icon; return <a key={p.t} className="mh-mrow" href={marketingHref(p.h)} style={{ display: 'flex', gap: 12, padding: '14px 0', textDecoration: 'none' }}>
+            <span style={{ display: 'grid', placeItems: 'center', width: 36, height: 36, flexShrink: 0, borderRadius: 9, color: '#fff', background: p.tile, outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: `0 2px 8px rgba(${p.shadow},.28), inset 0 2px 1px rgba(255,255,255,.2)` }}><Icon size={16} /></span>
+            <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 16, fontWeight: 600, color: MK.ink }}>{p.t} {p.tag && <span className="mh-new">{p.tag}</span>}</span><span style={{ fontSize: 13, color: MK.ink500, lineHeight: 1.5 }}>{p.d}</span></span>
+          </a>; })}
+          <a className="mh-mobile-learn" href={MKT + '/how-it-works'}>How Frigade learns your product <ArrowRight size={14} /></a>
+          {([{ name: 'Features', menu: MKT_FEATURES }, { name: 'Resources', menu: MKT_RESOURCES }]).map(({ name, menu }) => <details className="mh-mobile-group" key={name}>
+            <summary>{name}<ChevronDown size={16} /></summary>
+            {menu.cols.map(col => <div key={col.heading}><p className="mh-mobile-heading">{col.heading}</p>{col.items.map(item => <a className="mh-mobile-link" key={item.h} href={marketingHref(item.h)}>{item.t}</a>)}</div>)}
+            <a className="mh-mobile-link" href={marketingHref(menu.cell.footer.href)} style={{ marginTop: 12 }}>{menu.cell.footer.label}<ArrowUpRight size={14} /></a>
+          </details>)}
+          <a className="mh-mobile-pricing" href={MKT + MKT_NAV[product][0].h}>Pricing<ArrowUpRight size={16} /></a>
+        </div>
+        <div style={{ flexShrink: 0, padding: '20px 24px max(20px, env(safe-area-inset-bottom))', borderTop: `1px solid ${MK_SHEET_RULE}`, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', gap: 12 }}>
+          {mobileOpen && <MktLogin mobile />}<a href={getStartedHref} className="mh-cta" style={{ display: 'flex', justifyContent: 'center', padding: '12px 16px', borderRadius: 8, fontSize: 15, fontWeight: 500, color: '#fff', ...CTA_FILL[product], textDecoration: 'none' }}>Get Started</a>
         </div>
       </div>
-
-      {/* Scrim. A sibling of the band rather than a child, so the band's own
-          mouseleave still fires; entering the scrim means the pointer left the
-          menu, which closes it. */}
-      <div
-        aria-hidden
-        onMouseEnter={closeNow}
-        onClick={closeNow}
-        style={{ position: 'absolute', left: 0, right: 0, top: 'calc(100% + 1px)', height: '100vh', background: 'rgba(27,27,29,0.22)', transition: `opacity ${instant ? 0 : 200}ms ease-out`, opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none', zIndex: 39 }}
-      />
-
-      {/* The band. Unfolds by clip-path, which is off the main thread and costs
-          no layout. Content swaps inside it without re-running the unfold. */}
-      <div
-        className="mh-band"
-        onMouseEnter={clearTimers}
-        onMouseLeave={hoverClose}
-        style={{ position: 'absolute', left: 0, right: 0, top: 'calc(100% + 1px)', zIndex: 40, background: '#fff', borderBottom: `1px solid ${MK.hair}`, clipPath: open ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)', transition: `clip-path ${instant ? 0 : 220}ms cubic-bezier(.32,.72,0,1)`, visibility: open ? 'visible' : 'hidden', willChange: open ? 'clip-path' : undefined }}
-      >
-        <div className="mh-rail">
-          <div className={open === 'products' ? 'mh-rail-inner mh-grid mh-grid-3' : 'mh-rail-inner mh-grid mh-grid-4'}>
-            {open === 'products' ? (
-              <>
-                <span className="mh-heading" style={{ gridColumn: '1 / -1' }}>Products</span>
-                {MKT_PRODUCTS.map((p, i) => {
-                  const Icon = p.icon;
-                  return (
-                    <a key={p.t} href={MKT + p.h} onClick={closeNow} className="mh-prod" style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '20px 24px', textDecoration: 'none', animation: instant ? undefined : `rdItemIn 240ms cubic-bezier(.32,.72,0,1) ${40 + i * 22}ms backwards` }}>
-                      <span style={{ display: 'inline-flex', height: 32, width: 32, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: p.tile, color: '#fff', outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: `0 2px 8px 0 rgba(${p.shadow}, 0.28), inset 0 2px 1px 0 rgba(255,255,255,0.2)` }}>
-                        <Icon size={16} strokeWidth={2} />
-                      </span>
-                      <span style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.25, letterSpacing: '-0.008em', color: MK.ink }}>{p.t}</span>
-                          {p.tag ? <span style={{ borderRadius: 999, background: MK.ink100, padding: '1px 6px', fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: MK.ink500 }}>{p.tag}</span> : null}
-                        </span>
-                        <span style={{ fontSize: 13, lineHeight: 1.45, color: MK.ink500 }}>{p.d}</span>
-                      </span>
-                    </a>
-                  );
-                })}
-              </>
-            ) : menu ? (
-              <>
-                {menu.cols.map((col) => {
-                  // Only the tallest column ends flush with the band's own
-                  // bottom edge, so only that one may drop its last rule. Every
-                  // shorter column has white under it, and a list with no rule
-                  // closing it reads as hanging open.
-                  const tallest = Math.max(...menu.cols.map((c) => c.items.length));
-                  const fills = col.items.length === tallest;
-                  return (
-                    <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', background: '#fff' }}>
-                      <span className="mh-heading">{col.heading}</span>
-                      {col.items.map((item, i) => (
-                        <MktRow key={item.h} item={item} i={i} instant={instant} noRule={fills && i === col.items.length - 1} onGo={closeNow} />
-                      ))}
-                    </div>
-                  );
-                })}
-                <MktCellView cell={menu.cell} onGo={closeNow} />
-              </>
-            ) : null}
-          </div>
-        </div>
-        {/* Breathing room under the lattice, as a real grid row: the rule runs
-            the full width of the menu while the column rules carry on through
-            the gap, so the lattice closes instead of stopping short. */}
-        <div style={{ borderTop: `1px solid ${MK.hair}` }}>
-          <div className="mh-rail">
-            <div className={open === 'products' ? 'mh-rail-inner mh-grid mh-grid-3 mh-spacer' : 'mh-rail-inner mh-grid mh-grid-4 mh-spacer'} aria-hidden>
-              {Array.from({ length: open === 'products' ? 3 : 4 }).map((_, i) => <div key={i} style={{ background: '#fff' }} />)}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Kept mounted so it can animate both ways: the sheet fades, and the
-          content under the chrome bar rides down a few pixels behind it. */}
-      <div
-        ref={sheetRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Site navigation"
-        aria-hidden={!mobileOpen}
-        className="mh-sheet"
-        data-open={mobileOpen ? 'true' : 'false'}
-      >
-        <div style={{ height: 80, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', borderBottom: `1px solid ${MK_SHEET_RULE}` }}>
-          {logo}
-          {/* Same 40px target and 22px glyph as the hamburger, so the swap
-              reads as an icon changing in place rather than a hard cut. */}
-          <button ref={sheetCloseRef} type="button" className="mh-iconbtn" aria-label="Close menu" tabIndex={mobileOpen ? 0 : -1} onClick={() => setMobileOpen(false)}>
-            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden><path d="M5 5 L17 17 M17 5 L5 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-          </button>
-        </div>
-        <div className="mh-sheet-body">
-          <div style={{ flex: 1, overflowY: 'auto', padding: '24px 24px 16px' }}>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', color: MK.ink400 }}>Products</p>
-            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {MKT_PRODUCTS.map((p) => {
-                const Icon = p.icon;
-                return (
-                  <a key={p.t} className="mh-mrow" href={MKT + p.h} tabIndex={mobileOpen ? 0 : -1} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 8px', margin: '0 -8px', borderRadius: 12, textDecoration: 'none' }}>
-                    <span style={{ display: 'inline-flex', height: 32, width: 32, flexShrink: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: p.tile, color: '#fff', outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: `0 2px 8px 0 rgba(${p.shadow}, 0.3), inset 0 2.5px 1px 0 rgba(255,255,255,0.2)` }}>
-                      <Icon size={16} strokeWidth={2.25} />
-                    </span>
-                    <span style={{ fontSize: 16, fontWeight: 500, color: MK.ink }}>{p.t}</span>
-                    {p.tag ? <span style={{ borderRadius: 999, background: MK.ink100, padding: '1px 6px', fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: MK.ink500 }}>{p.tag}</span> : null}
-                  </a>
-                );
-              })}
-            </div>
-            <p style={{ margin: '32px 0 0', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', color: MK.ink400 }}>Explore</p>
-            {/* One row per nav item, bands included. Flattening them inline put
-                every Features and Why Frigade link in the sheet: thirty-odd
-                rows to scroll past on a phone to reach Pricing. Features comes
-                out entirely, because its link is one feature standing in for
-                eleven and there is no index to point at instead; About takes
-                the slot, and the footer still carries the long tail. */}
-            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column' }}>
-              {[{ t: 'Why Frigade', h: '/compare' }, ...nav, { t: 'About', h: '/about' }].map((l) => (
-                <a key={l.t} className="mh-mlink" href={MKT + l.h} tabIndex={mobileOpen ? 0 : -1}>{l.t}</a>
-              ))}
-            </div>
-          </div>
-          <div style={{ flexShrink: 0, padding: '20px 24px', borderTop: `1px solid ${MK_SHEET_RULE}` }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
-              <a href={PRODUCT_META[product].signIn} className="mh-cta mh-cta-secondary" tabIndex={mobileOpen ? 0 : -1} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '12px 20px', borderRadius: 6, fontSize: 15, fontWeight: 500, lineHeight: 1.6, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, textDecoration: 'none' }}>Login</a>
-              <a href={getStartedHref} className="mh-cta" tabIndex={mobileOpen ? 0 : -1} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '12px 20px', borderRadius: 8, fontSize: 15, fontWeight: 500, lineHeight: 1.6, color: '#fff', ...CTA_FILL[product], textDecoration: 'none' }}>Get Started</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-  );
+    </div>
+  </header>;
 }
 
 // The demo's product switcher. frigade.com shows a dropdown pill here, and this
@@ -1617,13 +1373,7 @@ function MarketingHeader() {
 // dropdown hides the alternative behind a click, so a visitor who never opens it
 // never learns the second demo exists. Both products are named at rest instead.
 //
-// Shape and motion follow the marketing site's ProductToggle: a recessed track
-// with a raised white key that slides between the options. Only `translate`
-// transitions, so the slide is interruptible and stays on the compositor, and
-// both tile states carry the same two shadow layers (glow + inset highlight, at
-// zero when inactive) so box-shadow interpolates instead of snapping.
-const SEG_EASE = 'cubic-bezier(.32,.72,0,1)';
-
+// A flat two-option chooser keeps both demos visible and swaps them in place.
 function ProductPill() {
   const { experience, setExperience } = useExperience();
   const cur: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
@@ -1633,16 +1383,16 @@ function ProductPill() {
     // The hero's entrance animations (fill: forwards on opacity/transform) leave every
     // sibling a stacking context, so keep the explicit z-index the dropdown needed.
     <div
-      role="tablist"
+      role="group"
       aria-label="Choose a demo"
-      style={{ position: 'relative', zIndex: 30, display: 'grid', gridTemplateColumns: '1fr 1fr', width: 322, padding: 5, borderRadius: 15, background: '#f4f5f8', border: '1px solid rgba(34,34,79,0.07)', boxShadow: 'inset 0 1px 2px rgba(15,23,42,.05)' }}
+      style={{ position: 'relative', zIndex: 30, display: 'grid', gridTemplateColumns: '1fr 1fr', width: 322, maxWidth: '100%', padding: 6, borderRadius: 12, background: '#fafafa', border: '1px solid #e7e9ee' }}
     >
       {/* The key. Sized to one column and moved by its own width, so it lands
           exactly on the second option without measuring anything. */}
       <span
         aria-hidden
         className="nw-seg-key"
-        style={{ position: 'absolute', top: 5, bottom: 5, left: 5, width: 'calc(50% - 5px)', borderRadius: 11, background: '#fff', boxShadow: '0 1px 2px rgba(15,23,42,.09), 0 10px 22px -10px rgba(15,23,42,.22), inset 0 0 0 1px rgba(15,23,42,.03)', translate: idx === 1 ? '100% 0' : '0 0' }}
+        style={{ position: 'absolute', top: 6, bottom: 6, left: 6, width: 'calc(50% - 6px)', borderRadius: 8, background: '#fff', border: '1px solid #e7e9ee', boxShadow: '0 1px 2px rgba(26,27,47,.04)', translate: idx === 1 ? '100% 0' : '0 0' }}
       />
       {keys.map((k) => {
         const on = k === cur;
@@ -1651,15 +1401,14 @@ function ProductPill() {
           <button
             key={k}
             type="button"
-            role="tab"
-            aria-selected={on}
+            aria-pressed={on}
             className="nw-seg-opt"
             onClick={() => { if (!on) setExperience(k); }}
-            style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '7px 10px', borderRadius: 11, border: 0, background: 'none', cursor: on ? 'default' : 'pointer', fontFamily: 'inherit' }}
+            style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '7px 10px', borderRadius: 8, border: 0, background: 'none', cursor: on ? 'default' : 'pointer', fontFamily: 'inherit' }}
           >
             <span
               className="nw-seg-tile"
-              style={{ flexShrink: 0, width: 24, height: 24, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: on ? PRODUCT_META[k].tile : '#fff', border: `1px solid ${on ? PRODUCT_META[k].tile : 'rgba(34,34,79,0.10)'}`, color: on ? '#fff' : '#98a0b0', boxShadow: on ? `0 2px 8px 0 ${PRODUCT_META[k].tile}4d, inset 0 2.5px 1px 0 rgba(255,255,255,.2)` : '0 0 0 0 rgba(1,94,251,0), inset 0 0 0 0 rgba(255,255,255,0)' }}
+              style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: on ? `${PRODUCT_META[k].tile}12` : 'transparent', color: on ? PRODUCT_META[k].tile : '#9aa0b0' }}
             >
               <Icon size={13} strokeWidth={2.4} aria-hidden />
             </span>
@@ -1682,15 +1431,15 @@ function OtherDemoCard({ to }: { to: ProductKey }) {
       type="button"
       className="nw-otherdemo"
       onClick={() => { setExperience(to); if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }}
-      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', maxWidth: 520, margin: '34px auto 0', padding: '15px 18px', borderRadius: 14, background: '#fff', border: `1px solid ${C.line}`, boxShadow: '0 1px 2px rgba(18,24,40,.05)', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+      style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', maxWidth: 520, margin: '34px auto 0', padding: '20px 24px', borderRadius: 0, background: '#fff', border: `1px solid ${C.line}`, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
     >
-      <ProductTile k={to} size={38} radius={11} iconSize={19} />
+      <ProductTile k={to} size={36} radius={9} iconSize={16} glow />
       <span style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, minWidth: 0 }}>
         <span style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '.07em', textTransform: 'uppercase', color: C.faint }}>The other demo</span>
         <span style={{ fontSize: 15, fontWeight: 600, color: C.ink, letterSpacing: '-.01em' }}>{m.label}</span>
         <span style={{ fontSize: 13, lineHeight: 1.45, color: C.muted }}>{m.desc}</span>
       </span>
-      <span className="nw-otherdemo-cta" style={{ flexShrink: 0, color: C.brand, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>Try it &rarr;</span>
+      <span className="nw-otherdemo-cta" style={{ flexShrink: 0, color: C.brand, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>Explore &rarr;</span>
     </button>
   );
 }
@@ -1729,7 +1478,7 @@ const FOOTER_SOCIALS: { p: string; h: string; icon: React.ReactNode }[] = [
 const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
   { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'Generative UI', h: '/features/generative-ui' }, { t: 'Mobile', h: '/features/mobile' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
   { heading: 'Use Cases', links: [{ t: 'Support Deflection', h: '/use-cases/support-deflection' }, { t: 'User Activation', h: '/use-cases/user-activation' }, { t: 'Virtual CSM', h: '/use-cases/virtual-csm' }, { t: 'Feature Adoption', h: '/use-cases/feature-adoption' }, { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell' }] },
-  { heading: 'Resources', links: [{ t: 'How It Works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Glossary', h: '/glossary' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
+  { heading: 'Resources', links: [{ t: 'How it works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Engage docs', h: 'https://engage-docs.frigade.com' }, { t: 'Glossary', h: '/glossary' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
   // Alphabetical by competitor, same as the published column.
   { heading: 'Guides', links: [{ t: 'Adoption platforms', h: '/blog/ten-digital-adoption-platforms-2026' }, { t: 'Ticket deflection', h: '/blog/how-to-deflect-support-tickets' }, { t: 'Support AI tools', h: '/blog/eight-customer-support-ai-tools-2026' }] },
   { heading: 'Compare', links: [{ t: 'Frigade vs. Appcues', h: '/compare/appcues' }, { t: 'Frigade vs. Chameleon', h: '/compare/chameleon' }, { t: 'Frigade vs. Fin', h: '/compare/fin' }, { t: 'Frigade vs. HubSpot', h: '/compare/hubspot' }, { t: 'Frigade vs. Pendo', h: '/compare/pendo' }, { t: 'Frigade vs. Pylon', h: '/compare/pylon' }, { t: 'Frigade vs. Userflow', h: '/compare/userflow' }, { t: 'Frigade vs. Userpilot', h: '/compare/userpilot' }, { t: 'Frigade vs. WalkMe', h: '/compare/walkme' }, { t: 'Frigade vs. Whatfix', h: '/compare/whatfix' }, { t: 'Frigade vs. Zendesk', h: '/compare/zendesk' }] },
@@ -1740,22 +1489,10 @@ const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
   // booking the same frigade-demo-call calendar as the page's other CTAs.
   { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
 ];
-// The marketing footer splits its columns on intent rather than order. The top
-// row is what a visitor came to do (what we sell, who we are, how to evaluate
-// it); everything below is the SEO surface, which is most of the link count and
-// little of the intent. That's why Company moves up and Features moves down.
-// Headings not named here fall to the second tier, so a new column is quiet by
-// default rather than silently landing in the top row. Industries is listed but
-// absent from FOOTER_COLS: all four of its pages are drafts on the live site.
-const FOOTER_TIER_ONE = ['Company', 'Resources', 'Case Studies'];
-const FOOTER_TIER_TWO = ['Features', 'Use Cases', 'Compare', 'Industries'];
-const pickCols = (order: string[]) =>
-  order.map((h) => FOOTER_COLS.find((c) => c.heading === h)).filter((c): c is (typeof FOOTER_COLS)[number] => Boolean(c));
-const FOOTER_COLS_PRIMARY = pickCols(FOOTER_TIER_ONE);
-const FOOTER_COLS_SECONDARY = [
-  ...pickCols(FOOTER_TIER_TWO),
-  ...FOOTER_COLS.filter((c) => !FOOTER_TIER_ONE.includes(c.heading) && !FOOTER_TIER_TWO.includes(c.heading)),
-];
+const FOOTER_GROUPS = [['Use Cases'], ['Features'], ['Resources', 'Guides'], ['Company', 'Case Studies']].map(headings =>
+  headings.flatMap(heading => FOOTER_COLS.filter(col => col.heading === heading)),
+);
+const FOOTER_COMPARISONS = FOOTER_COLS.find(col => col.heading === 'Compare')!;
 
 // Product badges mirror the marketing footer: a colored rounded-square
 // icon (brand blue for Assistant, engage navy for Engage) next to the name.
@@ -1777,30 +1514,18 @@ function MarketingFooter() {
   // whichever product the page is showing. The demo's header toggle swaps
   // products in place, so the legal links have to follow it here too.
   const legalBase = experience === 'engage' ? '/legal/engage' : '/legal/assistant';
-  const head: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: C.ink, margin: 0 };
-  const link: React.CSSProperties = { fontSize: 13, color: C.ink, textDecoration: 'none' };
-  // Second tier steps down in size and colour, same hover.
-  const head2: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: C.ink2, margin: 0 };
-  const link2: React.CSSProperties = { fontSize: 12.5, color: C.ink2, textDecoration: 'none' };
-  const renderFooterCol = (col: (typeof FOOTER_COLS)[number], secondary: boolean) => (
-    <div key={col.heading} style={{ display: 'flex', flexDirection: 'column', gap: secondary ? 10 : 12 }}>
-      <p style={secondary ? head2 : head}>{col.heading}</p>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {col.links.map((l) => (
-          <li key={l.t}>
-            {l.h === '#cal:demo' ? (
-              // Native Cal popup, same as the page's "Book a call" buttons —
-              // styled to read as a plain footer link.
-              <button className="nw-ftr-link" data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ ...(secondary ? link2 : link), background: 'none', border: 0, padding: 0, margin: 0, cursor: 'pointer', fontFamily: 'inherit', lineHeight: 'inherit', textAlign: 'left' }}>{l.t}</button>
-            ) : (
-              <a className="nw-ftr-link" href={ext(l.h)} style={secondary ? link2 : link}>{l.t}</a>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-  const legal: React.CSSProperties = { fontSize: 12, color: '#0355f8', textDecoration: 'none' };
+  const head: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: C.ink, margin: '0 0 12px' };
+  const link: React.CSSProperties = { display: 'inline-block', padding: '4px 0', fontSize: 12.5, lineHeight: 1.6, textDecoration: 'none' };
+  const renderFooterCol = (col: (typeof FOOTER_COLS)[number]) => <div key={col.heading}>
+    <p style={head}>{col.heading}</p>
+    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {col.links.map(l => <li key={l.h}>{l.h === '#cal:demo' ?
+        <button className="nw-ftr-link" data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ ...link, background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>{l.t}</button> :
+        <a className="nw-ftr-link" href={ext(l.h)} style={link}>{l.t}</a>}
+      </li>)}
+    </ul>
+  </div>;
+  const legal: React.CSSProperties = { fontSize: 12, color: 'rgba(255,255,255,.7)', textDecoration: 'none' };
   return (
     <footer style={{ position: 'relative', fontFamily: FONT }}>
       {/* Everything the port needs that an inline style can't say: the
@@ -1809,20 +1534,17 @@ function MarketingFooter() {
           Set as raw HTML, like the page's other style blocks, so React
           doesn't escape punctuation in the CSS and desync hydration. */}
       <style dangerouslySetInnerHTML={{ __html: `
-        /* rail-outer-mx + px-6 md:px-14 from the marketing footer: the content
-           sits inside the 1240 rails, then insets again from the rail edge. */
-        .nw-ftr-mx{margin-left:0;margin-right:0;padding-left:24px;padding-right:24px}
-        @media (min-width:640px){.nw-ftr-mx{margin-left:32px;margin-right:32px}}
-        @media (min-width:768px){.nw-ftr-mx{padding-left:56px;padding-right:56px}}
-        @media (min-width:1024px){.nw-ftr-mx{margin-left:100px;margin-right:100px}}
-        .nw-ftr-top{display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
-        @media (min-width:768px){.nw-ftr-top{grid-template-columns:minmax(0,220px) 1fr}}
-        /* Two columns until there's room for four, so the 8 link columns stack
-           rather than crush on phones and tablets. */
-        .nw-ftr-more{margin:0;font-family:${MONO};font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:${C.faint}}
-        .nw-ftr-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px 24px}
-        @media (min-width:1024px){.nw-ftr-cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px 32px}}
-        .nw-ftr-link{transition:color .15s ease}
+        .nw-ftr-mx{margin-left:0;margin-right:0}
+        @media(min-width:640px){.nw-ftr-mx{margin-left:32px;margin-right:32px}}
+        @media(min-width:1024px){.nw-ftr-mx{margin-left:100px;margin-right:100px}}
+        .nw-ftr-brand{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px 32px;padding:32px 24px;border-bottom:1px solid ${MK.hair}}
+        .nw-ftr-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 24px;padding:40px 24px}
+        .nw-ftr-compare{display:flex;flex-direction:column;gap:16px;padding:28px 24px;border-top:1px solid ${MK.hair}}
+        .nw-ftr-dark{min-height:max(440px,calc(40vw + 192px))}
+        .nw-ftr-dark .nw-ftr-mx{padding-left:24px;padding-right:24px}
+        @media(min-width:768px){.nw-ftr-brand,.nw-ftr-cols,.nw-ftr-compare,.nw-ftr-dark .nw-ftr-mx{padding-left:48px;padding-right:48px}.nw-ftr-dark{min-height:440px}}
+        @media(min-width:1024px){.nw-ftr-cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px;padding-top:48px;padding-bottom:48px}.nw-ftr-compare{flex-direction:row;gap:32px}}
+        .nw-ftr-link{color:#4a5063;transition:color .15s ease}
         .nw-ftr-link:hover{color:#015efb}
         .nw-ftr-social{transition:background-color .15s ease}
         .nw-ftr-social:hover{background:#fafafa}
@@ -1851,66 +1573,40 @@ function MarketingFooter() {
         @media (min-width: 1280px) { .nw-ftr-fmark { height: 240px; } }
       ` }} />
       <div style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
-        <div className="nw-ftr-mx" style={{ paddingTop: 56, paddingBottom: 56, borderTop: `1px solid ${C.hair}` }}>
-          <div className="nw-ftr-top">
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16 }}>
-              {/* The wordmark doubles as the marketing site's scroll-to-top. */}
-              <button type="button" aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ display: 'inline-flex', alignItems: 'center', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/frigade-logo.svg" alt="Frigade" width={82} height={26} style={{ width: 82, height: 26, display: 'block' }} />
-              </button>
-              <div style={{ fontSize: 13, lineHeight: 1.5, color: C.muted }}>
-                <p style={{ margin: 0 }}>945 Market St.</p>
-                <p style={{ margin: 0 }}>San Francisco, CA 94103</p>
-              </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/aicpa-soc-badge.avif" alt="AICPA SOC for Service Organizations" width={72} height={72} style={{ width: 72, height: 72, marginTop: 8 }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {FOOTER_SOCIALS.map((s) => (
-                  <a key={s.p} className="nw-ftr-social" href={s.h} target="_blank" rel="noreferrer" aria-label={s.p} style={{ width: 32, height: 32, borderRadius: 999, border: `1px solid ${C.line}`, color: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{s.icon}</a>
-                ))}
-              </div>
+        <div className="nw-ftr-mx" style={{ borderTop: `1px solid ${MK.hair}` }}>
+          <div className="nw-ftr-brand">
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px 40px' }}>
+              <button type="button" aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })} style={{ display: 'inline-flex', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}><img src="/images/frigade-logo.svg" alt="Frigade" width={82} height={26} /></button>
+              <address style={{ fontSize: 12, lineHeight: 1.65, color: C.muted, fontStyle: 'normal' }}>945 Market St.<br />San Francisco, CA 94103</address>
             </div>
-            <div className="nw-ftr-cols">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <p style={head}>Product</p>
-                <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {FOOTER_PRODUCTS.map((p) => {
-                    const PIcon = p.icon;
-                    return (
-                      <li key={p.name}><a className="nw-ftr-link" href={ext(p.h)} style={{ ...link, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 20, height: 20, borderRadius: 7, background: p.bg, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, outline: '1px solid rgba(255,255,255,0.4)', outlineOffset: -1, boxShadow: `0 2px 8px 0 rgba(${p.shadowRgb}, 0.3), inset 0 2.5px 1px 0 rgba(255,255,255,0.2)` }}><PIcon size={12} strokeWidth={2.25} /></span>
-                        {p.name}{p.tag && <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.muted, background: '#f4f5f7', padding: '1px 6px', borderRadius: 99 }}>{p.tag}</span>}
-                      </a></li>
-                    );
-                  })}
-                </ul>
-              </div>
-              {FOOTER_COLS_PRIMARY.map((col) => renderFooterCol(col, false))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+              <img src="/images/aicpa-soc-badge.avif" alt="AICPA SOC for Service Organizations" width={52} height={52} />
+              <div style={{ display: 'flex', gap: 4, paddingLeft: 16, borderLeft: `1px solid ${MK.hair}` }}>{FOOTER_SOCIALS.map(s => <a key={s.p} className="nw-ftr-social" href={s.h} target="_blank" rel="noreferrer" aria-label={s.p} style={{ width: 40, height: 40, borderRadius: 6, color: '#4a5063', display: 'grid', placeItems: 'center', textDecoration: 'none' }}>{s.icon}</a>)}</div>
             </div>
           </div>
+          <nav className="nw-ftr-cols" aria-label="Footer">
+            {FOOTER_GROUPS.map((cols, i) => <div key={i} style={{ display: 'flex', minWidth: 0, flexDirection: 'column', gap: 32 }}>
+              {i === 0 && <div><p style={{ ...head, marginBottom: 16 }}>Products</p><ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>{FOOTER_PRODUCTS.map(p => {
+                const Icon = p.icon;
+                return <li key={p.name}><a className="nw-ftr-link" href={ext(p.h)} style={{ ...link, display: 'inline-flex', flexWrap: 'wrap', minHeight: 28, alignItems: 'center', gap: 8, padding: 0, fontSize: 13 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, flexShrink: 0, borderRadius: 5, background: p.bg, color: '#fff', outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: `0 1px 4px rgba(${p.shadowRgb},.28), inset 0 1px .5px rgba(255,255,255,.2)` }}><Icon size={12} strokeWidth={2.25} /></span>
+                  {p.name}{p.tag && <span className="mh-new">{p.tag}</span>}
+                </a></li>;
+              })}</ul></div>}
+              {cols.map(renderFooterCol)}
+            </div>)}
+          </nav>
+          <nav className="nw-ftr-compare" aria-label="Compare Frigade">
+            <p style={{ margin: 0, paddingTop: 4, flexShrink: 0, fontSize: 12, fontWeight: 600, color: '#4a5063' }}>Compare Frigade</p>
+            <ul style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 24px', listStyle: 'none', margin: 0, padding: 0 }}>{FOOTER_COMPARISONS.links.map(l => <li key={l.h}><a className="nw-ftr-link" href={ext(l.h)} style={link}>{l.t.replace(/^Frigade vs\. /, '')}</a></li>)}</ul>
+          </nav>
         </div>
-        {/* Second tier as its own closed section rather than an indented block.
-            Its border-t is the fourth side (the rails draw left and right, the
-            section above supplies the top) and sits on the same inset as that
-            border so it runs the full width instead of reading as a floating
-            divider. Same 220px/1fr track, so Features lands under Product. */}
-        {FOOTER_COLS_SECONDARY.length > 0 && (
-          <div className="nw-ftr-mx" style={{ borderTop: `1px solid ${C.hair}`, paddingTop: 40, paddingBottom: 40 }}>
-            <div className="nw-ftr-top">
-              <p className="nw-ftr-more">More from Frigade</p>
-              <div className="nw-ftr-cols">
-                {FOOTER_COLS_SECONDARY.map((col) => renderFooterCol(col, true))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
       {/* Dark band — faithful port of the marketing footer's art panel:
           the scroll-driven compass peeking from the top, diagonal stripes
           bottom-left, a masked F-mark watermark, and a bottom gradient, all
           on a 440px-tall #222127 field with the legal row at the top. */}
-      <div style={{ position: 'relative', isolation: 'isolate', background: '#222127', minHeight: 440, overflow: 'hidden' }}>
+      <div className="nw-ftr-dark" style={{ position: 'relative', isolation: 'isolate', background: '#222127', overflow: 'hidden' }}>
         {/* The page's hatched rails don't survive an opaque dark band, so the
             band draws its own: same 1240 canvas and 100px columns, hatched
             light-on-dark, so the rails run unbroken to the bottom of the page
@@ -1940,7 +1636,7 @@ function MarketingFooter() {
                 legal links sit closest to the bottom of the page. */}
             <div className="nw-ftr-legal" style={{ fontSize: 12 }}>
               <p style={{ margin: 0, color: 'rgba(255,255,255,.5)', justifySelf: 'start' }}>Built in San Francisco © Frigade Inc.</p>
-              <a className="nw-ftr-legal-link" href="https://status.frigade.ai/" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#0355f8', textDecoration: 'none', justifySelf: 'center' }}>
+              <a className="nw-ftr-legal-link" href="https://status.frigade.ai/" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,.7)', textDecoration: 'none', justifySelf: 'center' }}>
                 {/* Three stacked diamonds: an animated echo, the fill, and a
                     lit rim on top — the same build as the marketing site's. */}
                 <span aria-hidden style={{ position: 'relative', display: 'inline-block', width: 8, height: 8 }}>
@@ -1948,7 +1644,7 @@ function MarketingFooter() {
                   <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(#006eff 0%, #0056f8 100%)', borderRadius: 2, transform: 'rotate(45deg)' }} />
                   <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(#006eff 0%, #0056f8 100%)', borderRadius: 2, transform: 'rotate(45deg)', border: '1px solid rgba(255,255,255,0.07)', boxShadow: 'inset 0 0.5px 2px rgba(255,255,255,0.15), inset 0 2px 3px -1px rgba(255,255,255,0.1)' }} />
                 </span>
-                All services are operational
+                System status
               </a>
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 24 }}>
                 <a className="nw-ftr-legal-link" href={`https://frigade.com${legalBase}/privacy-policy`} style={legal}>Privacy Policy</a>
@@ -1964,8 +1660,7 @@ function MarketingFooter() {
 
 /* ---------- Framing page = native Frigade marketing hero ---------- */
 
-// A labeled value-prop grid (eyebrow + heading + bento). Shown under both the
-// Engage demo and the Assistant video. maxWidth 1040 keeps it inside the rails.
+// The shared value-prop grid uses the marketing site's square, ruled cells.
 function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: string; items: { icon: IconType; title: string; desc: string }[] }) {
   return (
     <div style={{ maxWidth: 1016, margin: '0 auto' }}>
@@ -1973,11 +1668,11 @@ function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: 
         <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>{title}</h2>
         <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>{subtitle}</p>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 1, background: MK.hair, border: `1px solid ${MK.hair}` }}>
         {items.map((b) => {
           const Icon = b.icon;
           return (
-            <div key={b.title} style={{ background: '#f7f7f9', borderRadius: 14, padding: '20px 20px 22px' }}>
+            <div key={b.title} style={{ background: '#fff', padding: '28px 24px' }}>
               <span style={{ width: 36, height: 36, borderRadius: 10, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14 }}><Icon size={18} strokeWidth={2} /></span>
               <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600, letterSpacing: '-.01em', color: C.ink }}>{b.title}</h3>
               <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: C.muted }}>{b.desc}</p>
@@ -1989,13 +1684,11 @@ function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: 
   );
 }
 
-// Closing CTA card, following the marketing site's house pattern: a clean rounded
-// card on a near-white surface with a hairline border and a soft, brand-tinted
-// lift. Centered headline + subtitle + button pair.
+// Closing CTA follows the same square frame as the marketing sections.
 function RichCtaCard({ title, subtext, children, flush }: { title: string; subtext: string; children: React.ReactNode; flush?: boolean }) {
   return (
     <div style={{ maxWidth: 1016, margin: flush ? '0 auto' : '76px auto 0' }}>
-      <div style={{ borderRadius: 20, border: '1px solid #1b1b1d0a', background: '#fbfcfe', boxShadow: '0 1px 2px rgba(15,23,42,.04), 0 22px 48px -28px rgba(1,94,251,.18)' }}>
+      <div style={{ borderRadius: 0, border: `1px solid ${MK.hair}`, background: '#fafbfc' }}>
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '60px 24px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
           <h2 className="nw-h2" style={{ margin: 0, maxWidth: 560, fontWeight: 700, color: C.ink }}>{title}</h2>
           <p className="nw-balance" style={{ margin: 0, maxWidth: 480, fontSize: 15, lineHeight: 1.6, color: C.muted }}>{subtext}</p>
@@ -2125,7 +1818,7 @@ function SkillsSection() {
         <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
         <LearnMoreLink href="https://frigade.com/features/skills" label="Learn more about Skills" />
       </div>
-      <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', background: '#0d1424', border: `1px solid ${MK.hair}`, boxShadow: '0 8px 24px rgba(18,24,40,.04)' }}>
         <video src={VIDEO_BASE + '/videos/skills/full-demo.mp4'} poster={VIDEO_BASE + '/videos/skills/full-demo.jpg'} autoPlay muted loop playsInline controls preload="auto" aria-label="Full skills walkthrough" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '16 / 9' }} />
       </div>
       <div style={{ marginTop: 56 }}>
@@ -2181,7 +1874,7 @@ function AssistantSection() {
           <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, the way a power user would. That context is what lets it actually help your users, guiding them through real workflows instead of pointing at a help article.</p>
           <LearnMoreLink href="https://frigade.com/features/ai-generated-tours" label="Learn more about product tours" />
         </div>
-        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', aspectRatio: '16 / 9', background: '#0d1424', border: `1px solid ${MK.hair}`, boxShadow: '0 8px 24px rgba(18,24,40,.04)' }}>
           <video src={VIDEO_BASE + '/videos/airbnb.mp4'} poster={VIDEO_BASE + '/videos/airbnb.jpg'} autoPlay muted loop playsInline preload="auto" aria-label="Airbnb assistant demo" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
@@ -2211,7 +1904,7 @@ function AssistantSection() {
           <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Suggestions proactively onboard new users, drive feature adoption, and nudge the next step at the moment that matters. The impact of an account exec on every account, with almost none of the effort.</p>
           <LearnMoreLink href="https://frigade.com/features/suggestions" label="Learn more about Suggestions" />
         </div>
-        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 16, overflow: 'hidden', background: '#fff', boxShadow: '0 30px 80px rgba(18,24,40,.16), 0 2px 8px rgba(18,24,40,.07), 0 0 0 1px rgba(18,24,40,.05)' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', borderRadius: 0, overflow: 'hidden', background: '#fff', border: `1px solid ${MK.hair}`, boxShadow: '0 8px 24px rgba(18,24,40,.04)' }}>
           <video data-hero-video src="/videos/hero.mp4" autoPlay muted loop playsInline controls preload="auto" style={{ width: '100%', height: 'auto', display: 'block', aspectRatio: '1566 / 1080' }} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
@@ -2343,9 +2036,7 @@ export default function NorthwindPage() {
           .nw-src,.nw-path{display:none!important}
           .nw-url{width:auto!important}
         }
-        /* Marketing-header mirror: nav hover, dropdown fade + item drop-in (same
-           animation frigade.com uses), pill press feedback, and the 768px collapse
-           to hamburger, all matching the live site. */
+        /* Shared navigation: neutral hover, quick panel reveal, and a 1024px mobile breakpoint. */
         /* Announcement bar. Desktop only, as on the marketing site: the mobile
            nav row stays clean. Four layers over the flat blue - a highlight
            band that sweeps then pauses, the site's diagonal hatch, an edge
@@ -2372,29 +2063,39 @@ export default function NorthwindPage() {
         /* Flat links carry no chip: the chip marks a band trigger. */
         .mh-flat{position:relative;font-size:14px;font-weight:500;line-height:16px;color:#1a233c;white-space:nowrap;text-decoration:none;transition:color .15s ease}
         .mh-flat:hover{color:#015efb}
-        /* Login slot. The outer grid collapses its track to hand the width to
-           Get Started; the inner fades. Nothing clips, because the secondary
-           button's shadow halo sits outside its own box. Tablet drops the slot
-           entirely so the squeezed nav cannot collide with the CTA. */
-        .mh-login{display:none;grid-template-columns:1fr;margin-right:8px;transition:grid-template-columns 200ms cubic-bezier(.32,.72,0,1),margin-right 200ms cubic-bezier(.32,.72,0,1)}
-        @media(min-width:1024px){.mh-login{display:grid}}
-        .mh-login[data-tight="true"]{grid-template-columns:0fr;margin-right:0}
-        .mh-login-inner{min-width:0;transform-origin:right center;transition:opacity 200ms cubic-bezier(.32,.72,0,1),transform 200ms cubic-bezier(.32,.72,0,1)}
-        .mh-login[data-tight="true"] .mh-login-inner{opacity:0;transform:translateX(-4px);pointer-events:none}
+        .mh-login-button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 10px;border:0;border-radius:6px;background:transparent;font:inherit;font-size:14px;font-weight:500;color:#1a233c;cursor:pointer;white-space:nowrap}
+        .mh-login-button:hover,.mh-login-button:focus-visible{background:#fafafa}
+        .mh-login-panel{animation:mhItemIn 150ms cubic-bezier(.23,1,.32,1)}
+        .mh-new{display:inline-block;border-radius:99px;background:#f4f5f7;padding:1px 6px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#6b7180;vertical-align:middle}
+        .mh-product-desc{font-size:13px}
+        @media(min-width:1280px){.mh-product-desc{font-size:14px}}
+        .mh-mobile-group{border-top:1px solid ${MK_SHEET_RULE}}
+        .mh-mobile-group summary,.mh-mobile-pricing{display:flex;align-items:center;justify-content:space-between;padding:18px 0;list-style:none;font-size:16px;font-weight:500;color:#1a233c;text-decoration:none;cursor:pointer}
+        .mh-mobile-group summary::-webkit-details-marker{display:none}
+        .mh-mobile-group summary svg{transition:transform 150ms ease-out}
+        .mh-mobile-group[open] summary svg{transform:rotate(180deg)}
+        .mh-mobile-heading{margin:16px 0 8px;font-size:11px;color:#6b7180;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+        .mh-mobile-link{display:flex;align-items:center;gap:8px;padding:10px 8px;margin:0 -8px;border-radius:4px;font-size:14px;color:#1a233c;text-decoration:none}
+        .mh-mobile-link:hover,.mh-mobile-link:focus-visible{background:#fafafa}
+        .mh-mobile-group[open]{padding-bottom:16px}
+        .mh-mobile-pricing{border-top:1px solid ${MK_SHEET_RULE}}
+        .mh-mobile-learn{display:flex;align-items:center;gap:8px;padding:16px 0 24px;font-size:13px;color:#6b7180;text-decoration:none}
+        .mh-row:focus-visible,.mh-prod:focus-visible,.mh-cell:focus-visible,.mh-hub:focus-visible{outline:2px solid #015efb;outline-offset:-2px}
+        .nw-seg-opt:focus-visible{outline:2px solid #015efb;outline-offset:2px}
         .mh-cta{transition:transform .15s cubic-bezier(.23,1,.32,1),filter .15s cubic-bezier(.23,1,.32,1)}
         .mh-cta:hover{filter:brightness(1.05)}
         .mh-cta:active{transform:scale(.97)}
-        .mh-iconbtn{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:40px;height:40px;border:0;border-radius:8px;background:none;color:#1a233c;cursor:pointer;transition:background-color .15s ease,color .15s ease,transform .15s ease}
+        .mh-iconbtn{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:44px;height:44px;border:0;border-radius:8px;background:none;color:#1a233c;cursor:pointer;transition:background-color .15s ease,color .15s ease,transform .15s ease}
         .mh-iconbtn:hover{background:#f4f5f7}
         .mh-iconbtn:active{transform:scale(.95)}
         .mh-burger{display:none}
         /* The sheet stays mounted so it animates both ways: it fades, and the
            content below the chrome bar rides down behind the fade. */
         .mh-sheet{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;background:#fff;opacity:0;pointer-events:none;transition:opacity 160ms cubic-bezier(.32,.72,0,1)}
-        .mh-sheet[data-open="true"]{opacity:1;pointer-events:auto;transition-duration:220ms}
+        .mh-sheet[data-open="true"]{opacity:1;pointer-events:auto;transition-duration:180ms}
         .mh-sheet-body{display:flex;flex:1;min-height:0;flex-direction:column;transform:translateY(-6px);transition:transform 180ms cubic-bezier(.32,.72,0,1)}
-        .mh-sheet[data-open="true"] .mh-sheet-body{transform:none;transition-duration:280ms}
-        @media(min-width:768px){.mh-sheet{display:none}}
+        .mh-sheet[data-open="true"] .mh-sheet-body{transform:none;transition-duration:180ms}
+        @media(min-width:1024px){.mh-sheet{display:none}}
         .mh-mrow{transition:background-color .15s ease}
         .mh-mrow:hover{background:#fafafa}
         .mh-mlink{display:block;padding:10px 0;font-size:16px;font-weight:500;color:#1a233c;text-decoration:none;transition:color .15s ease}
@@ -2409,23 +2110,19 @@ export default function NorthwindPage() {
         .mh-rail-inner{margin-left:0;margin-right:0}
         @media(min-width:640px){.mh-rail-inner{margin-left:32px;margin-right:32px}}
         @media(min-width:1024px){.mh-rail-inner{margin-left:100px;margin-right:100px}}
-        /* gap:1px over a line-coloured ground draws the verticals; cells stay
-           opaque so the ground never shows through as a tint. An empty grid
-           area is not an empty cell, it is a grey slab, which is why the
-           spacer row below the lattice is filled with white cells. */
+        /* Opaque cells over a one-pixel grid keep the vertical rails continuous. */
         .mh-grid{box-sizing:border-box;display:grid;gap:1px;background:#1b1b1d0a;border-left:1px solid #1b1b1d0a;border-right:1px solid #1b1b1d0a}
         .mh-grid-3{grid-template-columns:repeat(3,1fr)}
         .mh-grid-4{grid-template-columns:repeat(2,1fr)}
         @media(min-width:1024px){.mh-grid-4{grid-template-columns:repeat(4,1fr)}}
-        .mh-spacer{height:28px}
-        .mh-heading{background:#fff;border-bottom:1px solid #1b1b1d0a;padding:16px 24px;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.13em;color:#9aa0b0}
+        .mh-heading{margin:0;background:#fff;padding:24px 24px 12px;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.13em;color:#6b7180}
         .mh-row,.mh-prod,.mh-cell,.mh-hub{background:#fff;transition:background-color .15s ease}
-        .mh-row:hover,.mh-prod:hover,.mh-cell:hover,.mh-hub:hover{background-color:rgba(250,250,250,.6)}
+        .mh-row:hover,.mh-prod:hover,.mh-cell:hover,.mh-hub:hover{background-color:#fafafa}
         .mh-cell-arrow{color:#c9cdd7;transition:color .15s ease}
         .mh-cell:hover .mh-cell-arrow{color:#6b7180}
         .mh-row-label,.mh-hub-label{color:#1a233c;transition:color .15s ease}
         .mh-row-icon,.mh-hub-icon{color:#9aa0b0;transition:color .15s ease}
-        .mh-row:hover .mh-row-label,.mh-row:focus-visible .mh-row-label,.mh-row:hover .mh-row-icon,.mh-row:focus-visible .mh-row-icon,.mh-hub:hover .mh-hub-label,.mh-hub:focus-visible .mh-hub-label,.mh-hub:hover .mh-hub-icon,.mh-hub:focus-visible .mh-hub-icon{color:#015efb}
+        .mh-row:hover .mh-row-icon,.mh-row:focus-visible .mh-row-icon,.mh-hub:hover .mh-hub-icon,.mh-hub:focus-visible .mh-hub-icon{color:#6b7180}
         @keyframes rdItemIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
         /* Dot field on the cell that closes a band. Animating ~700 dots is not
            an option, so the lattice is drawn once and a second lattice at a
@@ -2433,16 +2130,17 @@ export default function NorthwindPage() {
            out and return at different moments instead of the field sliding.
            Two layers on different clocks keep the beat from reading as a band.
            The wrapper's mask has three jobs, which is why the numbers are
-           specific: the chip and the mark at the top sit on visible dots, the
+           specific: the mark at the top sits on visible dots, the
            type in the middle sits on a floor rather than a hole (18%, not 0,
            so the field reads as continuous), and the corners stay densest. */
         .mh-dots-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(70% 64% at 50% 56%,rgba(0,0,0,0.18) 36%,rgba(0,0,0,0.5) 72%,#000 92%);mask-image:radial-gradient(70% 64% at 50% 56%,rgba(0,0,0,0.18) 36%,rgba(0,0,0,0.5) 72%,#000 92%)}
-        .mh-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(27,27,29,.55) 1px,transparent 1px);background-size:7px 7px;animation-timing-function:linear;animation-iteration-count:infinite}
-        .mh-dots-a{opacity:.34;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:7.5px 7.5px;mask-size:7.5px 7.5px;animation-name:mhDotsA;animation-duration:26s}
-        .mh-dots-b{opacity:.26;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:8.3px 8.3px;mask-size:8.3px 8.3px;animation-name:mhDotsB;animation-duration:37s}
+        .mh-dots{position:absolute;inset:0;background-image:radial-gradient(#9aa0b0 .85px,transparent .85px);background-size:7px 7px;animation-timing-function:linear;animation-iteration-count:infinite}
+        .mh-dots-a{opacity:.5;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:7.5px 7.5px;mask-size:7.5px 7.5px;animation-name:mhDotsA;animation-duration:36s}
+        .mh-dots-b{opacity:.32;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:8.3px 8.3px;mask-size:8.3px 8.3px;animation-name:mhDotsB;animation-duration:49s}
         @keyframes mhDotsA{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:75px -60px;mask-position:75px -60px}}
-        @keyframes mhDotsB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-83px 66px;mask-position:-83px 66px}}
-        @media(prefers-reduced-motion:reduce){.mh-dots{animation:none}}
+        @keyframes mhDotsB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-83px 66.4px;mask-position:-83px 66.4px}}
+        [data-open="false"] .mh-dots{animation-play-state:paused}
+        @media(prefers-reduced-motion:reduce){.mh-dots,.mh-login-panel{animation:none}.mh-band,.mh-sheet,.mh-sheet-body,.mh-mobile-group summary svg{transition:none!important}}
         .mh-item{transition:background-color .15s ease,transform .15s ease}
         .mh-item:hover{background:rgba(250,250,250,.7)}
         .mh-item:active{transform:scale(.98)}
@@ -2457,21 +2155,21 @@ export default function NorthwindPage() {
         @keyframes mhPing{0%{transform:rotate(45deg) scale(1);opacity:.5}70%,100%{transform:rotate(45deg) scale(2.2);opacity:0}}
         .mh-live{animation:mhPing 1.8s cubic-bezier(0,0,.2,1) infinite}
         @media (prefers-reduced-motion:reduce){.mh-live{animation:none;opacity:0}}
-        .nw-seg-key{transition:translate 260ms cubic-bezier(.32,.72,0,1);will-change:transform}
+        .nw-seg-key{transition:translate 260ms cubic-bezier(.32,.72,0,1);}
         .nw-seg-opt{transition:transform .15s ease}
         .nw-seg-opt:active{transform:scale(.985)}
         .nw-seg-tile{transition:background-color 260ms cubic-bezier(.32,.72,0,1),border-color 260ms cubic-bezier(.32,.72,0,1),color 260ms cubic-bezier(.32,.72,0,1),box-shadow 260ms cubic-bezier(.32,.72,0,1)}
         .nw-seg-label{transition:color 200ms ease,font-weight 200ms ease}
-        .nw-seg-opt[aria-selected="false"]:hover .nw-seg-label{color:rgb(26,27,47)}
-        .nw-seg-opt[aria-selected="false"]:hover .nw-seg-tile{border-color:rgba(34,34,79,0.18);color:#6b7180}
+        .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-label{color:rgb(26,27,47)}
+        .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-tile{border-color:rgba(34,34,79,0.18);color:#6b7180}
         @media(prefers-reduced-motion:reduce){.nw-seg-key,.nw-seg-tile,.nw-seg-label{transition:none}}
         .nw-otherdemo{transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
-        .nw-otherdemo:hover{border-color:#d9dde6;box-shadow:0 4px 14px rgba(18,24,40,.08)}
+        .nw-otherdemo:hover{border-color:#d9dde6;background:#fafafa!important}
         .nw-otherdemo:active{transform:scale(.995)}
         .mh-pill{transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
         .mh-pill:hover{border-color:#d9dde6;box-shadow:0 2px 8px rgba(18,24,40,.06)}
         .mh-pill:active{transform:scale(.97)}
-        @media (max-width:767px){.mh-nav{display:none!important}.mh-right{display:none!important}.mh-burger{display:inline-flex!important}}
+        @media (max-width:1023px){.mh-nav{display:none!important}.mh-right{display:none!important}.mh-burger{display:inline-flex!important}}
         .nw-reveal>*{opacity:0;transform:translateY(10px);animation:nwrev .6s cubic-bezier(.4,0,.2,1) forwards}
         .nw-reveal>*:nth-child(1){animation-delay:.08s}
         .nw-reveal>*:nth-child(2){animation-delay:.16s}
