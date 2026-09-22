@@ -1206,26 +1206,22 @@ function MktLogin({ mobile = false }: { mobile?: boolean }) {
   </div>;
 }
 
-// The announcement bar above the nav, mirrored from frigade.com's
-// AnnouncementBanner and its content/announcement.md. Desktop only, the same
-// as over there: the mobile nav row stays clean. Four layers sit over the flat
-// blue - a highlight band that sweeps and then pauses, the site's diagonal
-// hatch, an edge vignette that pushes the colour out to the left and right
-// margins so the centre reads near-white, and a noise grain multiplied in.
+// Shared closing-CTA palette, mirrored by the compact marketing banner.
+const MKT_BRAND_PANEL = 'linear-gradient(159deg, rgb(0,110,255) 0%, rgb(0,82,242) 100%)';
+
+// Keep the desktop-only announcement footprint aligned with frigade.com.
 const MKT_ANNOUNCEMENT = {
-  text: 'New: add Frigade to your own agent in one API call',
+  text: 'New: Add Frigade to your own agent in one API call',
   textMobile: 'Meet the Assist API',
   href: MKT + '/blog/your-product-cant-explain-itself',
 };
 
 function MarketingBanner() {
   return (
-    <a className="mh-banner" href={MKT_ANNOUNCEMENT.href}>
+    <a className="mh-banner" href={MKT_ANNOUNCEMENT.href} style={{ background: MKT_BRAND_PANEL }}>
       <span aria-hidden className="mh-banner-fx">
-        <span className="mh-banner-shimmer" />
-        <span className="mh-banner-hatch" />
-        <span className="mh-banner-vignette" />
-        <span className="mh-banner-grain" />
+        <span className="nw-cta-dots nw-cta-dots-compact nw-cta-dots-a" />
+        <span className="nw-cta-dots nw-cta-dots-compact nw-cta-dots-b" />
       </span>
       <span className="mh-banner-text">
         <span className="mh-banner-wide">{MKT_ANNOUNCEMENT.text}</span>
@@ -1691,7 +1687,7 @@ function ProductCta({ title, subtext, product }: { title: string; subtext: strin
   const engage = product === 'engage';
   const palette = engage
     ? { panel: 'linear-gradient(159deg, rgb(61,91,139) 0%, rgb(45,73,118) 100%)', glow: 'rgba(214,224,240,.5)', label: '#2d4976' }
-    : { panel: 'linear-gradient(159deg, rgb(0,110,255) 0%, rgb(0,82,242) 100%)', glow: 'rgba(198,228,255,.6)', label: '#015efb' };
+    : { panel: MKT_BRAND_PANEL, glow: 'rgba(198,228,255,.6)', label: '#015efb' };
   const icons = [engage ? CodeXml : Sparkles, Zap, Route, MousePointerClick];
   const slots: React.CSSProperties[] = [
     { left: '7%', top: '22%', width: 44, height: 44, transform: 'rotate(-8deg)' },
@@ -2054,29 +2050,19 @@ export default function NorthwindPage() {
           .nw-url{width:auto!important}
         }
         /* Shared navigation: neutral hover, quick panel reveal, and a 1024px mobile breakpoint. */
-        /* Announcement bar. Desktop only, as on the marketing site: the mobile
-           nav row stays clean. Four layers over the flat blue - a highlight
-           band that sweeps then pauses, the site's diagonal hatch, an edge
-           vignette that pushes the colour out to the margins so the middle
-           reads near-white, and a noise grain multiplied into the darker
-           zones. The whole stack fades in once, after the first paint. */
-        .mh-banner{position:relative;display:none;min-height:36px;width:100%;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid rgba(1,94,251,0.18);background:#bcd2f4;padding:8px 16px;text-decoration:none}
+        /* Match the main site's compact blue banner and closing-CTA dots. */
+        .mh-banner{position:relative;isolation:isolate;display:none;min-height:36px;width:100%;align-items:center;justify-content:center;overflow:hidden;padding:8px 16px;color:#fff;text-decoration:none}
         @media(min-width:768px){.mh-banner{display:flex;padding-top:0;padding-bottom:0}}
-        .mh-banner-fx{position:absolute;inset:0;opacity:0;pointer-events:none;animation:mhBannerIn 900ms cubic-bezier(.23,1,.32,1) 200ms forwards}
-        .mh-banner-shimmer{position:absolute;top:0;bottom:0;left:0;width:33.3333%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);will-change:transform}
-        @media(prefers-reduced-motion:no-preference){.mh-banner-shimmer{animation:mhShimmer 5s ease-in-out infinite}}
-        .mh-banner-hatch{position:absolute;inset:0;opacity:.55;background-image:url('/images/pattern-hatch-dark.svg');background-size:74.5px auto}
-        .mh-banner-vignette{position:absolute;inset:0;background-image:radial-gradient(ellipse 40% 200% at 50% 50%,transparent 0%,transparent 20%,rgba(1,94,251,0.12) 65%,rgba(1,94,251,0.26) 100%)}
-        .mh-banner-grain{position:absolute;inset:0;opacity:.30;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");background-size:160px 160px}
-        .mh-banner-text{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:1.4;color:#2f3649;text-wrap:balance;transition:color .15s ease}
-        .mh-banner:hover .mh-banner-text{color:#1a233c}
+        .mh-banner-fx{position:absolute;inset:0;pointer-events:none;mask-image:linear-gradient(90deg,#000,transparent 40%,transparent 60%,#000)}
+        .mh-banner-text{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:1.4;text-wrap:balance}
         .mh-banner-wide,.mh-banner-narrow{font-weight:500}
         .mh-banner-wide{display:none}
         @media(min-width:768px){.mh-banner-wide{display:inline}.mh-banner-narrow{display:none}}
-        .mh-banner-arrow{flex-shrink:0;transition:transform .15s ease}
-        .mh-banner:hover .mh-banner-arrow{transform:translateX(2px)}
-        @keyframes mhBannerIn{from{opacity:0}to{opacity:1}}
-        @keyframes mhShimmer{0%{transform:translateX(-140%) skewX(-12deg)}60%,100%{transform:translateX(420%) skewX(-12deg)}}
+        .mh-banner-arrow{flex-shrink:0;transition:transform 160ms cubic-bezier(.23,1,.32,1)}
+        .mh-banner:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+        @media(hover:hover) and (pointer:fine){.mh-banner:hover .mh-banner-arrow{transform:translateX(3px)}}
+        @media(prefers-reduced-motion:reduce){.mh-banner-arrow{transition:none}}
+
         /* Flat links carry no chip: the chip marks a band trigger. */
         .mh-flat{position:relative;font-size:14px;font-weight:500;line-height:16px;color:#1a233c;white-space:nowrap;text-decoration:none;transition:color .15s ease}
         .mh-flat:hover{color:#015efb}
@@ -2191,6 +2177,12 @@ export default function NorthwindPage() {
         .nw-cta-dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.95) 1px,transparent 1px);background-size:22px 22px;animation-timing-function:linear;animation-iteration-count:infinite}
         .nw-cta-dots-a{opacity:.22;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:23.5px 23.5px;mask-size:23.5px 23.5px;animation-name:nwCtaDotsA;animation-duration:26s}
         .nw-cta-dots-b{opacity:.16;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:26px 26px;mask-size:26px 26px;animation-name:nwCtaDotsB;animation-duration:37s}
+        /* Compact announcement preset: three dot rows in the 36px banner. */
+        .nw-cta-dots-compact{background-size:12px 12px}
+        .nw-cta-dots-compact.nw-cta-dots-a{-webkit-mask-size:13px 13px;mask-size:13px 13px;animation-name:nwCtaDotsCompactA}
+        .nw-cta-dots-compact.nw-cta-dots-b{-webkit-mask-size:14px 14px;mask-size:14px 14px;animation-name:nwCtaDotsCompactB}
+        @keyframes nwCtaDotsCompactA{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:130px -104px;mask-position:130px -104px}}
+        @keyframes nwCtaDotsCompactB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-140px 112px;mask-position:-140px 112px}}
         .nw-cta-tile{display:none}
         .nw-cta-tile-float{animation-name:nwCtaFloat;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
         .nw-sr:not(.nw-sr-in) .nw-cta-dots,.nw-sr:not(.nw-sr-in) .nw-cta-tile-float{animation-play-state:paused}
