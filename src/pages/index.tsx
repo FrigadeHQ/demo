@@ -1371,6 +1371,7 @@ function MarketingHeader() {
 // never learns the second demo exists. Both products are named at rest instead.
 //
 // A flat two-option chooser keeps both demos visible and swaps them in place.
+// Both product marks use the colored square tiles from the marketing header.
 function ProductPill() {
   const { experience, setExperience } = useExperience();
   const cur: ProductKey = experience === 'engage' ? 'engage' : 'assistant';
@@ -1393,7 +1394,6 @@ function ProductPill() {
       />
       {keys.map((k) => {
         const on = k === cur;
-        const Icon = PRODUCT_META[k].icon;
         return (
           <button
             key={k}
@@ -1403,11 +1403,8 @@ function ProductPill() {
             onClick={() => { if (!on) setExperience(k); }}
             style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '7px 10px', borderRadius: 8, border: 0, background: 'none', cursor: on ? 'default' : 'pointer', fontFamily: 'inherit' }}
           >
-            <span
-              className="nw-seg-tile"
-              style={{ flexShrink: 0, width: 28, height: 28, borderRadius: 6, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: on ? `${PRODUCT_META[k].tile}12` : 'transparent', color: on ? PRODUCT_META[k].tile : '#9aa0b0' }}
-            >
-              <Icon size={13} strokeWidth={2.4} aria-hidden />
+            <span className="nw-seg-tile" aria-hidden>
+              <ProductTile k={k} size={28} radius={6} iconSize={13} glow />
             </span>
             <span className="nw-seg-label" style={{ fontSize: 14, fontWeight: on ? 600 : 500, color: on ? 'rgb(26,27,47)' : '#727a8b' }}>{PRODUCT_META[k].label}</span>
           </button>
@@ -2161,10 +2158,10 @@ export default function NorthwindPage() {
         .nw-seg-key{transition:translate 260ms cubic-bezier(.32,.72,0,1);}
         .nw-seg-opt{transition:transform .15s ease}
         .nw-seg-opt:active{transform:scale(.985)}
-        .nw-seg-tile{transition:background-color 260ms cubic-bezier(.32,.72,0,1),border-color 260ms cubic-bezier(.32,.72,0,1),color 260ms cubic-bezier(.32,.72,0,1),box-shadow 260ms cubic-bezier(.32,.72,0,1)}
+        .nw-seg-tile{display:inline-flex;transition:transform 160ms ease}
         .nw-seg-label{transition:color 200ms ease,font-weight 200ms ease}
         .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-label{color:rgb(26,27,47)}
-        .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-tile{border-color:rgba(34,34,79,0.18);color:#6b7180}
+        .nw-seg-opt[aria-pressed="false"]:hover .nw-seg-tile{transform:scale(1.06)}
         @media(prefers-reduced-motion:reduce){.nw-seg-key,.nw-seg-tile,.nw-seg-label{transition:none}}
         /* Product closers mirror the marketing site's palette, texture and spacing. */
         .nw-product-cta{padding:80px 32px}
