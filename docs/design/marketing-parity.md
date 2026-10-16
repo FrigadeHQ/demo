@@ -1,5 +1,28 @@
 # Marketing-site style parity
 
+## October 16, 2026 refresh
+
+Reference: the deployed `frigade.com` site and marketing commit `c680502`. Demo baseline: `12a8615`. Review branch: `fix/marketing-parity-oct16`.
+
+| Before | After | Why |
+| --- | --- | --- |
+| 36px text-only announcement inside the sticky header | 56px banner with New badge, Learn more button, and the current three-state pixel animation; banner scrolls above the sticky navigation | Match the current shared banner geometry and scroll behavior |
+| Inter across marketing and product UI | Atkinson Hyperlegible Next for marketing, IBM Plex Mono for menu headings, Inter retained inside Northwind | Use the same typefaces as the main site without changing the embedded product |
+| Older Features and Resources promos and link lists | Hotplate in Features; demo promo and Valley footer in Resources; current Reviews, Security, and link descriptions | Keep both desktop and mobile navigation current |
+| Two login destinations | Assistant, Assist API, and Engage, using the existing dashboard destinations | Match the main site's product chooser |
+| Older drifting dots on promos and CTAs | Same tightly spaced pixels as the new banner, with clear space around promo arrows | Keep texture, animation, and contrast consistent |
+| SOC badge alone in the footer | Current G2, SOC, and GDPR row, plus Reviews and Security links | Match the live footer's assets, scale, and spacing |
+
+The banner and dot drawing use the marketing site's existing design and algorithm. The canvas pauses offscreen, in background tabs, and under reduced motion. The bundled Atkinson font is the same Latin variable font served by the main site; its OFL license is included. No dependencies were added.
+
+Verification: production build, TypeScript, `scripts/check-animated-dots.cjs`, and diff checks pass. Both local product URLs respond successfully; new local assets, banner ordering, and font scopes were checked in served HTML. Source checks confirm Northwind, the product selector, providers, flow definitions, signup attribution, and Cal booking targets are unchanged. Existing native-image and hook-dependency build advisories remain.
+
+Fresh desktop/mobile visual and interaction review is pending: the browser connection is unavailable. HTTP checks do not verify hydrated product switching or menu interaction. No forms or bookings were submitted.
+
+Local review: [Assistant](http://127.0.0.1:3292/) and [Engage](http://127.0.0.1:3292/?product=engage). This refresh is not deployed. The September notes below describe the earlier parity pass.
+
+## September 17, 2026 baseline
+
 Reference: the Frigade marketing navigation/footer released in `a7c1bb7` on September 17, 2026. This pass is on `design/marketing-parity`, based on demo-v2 `855a720`.
 
 ## Visual changes
