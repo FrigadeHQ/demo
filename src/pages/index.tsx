@@ -6,7 +6,7 @@ import {
   Sparkles, CodeXml, Braces, ClipboardList, ListChecks, Route, Flag, MessageSquare, Newspaper, X,
   UserPlus, Database, Zap, Check, CheckCircle2, RotateCcw, Rocket, ShieldCheck,
   Wrench, Lightbulb, LayoutTemplate, RefreshCw, Blocks, Terminal, Smartphone, UserCheck,
-  TrendingUp, Scale, Layers, Building2, MonitorPlay, ArrowUpRight, ArrowRight, BookOpen, MousePointerClick,
+  TrendingUp, Scale, Layers, Building2, MonitorPlay, ArrowUpRight, ArrowRight, BookOpen, MousePointerClick, Compass, Play,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { getUserId } from '@/lib/utils';
@@ -16,6 +16,7 @@ import { useExperience } from '@/components/experience-context';
 import { VIDEO_BASE, SkillsChooser, SKILL_VIDEOS } from '@/components/skills-chooser';
 import { MARKETING_VIDEO_FRAME } from '@/lib/marketing-styles';
 import { ScrollingFooterCompass } from '@/components/scrolling-footer-compass';
+import { AnimatedDots } from '@/components/animated-dots';
 import { FONT, MONO, C, DARK, palette, cssVars, APP_SCOPE, BTN_BRAND } from '@/lib/theme';
 
 // Cal.com popup config for the booking flows (reused from the existing demo site).
@@ -1014,6 +1015,7 @@ function BrowserFrame({ children, dark = false }: { children: React.ReactNode; d
 // has to move with them.
 // ---------------------------------------------------------------------------
 const MKT = 'https://frigade.com';
+const MARKETING_FONT = 'var(--font-marketing), system-ui, Arial, sans-serif';
 // Marketing tokens, by value. Every rule in the header - the header's own
 // bottom edge, the band's, the lattice ground, the column and row rules - is
 // one value on frigade.com, because the home page runs the squared grid and
@@ -1049,7 +1051,7 @@ type MktCell = {
   quote?: string;
   attribution?: string;
   href: string;
-  footer: { label: string; sublabel: string; href: string };
+  footer: { label: string; sublabel?: string; href: string; icon?: LucideIcon; logo?: string };
 };
 type MktMenu = { cols: MktCol[]; cell: MktCell };
 type MktMenuKey = 'products' | 'features' | 'resources';
@@ -1060,10 +1062,10 @@ const MKT_FEATURES: MktMenu = {
       { t: "AI-Generated Tours", h: "/features/ai-generated-tours", icon: Route, d: "Walkthroughs on the live screen" },
       { t: "Suggestions", h: "/features/suggestions", icon: Lightbulb, d: "Help before users ask" },
       { t: "Generative UI", h: "/features/generative-ui", icon: LayoutTemplate, d: "Answers users can act on" },
-      { t: "Skills", h: "/features/skills", icon: Zap, d: "Complete tasks inside your product" }
+      { t: "Skills", h: "/features/skills", icon: Zap, d: "Take action in your app" }
     ] },
     { heading: "Improve the experience", items: [
-      { t: "Always Accurate", h: "/features/always-accurate", icon: RefreshCw, d: "Re-learns as your product changes" },
+      { t: "Always Accurate", h: "/features/always-accurate", icon: RefreshCw, d: "Re-learns as you ship" },
       { t: "Feedback", h: "/features/feedback", icon: MessageSquare, d: "Coach answers without code" },
       { t: "Insights", h: "/features/insights", icon: BarChart3, d: "See where users need help" },
       { t: "Mobile Web", h: "/features/mobile", icon: Smartphone, d: "Guide users on smaller screens" }
@@ -1074,14 +1076,14 @@ const MKT_FEATURES: MktMenu = {
       { t: "Developer", h: "/features/developer", icon: Terminal, d: "APIs, SDKs, and controls" }
     ] }
   ],
-  cell: {"title": "See Frigade in action.", "subtitle": "Explore the demo. No signup required.", "href": "https://demo.frigade.com", "footer": {"label": "Try Frigade in your product", "sublabel": "Send us a URL to get started", "href": "https://frigade.com/#cta:demo-custom"}, "icon": MonitorPlay}
+  cell: { logo: '/images/hotplate.svg', logoAlt: 'Hotplate', quote: 'Frigade lets us run support like a product, not a cost center.', attribution: 'Ben Klenk, CEO', href: '/case-studies/hotplate', footer: { label: 'Try Frigade in your product', sublabel: 'Send us a URL to get started', href: '/#cta:demo-custom', icon: Play } }
 };
 
 const MKT_RESOURCES: MktMenu = {
   cols: [
     { heading: "Learn", items: [
-      { t: "How it works", h: "/how-it-works", icon: BookOpen, d: "From learning to helping users" },
-      { t: "Blog", h: "/blog", icon: Newspaper, d: "Ideas for better product adoption" },
+      { t: "How Frigade learns", h: "/how-it-works", icon: Compass, d: "From learning to helping users" },
+      { t: "Blog", h: "/blog", icon: Newspaper, d: "Product, design, and AI" },
       { t: "Updates", h: "/updates", icon: Megaphone, d: "The latest from Frigade" },
       { t: "Engage docs", h: "https://engage-docs.frigade.com", icon: Terminal, d: "Build onboarding with Engage" }
     ] },
@@ -1094,19 +1096,21 @@ const MKT_RESOURCES: MktMenu = {
     ] },
     { heading: "Get to know Frigade", items: [
       { t: "About", h: "/about", icon: Building2, d: "Meet the team" },
+      { t: "Reviews", h: "/reviews", icon: MessageSquare, d: "What people are saying" },
+      { t: "Security", h: "/security", icon: ShieldCheck, d: "Privacy and compliance" },
       { t: "Compare Frigade", h: "/compare", icon: Scale, d: "Find the right fit for your team" },
       { t: "Glossary", h: "/glossary", icon: BookOpen, d: "Product adoption, explained" }
     ] }
   ],
-  cell: {"logo": "/images/hotplate.svg", "logoAlt": "Hotplate", "quote": "Frigade lets us run support like a product, not a cost center.", "attribution": "Ben Klenk, CEO", "href": "https://frigade.com/case-studies/hotplate", "footer": {"label": "Read the Valley story", "sublabel": "In-product help at Valley", "href": "https://frigade.com/case-studies/valley"}}
+  cell: { title: 'See Frigade in action.', subtitle: 'Explore the demo. No signup required.', href: 'https://demo.frigade.com', icon: Play, footer: { label: 'Read the Valley story', sublabel: 'In-product help at Valley', href: '/case-studies/valley', logo: '/images/joinvalley.png' } }
 };
 
 // The three launched products, in nav order. Knowledge and Demo are gated off
 // on the marketing site, so they are absent here too.
-const MKT_PRODUCTS: { t: string; h: string; icon: LucideIcon; tile: string; shadow: string; d: string; tag?: string }[] = [
-  { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'Product answers and guidance in a ready-made assistant.' },
-  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Add product answers and guidance to your own agent.', tag: 'New' },
-  { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Build onboarding flows your team controls in React.' },
+const MKT_PRODUCTS: { t: string; h: string; icon: LucideIcon; tile: string; shadow: string; d: string; tag?: string; login: { href: string; description: string } }[] = [
+  { t: 'Assistant', h: '/', icon: Sparkles, tile: '#015efb', shadow: '1, 94, 251', d: 'Product answers and guidance in a ready-made assistant.', login: { href: 'https://app.frigade.ai/sign-in', description: 'Manage your AI assistant' } },
+  { t: 'Assist API', h: '/assist-api', icon: Braces, tile: '#015efb', shadow: '1, 94, 251', d: 'Add product answers and guidance to your own agent.', tag: 'New', login: { href: 'https://app.frigade.ai/sign-in', description: 'Manage your Assist API' } },
+  { t: 'Engage', h: '/engage', icon: CodeXml, tile: '#2d4976', shadow: '45, 73, 118', d: 'Build onboarding flows your team controls in React.', login: { href: 'https://app.frigade.com/sign-in', description: 'Build onboarding flows' } },
 ];
 
 // Flat links, i.e. everything in the bar that is not a band trigger. Pricing is
@@ -1148,7 +1152,7 @@ function MktRow({ item, onGo }: { item: MktItem; onGo: () => void }) {
   return <a href={marketingHref(item.h)} className="mh-row" onClick={onGo} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 24px', textDecoration: 'none' }}>
     <Icon size={15} strokeWidth={2} style={{ marginTop: 3, flexShrink: 0 }} className="mh-row-icon" />
     <span style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-      <span className="mh-row-label" style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>{item.t}</span>
+      <span className="mh-row-label" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 14, fontWeight: 600, lineHeight: 1.3 }}>{item.t}{item.h.startsWith('http') && <ArrowUpRight size={12} aria-hidden />}</span>
       <span style={{ fontSize: 13, lineHeight: 1.45, color: MK.ink500 }}>{item.d}</span>
     </span>
   </a>;
@@ -1156,8 +1160,8 @@ function MktRow({ item, onGo }: { item: MktItem; onGo: () => void }) {
 
 function MktCellView({ cell, onGo }: { cell: MktCell; onGo: () => void }) {
   const Icon = cell.icon;
-  return <a href={marketingHref(cell.href)} onClick={onGo} className="mh-cell" style={{ position: 'relative', display: 'flex', flexDirection: 'column', padding: '24px 24px 28px', textDecoration: 'none', overflow: 'hidden' }}>
-    <ArrowUpRight size={16} strokeWidth={2} className="mh-cell-arrow" style={{ alignSelf: 'flex-end', flexShrink: 0 }} />
+  return <a href={marketingHref(cell.href)} onClick={onGo} className="mh-cell" style={{ position: 'relative', display: 'flex', flexDirection: 'column', padding: '20px 24px 28px', textDecoration: 'none', overflow: 'hidden' }}>
+    <ArrowUpRight size={20} strokeWidth={2} className="mh-cell-arrow" style={{ alignSelf: 'flex-end', flexShrink: 0 }} />
     {cell.logo ? <img src={cell.logo} alt={cell.logoAlt ?? ''} style={{ marginTop: 16, height: 23, width: 'auto', alignSelf: 'flex-start' }} /> : Icon ?
       <span style={{ marginTop: 16, display: 'inline-flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: MK.brand, color: '#fff', outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: '0 2px 8px rgba(1,94,251,.28), inset 0 2px 1px rgba(255,255,255,.2)' }}><Icon size={18} /></span> : null}
     {cell.quote ? <>
@@ -1167,16 +1171,18 @@ function MktCellView({ cell, onGo }: { cell: MktCell; onGo: () => void }) {
       <span style={{ marginTop: 20, maxWidth: '15ch', fontSize: 21, fontWeight: 600, lineHeight: 1.22, letterSpacing: '-.012em', color: MK.ink, textWrap: 'balance' }}>{cell.title}</span>
       <span style={{ marginTop: 12, fontSize: 13, lineHeight: 1.5, color: MK.ink500 }}>{cell.subtitle}</span>
     </>}
-    <span aria-hidden className="mh-dots-wrap"><span className="mh-dots mh-dots-a" /><span className="mh-dots mh-dots-b" /></span>
+    <span aria-hidden className="mh-dots-wrap"><AnimatedDots className="mh-promo-dots" /></span>
   </a>;
 }
 
-function MktMenuFooter({ action, onGo }: { action: { label: string; sublabel?: string; href: string }; onGo: () => void }) {
-  return <a className="mh-hub" href={marketingHref(action.href)} onClick={onGo} style={{ display: 'flex', alignItems: 'center', gap: 12, minHeight: 64, padding: '16px 24px', textDecoration: 'none', borderLeft: `1px solid ${MK.hair}`, borderRight: `1px solid ${MK.hair}` }}>
-    <span style={{ display: 'flex', flex: 1, flexWrap: 'wrap', alignItems: 'baseline', gap: '4px 16px' }}>
-      <span className="mh-hub-label" style={{ fontSize: 14, fontWeight: 500 }}>{action.label}</span>
-      {action.sublabel && <span style={{ color: MK.ink500, fontSize: 13 }}>{action.sublabel}</span>}
-    </span><ArrowRight size={16} className="mh-hub-icon" />
+function MktMenuFooter({ action, onGo }: { action: MktCell['footer']; onGo: () => void }) {
+  const Icon = action.icon;
+  return <a className="mh-hub" href={marketingHref(action.href)} onClick={onGo} style={{ display: 'flex', alignItems: 'center', gap: 16, minHeight: 88, textDecoration: 'none', borderLeft: `1px solid ${MK.hair}`, borderRight: `1px solid ${MK.hair}` }}>
+    {(action.logo || Icon) && <span style={{ display: 'grid', placeItems: 'center', flexShrink: 0, width: 44, height: 44, borderRadius: 12, overflow: 'hidden', background: action.logo ? '#000' : '#fff', border: action.logo ? undefined : `1px solid ${MK.hair}`, color: '#2f3649' }}>{action.logo ? <img src={action.logo} alt="" width={44} height={44} /> : Icon && <Icon size={22} strokeWidth={1.5} aria-hidden />}</span>}
+    <span style={{ display: 'flex', flex: 1, minWidth: 0, flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+      <span className="mh-hub-label" style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.4 }}>{action.label}</span>
+      {action.sublabel && <span style={{ color: MK.ink500, fontSize: 13, lineHeight: 1.5 }}>{action.sublabel}</span>}
+    </span><ArrowRight size={20} className="mh-hub-icon" />
   </a>;
 }
 
@@ -1191,17 +1197,17 @@ function MktLogin({ mobile = false }: { mobile?: boolean }) {
     document.addEventListener('pointerdown', outside);
     return () => document.removeEventListener('pointerdown', outside);
   }, [open]);
-  return <div ref={ref} style={{ position: 'relative' }} onKeyDown={(e) => {
+  return <div ref={ref} style={{ position: 'relative' }} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }} onKeyDown={(e) => {
     if (e.key === 'Escape' && open) { e.preventDefault(); e.stopPropagation(); setOpen(false); button.current?.focus(); }
   }}>
     <button ref={button} type="button" className="mh-login-button" aria-label="Log in. Choose product to sign in to." aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} style={{ width: mobile ? '100%' : undefined }}>
       Log in <ChevronDown size={12} style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform 150ms ease-out' }} />
     </button>
     {open && <div id={id} className="mh-login-panel" style={{ position: 'absolute', ...(mobile ? { bottom: 'calc(100% + 12px)', left: 0 } : { top: 'calc(100% + 12px)', right: 0 }), width: 300, maxWidth: 'calc(100vw - 48px)', padding: 8, borderRadius: 8, background: '#fff', border: `1px solid ${MK.hair}`, boxShadow: '0 16px 40px -12px rgba(27,27,29,.18), 0 4px 12px -4px rgba(27,27,29,.06)', zIndex: 60 }}>
-      {(Object.keys(PRODUCT_META) as ProductKey[]).map((k) => <a key={k} className="mh-item" href={PRODUCT_META[k].signIn} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 6, textDecoration: 'none' }}>
-        <ProductTile k={k} size={28} radius={7} iconSize={15} glow />
-        <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontSize: 14, fontWeight: 500, color: MK.ink }}>{PRODUCT_META[k].label}</span><span style={{ fontSize: 12, color: MK.ink500 }}>{PRODUCT_META[k].signInDesc}</span></span>
-      </a>)}
+      {MKT_PRODUCTS.map((p) => { const Icon = p.icon; return <a key={p.t} className="mh-item" href={p.login.href} target="_blank" rel="noreferrer" onClick={() => setOpen(false)} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 10px', borderRadius: 6, textDecoration: 'none' }}>
+        <span className="mh-item-tile" style={{ display: 'grid', placeItems: 'center', marginTop: 2, width: 28, height: 28, flexShrink: 0, borderRadius: 9, background: p.tile, color: '#fff', outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: `0 2px 8px rgba(${p.shadow},.3), inset 0 2.5px 1px rgba(255,255,255,.2)` }}><Icon size={16} strokeWidth={2.25} /></span>
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13.5, lineHeight: 1.3, fontWeight: 600, color: MK.ink }}>{p.t}{p.tag && <span className="mh-new">{p.tag}</span>}</span><span style={{ fontSize: 12, lineHeight: 1.45, color: MK.ink500 }}>{p.login.description}</span></span>
+      </a>; })}
     </div>}
   </div>;
 }
@@ -1211,8 +1217,10 @@ const MKT_BRAND_PANEL = 'linear-gradient(159deg, rgb(0,110,255) 0%, rgb(0,82,242
 
 // Keep the desktop-only announcement footprint aligned with frigade.com.
 const MKT_ANNOUNCEMENT = {
-  text: 'New: Add Frigade to your own agent in one API call',
+  badge: 'New',
+  text: 'Add Frigade to your own agent in one API call',
   textMobile: 'Meet the Assist API',
+  linkText: 'Learn more',
   href: MKT + '/blog/your-product-cant-explain-itself',
 };
 
@@ -1220,15 +1228,15 @@ function MarketingBanner() {
   return (
     <a className="mh-banner" href={MKT_ANNOUNCEMENT.href} style={{ background: MKT_BRAND_PANEL }}>
       <span aria-hidden className="mh-banner-fx">
-        <span className="nw-cta-dots nw-cta-dots-compact nw-cta-dots-a" />
-        <span className="nw-cta-dots nw-cta-dots-compact nw-cta-dots-b" />
+        <AnimatedDots className="mh-banner-dots" />
       </span>
       <span className="mh-banner-text">
+        <span className="mh-banner-badge">{MKT_ANNOUNCEMENT.badge}</span>
         <span className="mh-banner-wide">{MKT_ANNOUNCEMENT.text}</span>
         <span className="mh-banner-narrow">{MKT_ANNOUNCEMENT.textMobile}</span>
-        <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden className="mh-banner-arrow">
+        <span className="mh-banner-action">{MKT_ANNOUNCEMENT.linkText}<svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden className="mh-banner-arrow">
           <path d="M3 6h6m0 0L6 3m3 3L6 9" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        </svg></span>
       </span>
     </a>
   );
@@ -1309,8 +1317,7 @@ function MarketingHeader() {
   const trigger = (key: MktMenuKey, label: string) => <button ref={el => { triggers.current[key] = el; }} type="button" className="mh-trigger" data-on={open === key} aria-expanded={open === key} aria-controls="marketing-menu" onMouseEnter={() => hoverOpen(key)} onMouseLeave={hoverClose} onClick={(e) => { if (open === key && e.detail === 0) closeNow(); else openNow(key); }}>
     {label}<ChevronDown size={12} style={{ color: MK.ink500, transform: open === key ? 'rotate(180deg)' : undefined, transition: 'transform 150ms ease-out' }} />
   </button>;
-  return <header ref={headerRef} style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: `1px solid ${MK.hair}`, flexShrink: 0 }}>
-    <MarketingBanner />
+  return <><MarketingBanner /><header ref={headerRef} style={{ position: 'sticky', top: 0, zIndex: 50, background: '#fff', borderBottom: `1px solid ${MK.hair}`, flexShrink: 0 }}>
     <div className="mh-bar" style={{ maxWidth: 1288, margin: '0 auto', height: 79, padding: '0 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'center' }}>
       <div style={{ justifySelf: 'start' }}>{logo}</div>
       <nav className="mh-nav" aria-label="Frigade" style={{ justifySelf: 'center', display: 'flex', alignItems: 'center', gap: 24 }}>
@@ -1330,13 +1337,13 @@ function MarketingHeader() {
       <div className="mh-rail"><div className={`mh-rail-inner mh-grid ${open === 'products' ? 'mh-grid-3' : 'mh-grid-4'}`}>
         {open === 'products' ? MKT_PRODUCTS.map(p => {
           const Icon = p.icon;
-          return <a key={p.t} href={marketingHref(p.h)} className="mh-prod" onClick={closeNow} style={{ display: 'flex', flexDirection: 'column', gap: 20, padding: '28px 32px', textDecoration: 'none' }}>
+          return <a key={p.t} href={marketingHref(p.h)} className="mh-prod" onClick={closeNow} style={{ display: 'flex', flexDirection: 'column', gap: 20, textDecoration: 'none' }}>
             <span style={{ display: 'inline-flex', height: 36, width: 36, alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: p.tile, color: '#fff', outline: '1px solid rgba(255,255,255,.4)', outlineOffset: -1, boxShadow: `0 2px 8px rgba(${p.shadow},.28), inset 0 2px 1px rgba(255,255,255,.2)` }}><Icon size={16} /></span>
             <span style={{ display: 'flex', flexDirection: 'column', gap: 8 }}><span style={{ display: 'flex', alignItems: 'center', gap: 8, color: MK.ink, fontSize: 18, fontWeight: 600 }}>{p.t}{p.tag && <span className="mh-new">{p.tag}</span>}</span><span className="mh-product-desc" style={{ lineHeight: 1.5, color: MK.ink500 }}>{p.d}</span></span>
           </a>;
         }) : menu ? <>{menu.cols.map(col => <div key={col.heading} style={{ background: '#fff', paddingBottom: 16 }}><p className="mh-heading">{col.heading}</p>{col.items.map(item => <MktRow key={item.h} item={item} onGo={closeNow} />)}</div>)}<MktCellView cell={menu.cell} onGo={closeNow} /></> : null}
       </div></div>
-      <div style={{ borderTop: `1px solid ${MK.hair}` }}><div className="mh-rail"><div className="mh-rail-inner"><MktMenuFooter action={menu?.cell.footer ?? { label: 'How Frigade learns your product', href: '/how-it-works' }} onGo={closeNow} /></div></div></div>
+      <div style={{ borderTop: `1px solid ${MK.hair}` }}><div className="mh-rail"><div className="mh-rail-inner"><MktMenuFooter action={menu?.cell.footer ?? { label: 'How Frigade learns your product', sublabel: 'See how it explores your app and keeps up with changes', href: '/how-it-works', icon: Compass }} onGo={closeNow} /></div></div></div>
     </div>
     <div ref={sheetRef} role="dialog" aria-modal="true" aria-label="Site navigation" aria-hidden={!mobileOpen} {...(!mobileOpen ? { inert: '' as any } : {})} className="mh-sheet" data-open={mobileOpen}>
       <div style={{ height: 80, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', borderBottom: `1px solid ${MK_SHEET_RULE}` }}>
@@ -1361,7 +1368,7 @@ function MarketingHeader() {
         </div>
       </div>
     </div>
-  </header>;
+  </header></>;
 }
 
 // The demo's product switcher. frigade.com shows a dropdown pill here, and this
@@ -1472,7 +1479,7 @@ const FOOTER_SOCIALS: { p: string; h: string; icon: React.ReactNode }[] = [
 const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
   { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'Generative UI', h: '/features/generative-ui' }, { t: 'Mobile', h: '/features/mobile' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
   { heading: 'Use Cases', links: [{ t: 'Support Deflection', h: '/use-cases/support-deflection' }, { t: 'User Activation', h: '/use-cases/user-activation' }, { t: 'Virtual CSM', h: '/use-cases/virtual-csm' }, { t: 'Feature Adoption', h: '/use-cases/feature-adoption' }, { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell' }] },
-  { heading: 'Resources', links: [{ t: 'How it works', h: '/how-it-works' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Engage docs', h: 'https://engage-docs.frigade.com' }, { t: 'Glossary', h: '/glossary' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
+  { heading: 'Resources', links: [{ t: 'How it works', h: '/how-it-works' }, { t: 'Reviews', h: '/reviews' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Engage docs', h: 'https://engage-docs.frigade.com' }, { t: 'Glossary', h: '/glossary' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
   // Alphabetical by competitor, same as the published column.
   { heading: 'Guides', links: [{ t: 'Adoption platforms', h: '/blog/ten-digital-adoption-platforms-2026' }, { t: 'Ticket deflection', h: '/blog/how-to-deflect-support-tickets' }, { t: 'Support AI tools', h: '/blog/eight-customer-support-ai-tools-2026' }] },
   { heading: 'Compare', links: [{ t: 'Frigade vs. Appcues', h: '/compare/appcues' }, { t: 'Frigade vs. Chameleon', h: '/compare/chameleon' }, { t: 'Frigade vs. Fin', h: '/compare/fin' }, { t: 'Frigade vs. HubSpot', h: '/compare/hubspot' }, { t: 'Frigade vs. Pendo', h: '/compare/pendo' }, { t: 'Frigade vs. Pylon', h: '/compare/pylon' }, { t: 'Frigade vs. Userflow', h: '/compare/userflow' }, { t: 'Frigade vs. Userpilot', h: '/compare/userpilot' }, { t: 'Frigade vs. WalkMe', h: '/compare/walkme' }, { t: 'Frigade vs. Whatfix', h: '/compare/whatfix' }, { t: 'Frigade vs. Zendesk', h: '/compare/zendesk' }] },
@@ -1481,7 +1488,7 @@ const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
   // hash deep-link (frigade.com/contact and /demo are not real routes).
   // "Get a demo" (h: '#cal:demo') is rendered as a Cal popup trigger below,
   // booking the same frigade-demo-call calendar as the page's other CTAs.
-  { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
+  { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Security', h: '/security' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
 ];
 const FOOTER_GROUPS = [['Use Cases'], ['Features'], ['Resources', 'Guides'], ['Company', 'Case Studies']].map(headings =>
   headings.flatMap(heading => FOOTER_COLS.filter(col => col.heading === heading)),
@@ -1521,7 +1528,7 @@ function MarketingFooter() {
   </div>;
   const legal: React.CSSProperties = { fontSize: 12, color: 'rgba(255,255,255,.7)', textDecoration: 'none' };
   return (
-    <footer style={{ position: 'relative', fontFamily: FONT }}>
+    <footer style={{ position: 'relative', fontFamily: MARKETING_FONT }}>
       {/* Everything the port needs that an inline style can't say: the
           marketing footer's breakpoints, its hover transitions, and the
           status pill's echo. Class names stay footer-scoped (nw-ftr-*).
@@ -1542,6 +1549,11 @@ function MarketingFooter() {
         .nw-ftr-link:hover{color:#015efb}
         .nw-ftr-social{transition:background-color .15s ease}
         .nw-ftr-social:hover{background:#fafafa}
+        .nw-ftr-proof{display:flex;flex-wrap:wrap;align-items:center;gap:16px 20px}
+        .nw-ftr-socials{display:flex;gap:4px}
+        @media(min-width:640px){.nw-ftr-socials{padding-left:16px;border-left:1px solid ${MK.hair}}}
+        .nw-ftr-award:focus-visible,.nw-ftr-security:focus-visible{outline:2px solid ${MK.brand};outline-offset:4px}
+        .nw-ftr-security{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;flex-shrink:0}
         .nw-ftr-social:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(1,94,251,.4)}
         /* Hover the X mark and the old Twitter bird takes its place. */
         .nw-ftr-x,.nw-ftr-bird{position:absolute}
@@ -1573,9 +1585,18 @@ function MarketingFooter() {
               <button type="button" aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })} style={{ display: 'inline-flex', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}><img src="/images/frigade-logo.svg" alt="Frigade" width={82} height={26} /></button>
               <address style={{ fontSize: 12, lineHeight: 1.65, color: C.muted, fontStyle: 'normal' }}>945 Market St.<br />San Francisco, CA 94103</address>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              <img src="/images/aicpa-soc-badge.avif" alt="AICPA SOC for Service Organizations" width={52} height={52} />
-              <div style={{ display: 'flex', gap: 4, paddingLeft: 16, borderLeft: `1px solid ${MK.hair}` }}>{FOOTER_SOCIALS.map(s => <a key={s.p} className="nw-ftr-social" href={s.h} target="_blank" rel="noreferrer" aria-label={s.p} style={{ width: 40, height: 40, borderRadius: 6, color: '#4a5063', display: 'grid', placeItems: 'center', textDecoration: 'none' }}>{s.icon}</a>)}</div>
+            <div className="nw-ftr-proof">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <a className="nw-ftr-award" href="https://www.g2.com/products/frigade-frigade/reviews" target="_blank" rel="noreferrer"><img src="/images/g2-high-performer-fall-2026.svg" alt="G2 High Performer, Fall 2026" width={92} height={106} style={{ height: 48, width: 'auto', transform: 'translateY(2px)' }} /></a>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <a className="nw-ftr-security" href={MKT + '/security'} aria-label="SOC 2 Type II"><img src="/images/aicpa-soc-badge.avif" alt="" width={48} height={48} /></a>
+                  <a className="nw-ftr-security" href={MKT + '/security'} aria-label="GDPR compliant"><svg aria-hidden viewBox="0 0 100 100" width={48} height={48} fill="none">
+                    <circle cx="50" cy="50" r="48" fill={MK.brand} /><circle cx="50" cy="50" r="44" stroke="#fff" strokeOpacity=".3" />
+                    <g fill="#fff">{Array.from({ length: 12 }, (_, i) => { const angle = (i * 30 - 90) * Math.PI / 180; return <path key={i} d="M0-3.6 1.05-1.1 3.8-1.1 1.55.6 2.4 3.2 0 1.65-2.4 3.2-1.55.6-3.8-1.1-1.05-1.1Z" transform={`translate(${50 + Math.cos(angle) * 32} ${50 + Math.sin(angle) * 32})`} />; })}<text x="50" y="56" textAnchor="middle" style={{ fontSize: 17, fontWeight: 600, letterSpacing: -.5 }}>GDPR</text></g>
+                  </svg></a>
+                </div>
+              </div>
+              <div className="nw-ftr-socials">{FOOTER_SOCIALS.map(s => <a key={s.p} className="nw-ftr-social" href={s.h} target="_blank" rel="noreferrer" aria-label={s.p} style={{ width: 40, height: 40, borderRadius: 6, color: '#4a5063', display: 'grid', placeItems: 'center', textDecoration: 'none' }}>{s.icon}</a>)}</div>
             </div>
           </div>
           <nav className="nw-ftr-cols" aria-label="Footer">
@@ -1694,7 +1715,7 @@ function ProductCta({ title, subtext, product }: { title: string; subtext: strin
   ];
   const motion = [{ duration: '6s', delay: '0s', direction: 'normal' }, { duration: '7.5s', delay: '-2.5s', direction: 'reverse' }, { duration: '6.8s', delay: '-1.2s', direction: 'reverse' }, { duration: '8s', delay: '-4s', direction: 'normal' }];
   return <div className="nw-product-cta" data-product={product} style={{ position: 'relative', isolation: 'isolate', overflow: 'hidden', background: palette.panel }}>
-    <span aria-hidden className="nw-cta-dots nw-cta-dots-a" /><span aria-hidden className="nw-cta-dots nw-cta-dots-b" />
+    <span aria-hidden className="nw-cta-dots"><AnimatedDots /></span>
     <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: '-40%', height: '80%', pointerEvents: 'none', background: `radial-gradient(58% 100% at 50% 100%, ${palette.glow}, rgba(255,255,255,0) 70%)` }} />
     {icons.map((Icon, i) => <span key={i} className="nw-cta-tile" aria-hidden style={{ position: 'absolute', pointerEvents: 'none', ...slots[i] }}>
       <span className="nw-cta-tile-float" style={{ display: 'grid', placeItems: 'center', width: '100%', height: '100%', borderRadius: 13, border: '1px solid rgba(255,255,255,.15)', background: 'rgba(255,255,255,.07)', color: 'rgba(255,255,255,.8)', animationDuration: motion[i].duration, animationDelay: motion[i].delay, animationDirection: motion[i].direction }}><Icon size={19} strokeWidth={1.75} /></span>
@@ -2018,7 +2039,7 @@ export default function NorthwindPage() {
     return () => io.disconnect();
   }, [experience]);
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', color: C.ink, fontFamily: FONT }}>
+    <div style={{ minHeight: '100vh', background: '#fff', color: C.ink, fontFamily: MARKETING_FONT }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes nwpulse{0%{box-shadow:0 0 0 0 rgba(1,94,251,.5)}70%{box-shadow:0 0 0 6px rgba(1,94,251,0)}100%{box-shadow:0 0 0 0 rgba(1,94,251,0)}}
         @keyframes nwrev{to{opacity:1;transform:none}}
@@ -2029,7 +2050,7 @@ export default function NorthwindPage() {
            under a scrim with the message resting on top. The hero pills hide with it,
            since each one replays a flow in a demo that is no longer yours to poke at.
            --nw-k is the fit scale, measured in JS. */
-        .nw-stage{position:relative}
+        .nw-stage{position:relative;font-family:${FONT}}
         .nw-preview{display:none}
         @media (max-width:${DEMO_MIN - 1}px){
           .nw-pills{display:none!important}
@@ -2047,11 +2068,15 @@ export default function NorthwindPage() {
           .nw-url{width:auto!important}
         }
         /* Shared navigation: neutral hover, quick panel reveal, and a 1024px mobile breakpoint. */
-        /* Match the main site's compact blue banner and closing-CTA dots. */
-        .mh-banner{position:relative;isolation:isolate;display:none;min-height:36px;width:100%;align-items:center;justify-content:center;overflow:hidden;padding:8px 16px;color:#fff;text-decoration:none}
-        @media(min-width:768px){.mh-banner{display:flex;padding-top:0;padding-bottom:0}}
-        .mh-banner-fx{position:absolute;inset:0;pointer-events:none;mask-image:linear-gradient(90deg,#000,transparent 40%,transparent 60%,#000)}
-        .mh-banner-text{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;line-height:1.4;text-wrap:balance}
+        /* Shared banner: 56px, coordinated pixels, and a quiet field behind the copy. */
+        .mh-banner{position:relative;isolation:isolate;display:none;min-height:56px;width:100%;align-items:center;justify-content:center;overflow:hidden;padding:10px 24px;border-bottom:1px solid rgba(255,255,255,.14);color:#fff;text-decoration:none}
+        @media(min-width:768px){.mh-banner{display:flex}}
+        .mh-banner-fx{position:absolute;inset:0;pointer-events:none;mask-image:linear-gradient(90deg,#fff calc(50% - 420px),rgba(255,255,255,.18) calc(50% - 300px) calc(50% + 300px),#fff calc(50% + 420px))}
+        .mh-banner-dots{color:#fff;background-image:radial-gradient(rgba(255,255,255,.035) .5px,transparent .5px);background-size:3px 3px}
+        .mh-banner-text{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:20px;font-size:16px;line-height:1.3;text-wrap:balance}
+        .mh-banner-badge{display:inline-flex;align-items:center;flex:none;height:32px;padding:0 14px;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(1,94,251,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+        .mh-banner-action{display:inline-flex;align-items:center;flex:none;gap:12px;height:36px;padding:0 16px;border:1px solid rgba(255,255,255,.75);border-radius:14px;background:linear-gradient(#fff,#fbfcfe);color:${MK.ink};box-shadow:inset 0 1px 0 #fff,0 4px 12px rgba(26,35,60,.08);font-size:14px;font-weight:500;white-space:nowrap}
+        @media(max-width:900px){.mh-banner-text{gap:16px;font-size:14px}}
         .mh-banner-wide,.mh-banner-narrow{font-weight:500}
         .mh-banner-wide{display:none}
         @media(min-width:768px){.mh-banner-wide{display:inline}.mh-banner-narrow{display:none}}
@@ -2060,15 +2085,15 @@ export default function NorthwindPage() {
         @media(hover:hover) and (pointer:fine){.mh-banner:hover .mh-banner-arrow{transform:translateX(3px)}}
         @media(prefers-reduced-motion:reduce){.mh-banner-arrow{transition:none}}
 
-        /* Flat links carry no chip: the chip marks a band trigger. */
-        .mh-flat{position:relative;font-size:14px;font-weight:500;line-height:16px;color:#1a233c;white-space:nowrap;text-decoration:none;transition:color .15s ease}
-        .mh-flat:hover{color:#015efb}
-        .mh-login-button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 10px;border:0;border-radius:6px;background:transparent;font:inherit;font-size:14px;font-weight:500;color:#1a233c;cursor:pointer;white-space:nowrap}
+        .mh-flat{position:relative;margin:0 -10px;padding:6px 10px;border-radius:8px;font-size:14px;font-weight:500;line-height:16px;color:#1a233c;white-space:nowrap;text-decoration:none;transition:background-color .15s ease}
+        .mh-flat:hover,.mh-flat:focus-visible{background:#fafafa}
+        .mh-login-button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 10px;border:0;border-radius:6px;background:transparent;font:inherit;font-size:14px;font-weight:500;color:#2f3649;cursor:pointer;white-space:nowrap}
         .mh-login-button:hover,.mh-login-button:focus-visible{background:#fafafa}
         .mh-login-panel{animation:mhItemIn 150ms cubic-bezier(.23,1,.32,1)}
         .mh-new{display:inline-block;border-radius:99px;background:#f4f5f7;padding:1px 6px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#6b7180;vertical-align:middle}
         .mh-product-desc{font-size:13px}
-        @media(min-width:1280px){.mh-product-desc{font-size:14px}}
+        .mh-prod{padding:28px 24px}
+        @media(min-width:1280px){.mh-product-desc{font-size:14px}.mh-prod{padding-inline:32px}}
         .mh-mobile-group{border-top:1px solid ${MK_SHEET_RULE}}
         .mh-mobile-group summary,.mh-mobile-pricing{display:flex;align-items:center;justify-content:space-between;padding:18px 0;list-style:none;font-size:16px;font-weight:500;color:#1a233c;text-decoration:none;cursor:pointer}
         .mh-mobile-group summary::-webkit-details-marker{display:none}
@@ -2115,32 +2140,20 @@ export default function NorthwindPage() {
         .mh-grid-3{grid-template-columns:repeat(3,1fr)}
         .mh-grid-4{grid-template-columns:repeat(2,1fr)}
         @media(min-width:1024px){.mh-grid-4{grid-template-columns:repeat(4,1fr)}}
-        .mh-heading{margin:0;background:#fff;padding:24px 24px 12px;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.13em;color:#6b7180}
+        .mh-heading{margin:0;background:#fff;padding:24px 24px 12px;font-family:var(--font-marketing-mono),monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.13em;color:#6b7180}
         .mh-row,.mh-prod,.mh-cell,.mh-hub{background:#fff;transition:background-color .15s ease}
         .mh-row:hover,.mh-prod:hover,.mh-cell:hover,.mh-hub:hover{background-color:#fafafa}
-        .mh-cell-arrow{color:#c9cdd7;transition:color .15s ease}
-        .mh-cell:hover .mh-cell-arrow{color:#6b7180}
+        .mh-cell-arrow{color:#9aa0b0;transition:color .15s ease}
+        .mh-cell:hover .mh-cell-arrow,.mh-cell:focus-visible .mh-cell-arrow{color:#1a233c}
+        .mh-hub{padding:16px 24px}
+        @media(min-width:1280px){.mh-hub{padding-inline:32px}}
         .mh-row-label,.mh-hub-label{color:#1a233c;transition:color .15s ease}
         .mh-row-icon,.mh-hub-icon{color:#9aa0b0;transition:color .15s ease}
         .mh-row:hover .mh-row-icon,.mh-row:focus-visible .mh-row-icon,.mh-hub:hover .mh-hub-icon,.mh-hub:focus-visible .mh-hub-icon{color:#6b7180}
         @keyframes rdItemIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:translateY(0)}}
-        /* Dot field on the cell that closes a band. Animating ~700 dots is not
-           an option, so the lattice is drawn once and a second lattice at a
-           deliberately different pitch is slid across it as a mask: dots drop
-           out and return at different moments instead of the field sliding.
-           Two layers on different clocks keep the beat from reading as a band.
-           The wrapper's mask has three jobs, which is why the numbers are
-           specific: the mark at the top sits on visible dots, the
-           type in the middle sits on a floor rather than a hole (18%, not 0,
-           so the field reads as continuous), and the corners stay densest. */
-        .mh-dots-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;-webkit-mask-image:radial-gradient(70% 64% at 50% 56%,rgba(0,0,0,0.18) 36%,rgba(0,0,0,0.5) 72%,#000 92%);mask-image:radial-gradient(70% 64% at 50% 56%,rgba(0,0,0,0.18) 36%,rgba(0,0,0,0.5) 72%,#000 92%)}
-        .mh-dots{position:absolute;inset:0;background-image:radial-gradient(#9aa0b0 .85px,transparent .85px);background-size:7px 7px;animation-timing-function:linear;animation-iteration-count:infinite}
-        .mh-dots-a{opacity:.5;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:7.5px 7.5px;mask-size:7.5px 7.5px;animation-name:mhDotsA;animation-duration:36s}
-        .mh-dots-b{opacity:.32;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:8.3px 8.3px;mask-size:8.3px 8.3px;animation-name:mhDotsB;animation-duration:49s}
-        @keyframes mhDotsA{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:75px -60px;mask-position:75px -60px}}
-        @keyframes mhDotsB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-83px 66.4px;mask-position:-83px 66.4px}}
-        [data-open="false"] .mh-dots{animation-play-state:paused}
-        @media(prefers-reduced-motion:reduce){.mh-dots,.mh-login-panel{animation:none}.mh-band,.mh-sheet,.mh-sheet-body,.mh-mobile-group summary svg{transition:none!important}}
+        .mh-dots-wrap{position:absolute;inset:0;overflow:hidden;pointer-events:none;color:${MK.brand};mask-image:radial-gradient(70% 64% at 50% 56%,rgba(0,0,0,.18) 36%,rgba(0,0,0,.5) 72%,#000 92%)}
+        .mh-promo-dots{mask-image:radial-gradient(circle at calc(100% - 34px) 30px,transparent 22px,#000 44px)}
+        @media(prefers-reduced-motion:reduce){.mh-login-panel{animation:none}.mh-band,.mh-sheet,.mh-sheet-body,.mh-mobile-group summary svg{transition:none!important}}
         .mh-item{transition:background-color .15s ease,transform .15s ease}
         .mh-item:hover{background:rgba(250,250,250,.7)}
         .mh-item:active{transform:scale(.98)}
@@ -2171,20 +2184,10 @@ export default function NorthwindPage() {
         .nw-cta-booking{padding:10px 0;border:0;background:transparent;color:rgba(255,255,255,.85);font:inherit;font-size:14px;font-weight:500;cursor:pointer}
         .nw-cta-booking:hover{color:#fff}
         .nw-cta-primary:focus-visible,.nw-cta-booking:focus-visible{outline:2px solid #fff;outline-offset:5px}
-        .nw-cta-dots{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,.95) 1px,transparent 1px);background-size:22px 22px;animation-timing-function:linear;animation-iteration-count:infinite}
-        .nw-cta-dots-a{opacity:.22;-webkit-mask-image:radial-gradient(circle,#000 34%,transparent 62%);mask-image:radial-gradient(circle,#000 34%,transparent 62%);-webkit-mask-size:23.5px 23.5px;mask-size:23.5px 23.5px;animation-name:nwCtaDotsA;animation-duration:26s}
-        .nw-cta-dots-b{opacity:.16;-webkit-mask-image:radial-gradient(circle,#000 30%,transparent 58%);mask-image:radial-gradient(circle,#000 30%,transparent 58%);-webkit-mask-size:26px 26px;mask-size:26px 26px;animation-name:nwCtaDotsB;animation-duration:37s}
-        /* Compact announcement preset: three dot rows in the 36px banner. */
-        .nw-cta-dots-compact{background-size:12px 12px}
-        .nw-cta-dots-compact.nw-cta-dots-a{-webkit-mask-size:13px 13px;mask-size:13px 13px;animation-name:nwCtaDotsCompactA}
-        .nw-cta-dots-compact.nw-cta-dots-b{-webkit-mask-size:14px 14px;mask-size:14px 14px;animation-name:nwCtaDotsCompactB}
-        @keyframes nwCtaDotsCompactA{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:130px -104px;mask-position:130px -104px}}
-        @keyframes nwCtaDotsCompactB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-140px 112px;mask-position:-140px 112px}}
+        .nw-cta-dots{position:absolute;inset:0;pointer-events:none;color:#fff}
         .nw-cta-tile{display:none}
         .nw-cta-tile-float{animation-name:nwCtaFloat;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
-        .nw-sr:not(.nw-sr-in) .nw-cta-dots,.nw-sr:not(.nw-sr-in) .nw-cta-tile-float{animation-play-state:paused}
-        @keyframes nwCtaDotsA{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:235px -188px;mask-position:235px -188px}}
-        @keyframes nwCtaDotsB{from{-webkit-mask-position:0 0;mask-position:0 0}to{-webkit-mask-position:-260px 208px;mask-position:-260px 208px}}
+        .nw-sr:not(.nw-sr-in) .nw-cta-tile-float{animation-play-state:paused}
         @keyframes nwCtaFloat{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}30%{transform:translate3d(6px,-13px,0) rotate(2.5deg)}65%{transform:translate3d(-5px,6px,0) rotate(-1.5deg)}}
         @media(max-width:359px){.nw-cta-title{font-size:28px}}
         @media(min-width:768px){.nw-product-cta{padding:96px 48px}.nw-cta-title{font-size:52px}.nw-cta-tile{display:block}}
@@ -2201,7 +2204,7 @@ export default function NorthwindPage() {
         }
         .nw-otherdemo:focus-visible{outline:2px solid #015efb;outline-offset:3px}
         .nw-otherdemo:focus-visible .nw-arrow-label::after,.nw-cta-booking:focus-visible .nw-arrow-label::after{transform:scaleX(1);transition:none}
-        @media(prefers-reduced-motion:reduce){.nw-cta-dots,.nw-cta-tile-float{animation:none}.nw-arrow-label::after,.nw-arrow-glyph,.nw-cta-primary{transition:none}.nw-otherdemo .nw-arrow-glyph,.nw-cta-booking .nw-arrow-glyph,.nw-cta-primary{transform:none!important}}
+        @media(prefers-reduced-motion:reduce){.nw-cta-tile-float{animation:none}.nw-arrow-label::after,.nw-arrow-glyph,.nw-cta-primary{transition:none}.nw-otherdemo .nw-arrow-glyph,.nw-cta-booking .nw-arrow-glyph,.nw-cta-primary{transform:none!important}}
         .nw-otherdemo{transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
         .nw-otherdemo:hover{border-color:#d9dde6;background:#fafafa!important}
         .nw-otherdemo:active{transform:scale(.995)}

@@ -1,6 +1,7 @@
 import '@/pages/globals.css';
 import { Providers } from '@/components/providers';
-import { Inter } from 'next/font/google';
+import { Inter, IBM_Plex_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
@@ -9,6 +10,16 @@ const inter = Inter({
   variable: '--font-sans',
   display: 'swap',
 });
+
+// The product demo keeps Inter; the surrounding marketing site uses Atkinson.
+const marketingFont = localFont({
+  src: '../fonts/atkinson-hyperlegible-next-latin.woff2',
+  weight: '200 800',
+  display: 'swap',
+  adjustFontFallback: false,
+  fallback: ['system-ui', 'Arial', 'sans-serif'],
+});
+const marketingMono = IBM_Plex_Mono({ subsets: ['latin'], weight: '500', display: 'swap' });
 
 // Site-wide metadata (Pages Router): browser title, description, favicon, and the
 // social link-preview tags (Open Graph + Twitter). The preview image is committed
@@ -48,6 +59,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       <style jsx global>{`
         :root {
           --font-sans: ${inter.style.fontFamily};
+          --font-marketing: ${marketingFont.style.fontFamily};
+          --font-marketing-mono: ${marketingMono.style.fontFamily};
         }
       `}</style>
       <Providers>
