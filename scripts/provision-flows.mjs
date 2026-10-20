@@ -62,30 +62,32 @@ export const FLOWS = [
   // the app sets when you do the matching action (completionCriteria).
   {
     key: 'checklist',
-    name: 'Northwind Getting Started',
+    name: 'Northwind Getting Started v2',
     type: 'CHECKLIST',
     data: YAML.stringify({
       title: 'Get set up',
-      subtitle: 'Set up your first agent, connect your tools, and invite your team.',
+      subtitle: 'Pick a step and we’ll point you to it.',
       steps: [
         { id: 'take-a-tour', title: 'Take a quick tour', completionCriteria: "user.property('tookTour') == true", props: { action: 'tour' } },
         { id: 'create-agent', title: 'Create your first agent', completionCriteria: "user.property('createdAgent') == true", props: { hint: 'Spin up your first agent here.', target: 'create-agent' } },
+        // Explore hints runs the real hints flow, and opening them completes it.
+        { id: 'try-hints', title: 'Explore hints', completionCriteria: "user.property('triedHints') == true", props: { action: 'hints' } },
         { id: 'add-key', title: 'Add an API key', completionCriteria: "user.property('addedApiKey') == true", props: { hint: 'Generate a key from API Keys.', target: 'nav-api-keys' } },
-        { id: 'invite-team', title: 'Invite your team', completionCriteria: "user.property('invitedTeam') == true", props: { hint: 'Add teammates from Settings.', target: 'nav-settings' } },
-        { id: 'view-analytics', title: 'Check your analytics', completionCriteria: "user.property('viewedAnalytics') == true", props: { hint: 'See usage and spend in Analytics.', target: 'nav-analytics' } },
+        { id: 'read-changelog', title: 'Read the changelog', completionCriteria: "user.property('readChangelog') == true", props: { hint: 'New updates land here.', target: 'bell' } },
       ],
     }),
   },
   // Welcome modal — kicks off the onboarding journey (form, then tour).
+  // ${firstName} is interpolated from the name the form collected.
   {
     key: 'announcement',
-    name: 'Northwind Welcome',
+    name: 'Northwind Welcome Personalized',
     type: 'ANNOUNCEMENT',
     data: YAML.stringify({
       steps: [
         {
           id: 'welcome',
-          title: 'Welcome to the demo',
+          title: 'Welcome to the demo${firstName}',
           subtitle: 'Take a short tour, then try the checklists, forms, and announcements yourself.',
           primaryButton: { title: 'Show me around', action: 'flow.complete' },
           secondaryButton: { title: 'Skip tour', action: 'flow.skip' },
@@ -97,7 +99,7 @@ export const FLOWS = [
   // per step; steps 2 and 3 carry a Back button (flow.back).
   {
     key: 'form',
-    name: 'Northwind Onboarding',
+    name: 'Northwind Onboarding v2',
     type: 'FORM',
     data: YAML.stringify({
       steps: [
@@ -113,7 +115,7 @@ export const FLOWS = [
           title: 'What best describes you?',
           primaryButton: { title: 'Continue' },
           secondaryButton: { title: 'Back', action: 'flow.back' },
-          fields: [{ id: 'role', type: 'select', required: true, options: [{ label: 'Engineer', value: 'engineer' }, { label: 'Product', value: 'product' }, { label: 'Founder or exec', value: 'founder' }, { label: 'Something else', value: 'other' }] }],
+          fields: [{ id: 'role', type: 'select', required: true, options: [{ label: 'Engineer', value: 'engineer' }, { label: 'Product', value: 'product' }, { label: 'Founder or exec', value: 'founder' }, { label: 'Other', value: 'other' }] }],
         },
         {
           id: 'usecase',
@@ -158,7 +160,7 @@ export const FLOWS = [
   // labels sit on the field itself, which takes precedence over the flow's.
   {
     key: 'survey',
-    name: 'Northwind Demo Survey',
+    name: 'Northwind Demo Survey v2',
     type: 'SURVEY',
     data: YAML.stringify({
       props: {
@@ -174,6 +176,7 @@ export const FLOWS = [
         {
           id: 'thanks',
           title: 'Thanks for the feedback',
+          subtitle: 'Everything in this demo is built with Frigade, and you can add any of it to your own product.',
           // No uri on the primary: the app intercepts it in onPrimary to open the
           // Cal.com popup in place, rather than sending you to another tab.
           primaryButton: { title: 'Book a call', action: false },
@@ -200,6 +203,41 @@ export const FLOWS = [
           // booking popup, and the card stays up until it's explicitly dismissed.
           primaryButton: { title: 'Talk to sales', action: false },
         },
+      ],
+    }),
+  },
+  // Product announcement: a feature-launch modal, the in-product counterpart to
+  // a changelog entry. Its primary button hands off to the changelog. The image
+  // ships with this app (public/images); a Frigade CDN URL works just as well.
+  // Any step can carry custom props: darkImageUri is ours, read for dark mode.
+  {
+    key: 'launch',
+    name: 'Northwind Launch Announcement',
+    type: 'ANNOUNCEMENT',
+    data: YAML.stringify({
+      steps: [
+        {
+          id: 'reason-2',
+          title: 'Meet Northwind Reason 2',
+          subtitle: 'Our new reasoning model runs about twice as fast, with noticeably lower latency. Switch any agent over from the model picker.',
+          imageUri: '/images/northwind-reason-2.svg',
+          props: { darkImageUri: '/images/northwind-reason-2-dark.svg' },
+          primaryButton: { title: "See what's new", action: 'flow.complete' },
+        },
+      ],
+    }),
+  },
+  // Hints: a TOUR read non-sequentially: every step shows at once as a beacon on
+  // its `selector`, opens on click, and completes on its own "Got it".
+  {
+    key: 'hints',
+    name: 'Northwind Hints',
+    type: 'TOUR',
+    data: YAML.stringify({
+      steps: [
+        { id: 'workspace', title: 'Switch workspaces', subtitle: 'Keep staging and production apart, each with its own agents and keys.', selector: '[data-tour="workspace"]', primaryButton: { title: 'Got it' } },
+        { id: 'search', title: 'Find anything', subtitle: 'Jump to any agent, run, or API key from here.', selector: '[data-hint="search"]', primaryButton: { title: 'Got it' } },
+        { id: 'row-actions', title: 'Bulk actions live here', subtitle: 'Pause, deploy, or retag a group of agents in one move.', selector: '[data-hint="row-actions"]', primaryButton: { title: 'Got it' } },
       ],
     }),
   },

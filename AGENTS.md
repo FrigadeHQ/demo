@@ -27,10 +27,11 @@ marketing header + footer and switches between two products with a header toggle
   Every surface drawn in the brand blue is a real Frigade flow.
 - **Assistant**: a product video plus value props and CTAs.
 
-The eight Frigade surfaces split two ways. The **banner**, **onboarding form**,
+The ten Frigade surfaces split two ways. The **banner**, **onboarding form**,
 **survey** and **sidebar card** render through Frigade's own components, themed
-with Northwind's tokens so they read as native. The **announcement**,
-**checklist**, **tour** and **changelog** are read **headless**: we take the
+with Northwind's tokens so they read as native. The **welcome** and **product
+announcements**, **checklist**, **tour**, **hints** and **changelog** are read
+**headless**: we take the
 flow's content with `Frigade.useFlow(slug)` and draw our own UI.
 
 The split isn't arbitrary. Anything modal in Frigade renders through a dialog
@@ -48,20 +49,28 @@ the blue surfaces are visibly "the Frigade parts."
 | `src/pages/_app.tsx` | App shell: global CSS, the Inter font, and `<Providers>`. |
 | `src/components/providers.tsx` | The product-toggle context + the Frigade SDK provider (`@frigade/react`). |
 | `src/components/experience-context.tsx` | `useExperience()`: the current product, synced to the `?product=` query param. |
-| `src/lib/demo-flows.ts` | Slugs of the eight Frigade flows the app reads. Auto-generated. |
+| `src/lib/demo-flows.ts` | Slugs of the ten Frigade flows the app reads. Auto-generated. |
 | `src/lib/utils.ts` | `getUserId()` (stable per-browser id) and `cn()`. |
-| `scripts/provision-flows.mjs` | Creates/updates the eight flows in a Frigade workspace and rewrites `demo-flows.ts`. The flow definitions (YAML) live here, one commented block per flow. |
+| `scripts/provision-flows.mjs` | Creates/updates the ten flows in a Frigade workspace and rewrites `demo-flows.ts`. The flow definitions (YAML) live here, one commented block per flow. |
 | `src/pages/globals.css` | Just Tailwind's base reset. The demo styles itself inline. |
 
 ## How the flows work
 
-1. `scripts/provision-flows.mjs` defines eight flows and creates them in your
+1. `scripts/provision-flows.mjs` defines ten flows and creates them in your
    Frigade workspace (idempotent). It writes their slugs to `src/lib/demo-flows.ts`.
 2. `index.tsx` renders each flow one of two ways. The component-backed ones pass
    `flowId={DEMO_FLOWS.<key>}` to `Frigade.Banner` / `Form` / `Survey.NPS` / `Card`
    and style them through the `css` prop plus the shared theme. The headless ones
    read `Frigade.useFlow(DEMO_FLOWS.<key>)` and draw custom UI from `flow.steps` /
    `step.props`, completing steps with `step.complete()`.
+
+All copy on the headless surfaces (titles, subtitles, button labels, images) is
+read from the flows, so edits in the Frigade dashboard show up without a code
+change; the app's own text is only a fallback. A few steps also carry custom
+`props` the UI reads: `hint`, `target` and `action` on checklist steps, `gate`
+and `gateLabel` on tour steps, `date` on changelog entries, and `darkImageUri`
+on the product announcement (Frigade steps have one `imageUri`, so the dark-mode
+image rides in a prop).
 
 To point the demo at your own workspace: set your keys in `.env.local`, run the
 provision script (needs the private key), and it regenerates `demo-flows.ts`.
@@ -77,7 +86,8 @@ provision script (needs the private key), and it regenerates `demo-flows.ts`.
 - **Comments are for the reader.** This repo is open source, so keep notes
   reader-facing, with no team-only context.
 - Deep-link any surface for testing: `?dc=open` (demo console), `?ck=open`, `?cl=bell`,
-  `?an=open`, `?fm=open`, `?tour=open`, `?bn=open`, `?sv=open`.
+  `?an=open`, `?fm=open`, `?tour=open`, `?bn=open`, `?sv=open`, `?la=open`
+  (product announcement), `?hn=open` (hints).
 
 ## Verify before you ship
 

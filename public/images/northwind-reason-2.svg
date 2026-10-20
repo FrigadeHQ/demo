@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 360" font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+  <defs>
+    <pattern id="dots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.4" fill="#DCE0E7"/></pattern>
+    <filter id="card" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#121828" flood-opacity=".10"/></filter>
+    <filter id="chip" x="-30%" y="-40%" width="160%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#015EFB" flood-opacity=".30"/></filter>
+  </defs>
+  <rect width="680" height="360" fill="#F4F5F7"/>
+  <rect width="680" height="360" fill="url(#dots)"/>
+
+  <!-- Model picker, cut off by the bottom edge -->
+  <rect x="170" y="56" width="340" height="360" rx="20" fill="#fff" filter="url(#card)"/>
+  <text x="198" y="96" font-size="17" font-weight="600" fill="#8A93A3" letter-spacing=".4">MODEL</text>
+  <rect x="196" y="110" width="288" height="52" rx="12" fill="#F5F6F8" stroke="#E6E9EE" stroke-width="1.5"/>
+  <text x="216" y="144" font-size="23" font-weight="600" fill="#1A233C">Reason 2</text>
+  <path d="m6 9 6 6 6-6" transform="translate(448 124)" fill="none" stroke="#8A93A3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="196" y="172" width="288" height="200" rx="14" fill="#fff" stroke="#E6E9EE" stroke-width="1.5"/>
+  <rect x="204" y="180" width="272" height="68" rx="10" fill="#EEF4FF"/>
+  <circle cx="234" cy="214" r="17" fill="#015EFB"/>
+  <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" transform="translate(225 205) scale(.75)" fill="#fff"/>
+  <text x="262" y="209" font-size="21" font-weight="650" fill="#1A233C">Reason 2</text>
+  <rect x="358" y="191" width="46" height="23" rx="11.5" fill="#DCE8FF"/>
+  <text x="381" y="207" font-size="12.5" font-weight="700" fill="#015EFB" text-anchor="middle" letter-spacing=".8">NEW</text>
+  <text x="262" y="234" font-size="17" fill="#6B7385">Twice as fast</text>
+  <path d="M20 6 9 17l-5-5" transform="translate(442 202)" fill="none" stroke="#015EFB" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <circle cx="234" cy="290" r="17" fill="#EEF0F3"/>
+  <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" transform="translate(225 281) scale(.75)" fill="none" stroke="#A3AAB8" stroke-width="2.2" stroke-linejoin="round"/>
+  <text x="262" y="285" font-size="21" font-weight="500" fill="#4A5263">Reason 1</text>
+  <text x="262" y="310" font-size="17" fill="#8A93A3">Previous generation</text>
+
+  <!-- Speed chip over the card's corner -->
+  <g transform="translate(432 40) rotate(5)" filter="url(#chip)">
+    <rect width="150" height="46" rx="23" fill="#015EFB"/>
+    <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" transform="translate(16 12) scale(.92)" fill="#fff"/>
+    <text x="46" y="30.5" font-size="20" font-weight="700" fill="#fff">2x faster</text>
+  </g>
+</svg>
