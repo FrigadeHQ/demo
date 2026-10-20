@@ -48,7 +48,7 @@ This repo works best as a reference. Point your coding agent at it, then use
 [Frigade's Claude Code skill](https://github.com/FrigadeHQ/frigade-engage-skill) to build and wire your
 own flows in your Frigade workspace with your own API key, the same way this demo was built.
 
-To run this demo yourself, you first need to create its eight flows in your own Frigade workspace. The
+To run this demo yourself, you first need to create its ten flows in your own Frigade workspace. The
 full YAML for each one lives in [`scripts/provision-flows.mjs`](scripts/provision-flows.mjs); add your
 Frigade keys to `.env.local`, then run it to create them (or point your agent at those definitions):
 

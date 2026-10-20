@@ -109,24 +109,105 @@ function NavGhost({ w, active = false }: { w: number; active?: boolean }) {
     </div>
   );
 }
-// Frigade coachmark: an anchored hint bubble that points at the lit-up target.
-function HintBubble({ text, side, onDismiss }: { text: string; side: 'right' | 'bottom'; onDismiss: () => void }) {
-  const RING = 'rgba(1,94,251,.32)';
-  const pos: React.CSSProperties = side === 'right'
-    ? { left: 'calc(100% + 13px)', top: '50%', transform: 'translateY(-50%)' }
-    : { top: 'calc(100% + 13px)', right: 0 };
-  const caret: React.CSSProperties = side === 'right'
-    ? { left: -6, top: '50%', transform: 'translateY(-50%) rotate(45deg)', borderLeft: `1px solid ${RING}`, borderBottom: `1px solid ${RING}` }
-    : { top: -6, right: 24, transform: 'rotate(45deg)', borderTop: `1px solid ${RING}`, borderLeft: `1px solid ${RING}` };
+// Frigade hint: a small tip pointing at a lit-up target, shared by the checklist's
+// "do this next" hints and the standalone hints flow. By default it sits beside its
+// target's wrapper; `at` places it in app coordinates instead, with the caret
+// `caret` px from the tip's left edge so it still points at the beacon.
+function HintBubble({ title, text, side, at, caret = 24, action, onDismiss }: { title?: string; text: string; side: 'right' | 'bottom'; at?: React.CSSProperties; caret?: number; action?: { label: string; onClick: () => void }; onDismiss: () => void }) {
+  const edge = '1px solid var(--nw-line)';
+  const pos: React.CSSProperties = at || (side === 'right'
+    ? { left: 'calc(100% + 12px)', top: '50%', transform: 'translateY(-50%)' }
+    : { top: 'calc(100% + 12px)', right: 0 });
+  const caretPos: React.CSSProperties = side === 'right'
+    ? { left: -5, top: '50%', transform: 'translateY(-50%) rotate(45deg)', borderLeft: edge, borderBottom: edge }
+    : { top: -5, ...(at ? { left: caret - 5 } : { right: caret }), transform: 'rotate(45deg)', borderTop: edge, borderLeft: edge };
+  const origin = side === 'right' ? 'left center' : at ? `${caret}px top` : `calc(100% - ${caret}px) top`;
   return (
-    <div className="nw-hint" role="status" style={{ position: 'absolute', zIndex: 60, width: 212, background: 'var(--nw-card)', borderRadius: 12, boxShadow: `0 14px 36px rgba(1,94,251,.20), 0 0 0 1px ${RING}`, padding: '12px 13px', ...pos }}>
-      <span aria-hidden style={{ position: 'absolute', width: 11, height: 11, background: 'var(--nw-card)', boxSizing: 'border-box', ...caret }} />
-      <button onClick={onDismiss} aria-label="Dismiss" style={{ position: 'absolute', top: 8, right: 9, border: 0, background: 'none', color: 'var(--nw-faint)', padding: 2, borderRadius: 5, cursor: 'pointer', display: 'flex' }}><X size={13} /></button>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 5 }}>
-        <DotGrid color={C.brand} size={13} />
-        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.brand }}>Do this next</span>
+    <div className="nw-tip" role="status" style={{ position: 'absolute', zIndex: 60, width: title ? 224 : 'max-content', maxWidth: 260, background: 'var(--nw-card)', borderRadius: 10, boxShadow: '0 12px 32px -8px rgba(18,24,40,.22), 0 0 0 1px var(--nw-line)', padding: '11px 12px 12px', transformOrigin: origin, ...pos }}>
+      <span aria-hidden style={{ position: 'absolute', width: 9, height: 9, background: 'var(--nw-card)', boxSizing: 'border-box', ...caretPos }} />
+      <button onClick={onDismiss} aria-label="Dismiss" style={{ position: 'absolute', top: 8, right: 8, width: 18, height: 18, padding: 0, border: 0, borderRadius: '50%', background: 'var(--nw-hover)', color: 'var(--nw-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={11} strokeWidth={2.5} /></button>
+      {title && <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-.005em', color: 'var(--nw-ink)', paddingRight: 22, marginBottom: 3 }}>{title}</div>}
+      <div style={{ fontSize: 12.5, lineHeight: 1.45, color: title ? 'var(--nw-muted)' : 'var(--nw-ink2)', paddingRight: title ? 0 : 22 }}>{text}</div>
+      {action && <button className="nw-press" onClick={action.onClick} style={{ marginTop: 10, background: C.brand, color: '#fff', fontSize: 12, fontWeight: 600, padding: '5px 11px', borderRadius: 7, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{action.label}</button>}
+    </div>
+  );
+}
+// A white four-point sparkle, the banner's icon (Banner has no icon slot, so it's a ::before background).
+const SPARKLE_SVG = `url("data:image/svg+xml,${encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2C12.7 8 14.5 10 22 12C14.5 14 12.7 16 12 22C11.3 16 9.5 14 2 12C9.5 10 11.3 8 12 2Z' fill='white'/></svg>")}")`;
+
+// The announcement modal shared by the welcome and the product announcement: an
+// image on top, centered copy, and a full-width button that completes the flow.
+// Skipping is either the X in the corner (`onClose`) or a second button (`skip`).
+// The flow's image wins; `art` is drawn when the flow has none.
+function AnnouncementModal({ label, image, art, title, text, cta, onCta, onClose, skip }: { label: string; image?: string; art?: React.ReactNode; title: string; text?: string; cta: string; onCta: () => void; onClose?: () => void; skip?: { label: string; onClick: () => void } }) {
+  return (
+    <>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,21,26,.34)', zIndex: 50 }} />
+      <div className="nw-hint" role="dialog" aria-label={label} style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 340, background: 'var(--nw-card)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
+        {image ? <img src={image} alt="" style={{ display: 'block', width: '100%', aspectRatio: '680 / 360' }} /> : art}
+        {onClose && <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24, border: 0, borderRadius: '50%', background: 'rgba(18,24,40,.08)', color: '#5b6474', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={13} strokeWidth={2.5} /></button>}
+        <div style={{ padding: '18px 22px 20px', textAlign: 'center' }}>
+          <h3 className="nw-balance" style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 700, letterSpacing: '-.01em', color: 'var(--nw-ink)', lineHeight: 1.25, overflowWrap: 'anywhere' }}>{title}</h3>
+          {text && <p className="nw-balance" style={{ margin: '0 0 18px', fontSize: 13, lineHeight: 1.5, color: 'var(--nw-muted)' }}>{text}</p>}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {skip && <button className="nw-press" onClick={skip.onClick} style={{ flex: 1, background: 'var(--nw-card)', color: 'var(--nw-ink)', fontSize: 13.5, fontWeight: 600, padding: '10px 16px', borderRadius: 10, border: 0, cursor: 'pointer', boxShadow: '0 0 0 1px var(--nw-line)' }}>{skip.label}</button>}
+            <button className="nw-press" onClick={onCta} style={{ flex: 1, background: C.brand, color: '#fff', fontSize: 13.5, fontWeight: 600, padding: '10px 16px', borderRadius: 10, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{cta}</button>
+          </div>
+        </div>
       </div>
-      <div style={{ fontSize: 12.5, lineHeight: 1.45, color: 'var(--nw-ink2)', paddingRight: 8 }}>{text}</div>
+    </>
+  );
+}
+// The live preview above the onboarding form, over the site banner's animated dots:
+// the profile it's setting up, filling in as each answer lands, with the current step's slot pulsing until it's answered.
+// Frigade's form can't draw this, so it reads the answers from FormLiveContext.
+// Colours are var(--nw-*) because this renders outside NorthwindApp's themed C.
+function FormPreview({ values, step }: { values: Record<string, string>; step: number }) {
+  const slot = (i: number, w: number, h: number, r = 5) => <span className={i === step ? 'nw-slot' : undefined} style={{ display: 'block', width: w, height: h, borderRadius: r, background: i === step ? 'var(--nw-bw)' : 'var(--nw-ghost)' }} />;
+  const words = (values.name || '').trim().split(/\s+/).filter(Boolean);
+  const initials = words.length ? (words[0][0] + (words.length > 1 ? words[words.length - 1][0] : '')).toUpperCase() : '';
+  return (
+    <div style={{ position: 'relative', height: 118, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--nw-bg)' }}>
+      {/* The site banner's traveling dot wave, in the app's neutral gray. */}
+      <span aria-hidden style={{ position: 'absolute', inset: 0, color: 'var(--nw-faint)' }}><AnimatedDots /></span>
+      <div style={{ position: 'relative', width: 232, background: 'var(--nw-card)', borderRadius: 12, padding: 10, boxShadow: '0 12px 28px -10px rgba(18,24,40,.22), 0 0 0 1px var(--nw-line)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {initials
+            ? <span key="a" className="nw-pop" style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #2A78FF, #0049DB)', color: '#fff', fontSize: 11.5, fontWeight: 700 }}>{initials}</span>
+            : <span key="g" style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: step === 0 ? 'var(--nw-bw)' : 'var(--nw-ghost)' }} />}
+          <div style={{ minWidth: 0, flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {values.name ? <span key="n" className="nw-pop" style={{ fontSize: 13, fontWeight: 600, color: 'var(--nw-ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{values.name}</span> : slot(0, 104, 9)}
+            {values.role ? <span key="r" className="nw-pop" style={{ fontSize: 11.5, color: 'var(--nw-muted)' }}>{values.role}</span> : slot(1, 64, 7)}
+          </div>
+        </div>
+        <div style={{ height: 1, background: 'var(--nw-line)', margin: '9px 0 8px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <span style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--nw-faint)', flexShrink: 0 }}>Interested in</span>
+          {values.usecase ? <span key="u" className="nw-pop" style={{ fontSize: 10.5, fontWeight: 600, color: 'var(--nw-brand)', background: 'var(--nw-bw)', padding: '3px 8px', borderRadius: 99, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{values.usecase}</span> : slot(2, 76, 16, 99)}
+        </div>
+      </div>
+    </div>
+  );
+}
+// The welcome's header art, drawn in code so it can move: the Northwind mark on a
+// brand gradient, with lights circling its rings.
+function WelcomeArt() {
+  const sparkle = (left: number, top: number, size: number, delay: number) => (
+    <svg className="nw-twinkle" width={size} height={size} viewBox="-11 -11 22 22" style={{ position: 'absolute', left: left - size / 2, top: top - size / 2, animationDelay: `${delay}s` }}><path d="M0 -11C1 -3 3 -1 11 0C3 1 1 3 0 11C-1 3 -3 1 -11 0C-3 -1 -1 -3 0 -11Z" fill="#fff" /></svg>
+  );
+  return (
+    <div aria-hidden style={{ position: 'relative', aspectRatio: '680 / 360', overflow: 'hidden', background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,.26), rgba(255,255,255,0) 62%), linear-gradient(135deg, #2A78FF, #0049DB)' }}>
+      {[[108, .18], [158, .13], [224, .09], [300, .06]].map(([d, a]) => <span key={d} style={{ position: 'absolute', left: '50%', top: '50%', width: d, height: d, margin: -d / 2, borderRadius: '50%', border: `1px solid rgba(255,255,255,${a})` }} />)}
+      {sparkle(274, 35, 12, 0)}{sparkle(63, 60, 9, 1.4)}
+      {/* A light on each of three rings, trailing a fading arc: [radius, dot size,
+          seconds per turn, starting angle], uneven on purpose. */}
+      {[[54, 5, 18, 200], [79, 4, 26, 30], [112, 4, 36, 120]].map(([r, dot, period, deg]) => (
+        <span key={r} className="nw-spin" style={{ position: 'absolute', left: '50%', top: '50%', width: r * 2, height: r * 2, margin: -r, animationDuration: `${period}s`, animationDelay: `${(-deg / 360) * period}s` }}>
+          <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'conic-gradient(rgba(255,255,255,0) 0deg 240deg, rgba(255,255,255,.6) 360deg)', WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))', mask: 'radial-gradient(farthest-side, transparent calc(100% - 1.5px), #000 calc(100% - 1.5px))' }} />
+          <span style={{ position: 'absolute', left: '50%', top: 0.75, width: dot, height: dot, margin: -dot / 2, borderRadius: '50%', background: '#fff', boxShadow: '0 0 10px 2px rgba(255,255,255,.65)' }} />
+        </span>
+      ))}
+      <span style={{ position: 'absolute', left: '50%', top: '50%', width: 48, height: 48, margin: -24, borderRadius: 14, background: 'linear-gradient(180deg, rgba(255,255,255,.3), rgba(255,255,255,.14))', border: '1px solid rgba(255,255,255,.38)', backdropFilter: 'blur(6px)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, boxShadow: '0 10px 28px -10px rgba(0,30,120,.45)' }}>N</span>
     </div>
   );
 }
@@ -140,7 +221,7 @@ function NavTarget({ target, icon: Icon, label, w, lit, hint, onFire, onDismiss 
         {lit ? <Icon size={16} color={C.brand} strokeWidth={2} /> : <Ghost w={15} h={15} r={5} />}
         {lit ? <span style={{ fontSize: 13, fontWeight: 600, color: C.brand }}>{label}</span> : <Ghost w={w} h={8} />}
       </div>
-      {lit && <HintBubble text={hint} side="right" onDismiss={onDismiss} />}
+      {lit && hint && <HintBubble text={hint} side="right" onDismiss={onDismiss} />}
     </div>
   );
 }
@@ -157,17 +238,22 @@ const AGENTS = [
   { name: 'Lead Router', type: 'Workflow', status: 'Running', run: '14m ago', on: true },
   { name: 'Onboarding Bot', type: 'Single Prompt', status: 'Paused', run: '1d ago', on: false },
 ];
-const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
-  { label: 'Onboarding form', icon: ClipboardList, action: 'form' }, { label: 'Welcome announcement', icon: Megaphone, action: 'welcome' },
-  { label: 'Checklist', icon: ListChecks, action: 'checklist' }, { label: 'Product tour', icon: Route, action: 'tour' },
-  { label: 'Banner', icon: Flag, action: 'banner' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
-  { label: 'Card', icon: Sparkles, action: 'card' },
+// The hero pills, in two rows: the guided onboarding surfaces, then messaging and feedback.
+const EXPERIENCES: { label: string; icon: IconType; action: string }[][] = [
+  [
+    { label: 'Onboarding form', icon: ClipboardList, action: 'form' }, { label: 'Welcome announcement', icon: Megaphone, action: 'welcome' },
+    { label: 'Product tour', icon: Route, action: 'tour' }, { label: 'Checklist', icon: ListChecks, action: 'checklist' }, { label: 'Hints', icon: Lightbulb, action: 'hints' },
+  ],
+  [
+    { label: 'Product announcement', icon: Rocket, action: 'launch' }, { label: 'Banner', icon: Flag, action: 'banner' },
+    { label: 'Card', icon: Sparkles, action: 'card' }, { label: 'Survey', icon: MessageSquare, action: 'survey' }, { label: 'Changelog', icon: Newspaper, action: 'changelog' },
+  ],
 ];
-const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText, 'connect-sso': ShieldCheck, 'go-live': Rocket };
+const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'try-hints': Lightbulb, 'view-logs': ScrollText, 'connect-sso': ShieldCheck, 'go-live': Rocket, 'read-changelog': Newspaper };
 // Each checklist step completes on a real user property, not an imperative call. Doing
 // the action sets the property; the flow's completionCriteria (user.property(...)) then
 // marks the step done. This is the "fires on real events" path the benefits copy claims.
-const CK_PROPERTY: Record<string, string> = { 'take-a-tour': 'tookTour', 'create-agent': 'createdAgent', 'add-key': 'addedApiKey', 'invite-team': 'invitedTeam', 'view-analytics': 'viewedAnalytics' };
+const CK_PROPERTY: Record<string, string> = { 'take-a-tour': 'tookTour', 'create-agent': 'createdAgent', 'add-key': 'addedApiKey', 'try-hints': 'triedHints', 'read-changelog': 'readChangelog' };
 // Abridged marketing value props for the section below the demo (Engage-framed, marketing voice).
 const BENEFITS: { icon: IconType; title: string; desc: string }[] = [
   { icon: LayoutGrid, title: 'Native to your product', desc: 'Frigade surfaces inherit your design system. Type, color, and spacing, all of it. They read as part of your app, not a third-party widget.' },
@@ -191,20 +277,14 @@ const ASSISTANT_BENEFITS: { icon: IconType; title: string; desc: string }[] = [
 // hint shown while the step waits on a real user action (our custom coachmark's logic).
 const GATE_LABELS: Record<string, string> = { 'create-agent': 'Click Create Agent', theme: 'Switch the theme', 'ck-open': 'Open your checklist' };
 // The onboarding form is a real <Frigade.Form>: its questions, options and buttons
-// all come from the flow YAML now. These are only the RIGHT panel's display strings
-// (a custom live-preview that Frigade's form can't render), keyed by field id, in
-// step order. Kept in sync with the flow's field ids.
-const FORM_PANEL: { id: string; short: string; ph: string }[] = [
-  { id: 'name', short: 'Your name', ph: 'Your full name' },
-  { id: 'role', short: 'Your role', ph: 'Pick one' },
-  { id: 'usecase', short: 'Interests', ph: 'Optional' },
-];
-const FORM_ORDER = FORM_PANEL.map((f) => f.id);
+// all come from the flow YAML. These are its field ids in step order, which the
+// live preview above the form uses to know which slot is being filled.
+const FORM_ORDER = ['name', 'role', 'usecase'];
 
-// Bridges the embedded <Frigade.Form> to the custom right panel: the form's fields
-// live inside Frigade's component, but the preview beside them needs each answer as
-// it's typed and the active step. Custom field renderers publish here; the panel
-// reads it. `values` holds display labels (what the panel shows), not raw values.
+// Bridges the embedded <Frigade.Form> to the live preview above it: the form's fields
+// live inside Frigade's component, but the preview needs each answer as it's typed
+// and the active step. Custom field renderers publish here; the preview reads it.
+// `values` holds display labels (what the preview shows), not raw values.
 type FormLive = { values: Record<string, string>; publish: (id: string, val: string) => void; step: number; setStep: (n: number) => void };
 const FormLiveContext = createContext<FormLive | null>(null);
 
@@ -229,11 +309,11 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
   // NorthwindApp's themed C. That's what lets these inputs re-skin with the dark toggle.
   if (opts && opts.length) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
         {opts.map((o) => {
           const sel = field.value === o.value;
           return (
-            <button key={o.value} type="button" onClick={() => field.onChange(o.value)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '9px 12px', borderRadius: 9, cursor: 'pointer', textAlign: 'left', border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'transparent', boxShadow: sel ? '0 0 0 1px var(--nw-brand)' : 'none', transition: 'all .14s ease' }}>
+            <button key={o.value} type="button" onClick={() => field.onChange(o.value)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, padding: '7px 12px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'transparent', boxShadow: sel ? '0 0 0 1px var(--nw-brand)' : 'none', transition: 'all .14s ease' }}>
               <span style={{ fontSize: 13, fontWeight: 500, color: sel ? 'var(--nw-brand)' : 'var(--nw-ink)' }}>{o.label}</span>
               <span style={{ width: 15, height: 15, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: sel ? 'none' : '1.5px solid var(--nw-line)', background: sel ? 'var(--nw-brand)' : 'transparent' }}>{sel && <Check size={11} color="#fff" strokeWidth={3} />}</span>
             </button>
@@ -243,7 +323,7 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
     );
   }
   return (
-    <input autoFocus className="nw-input" value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '10px 13px', borderRadius: 9, border: '1px solid var(--nw-line)', background: 'var(--nw-bg)', fontSize: 14, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
+    <input autoFocus className="nw-input" maxLength={40} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid var(--nw-line)', background: 'var(--nw-card)', fontSize: 13.5, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
   );
 }
 
@@ -258,7 +338,7 @@ function NwNpsField({ field, fieldData, submit }: Frigade.FormFieldProps) {
   const opts = (fieldData.options ?? (flow?.props as any)?.options ?? []) as { label: string; value: string }[];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%', marginTop: 12 }}>
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div className="nw-rates" style={{ display: 'flex', gap: 6 }}>
         {opts.map((o) => {
           const sel = field.value === o.value;
           return (
@@ -267,7 +347,7 @@ function NwNpsField({ field, fieldData, submit }: Frigade.FormFieldProps) {
               type="button"
               className="nw-rate"
               onClick={() => { field.onChange(o.value); submit(); }}
-              style={{ flex: 1, height: 38, borderRadius: 9, border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'var(--nw-card)', color: sel ? 'var(--nw-brand)' : 'var(--nw-ink2)', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}
+              style={{ flex: 1, height: 40, borderRadius: 10, border: `1px solid ${sel ? 'var(--nw-brand)' : 'var(--nw-line)'}`, background: sel ? 'var(--nw-bw)' : 'var(--nw-card)', color: sel ? 'var(--nw-brand)' : 'var(--nw-ink2)', fontSize: 13.5, fontWeight: 600, cursor: 'pointer' }}
             >
               {o.label}
             </button>
@@ -282,30 +362,37 @@ function NwNpsField({ field, fieldData, submit }: Frigade.FormFieldProps) {
   );
 }
 
-// Changelog entry list (shared by the bell dropdown + slide-in panel)
+// Changelog entries as a timeline: a dot per entry on a hairline rail, brand for
+// the ones that are new to this visitor. Everything shown (title, body, date, image,
+// link) comes from the flow's steps, so it can all be edited from the dashboard.
 function renderEntries(steps: any[], newIds: Set<string>) {
   return steps.map((s) => {
     const date = s.props && s.props.date;
     const isNew = newIds.has(s.id);
     const cta = s.primaryButton || {};
     return (
-      <article key={s.id} style={{ padding: '16px 20px', borderBottom: '1px solid var(--nw-line)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 7 }}>
-          {date && <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.03em', textTransform: 'uppercase', color: 'var(--nw-muted)' }}>{date}</span>}
-          {isNew && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: C.brand, background: 'var(--nw-bw)', padding: '2px 8px', borderRadius: 20 }}>New</span>}
+      <article key={s.id} className="cl-entry" style={{ position: 'relative', padding: '12px 18px 14px 42px' }}>
+        <span aria-hidden className="cl-rail" />
+        <span aria-hidden style={{ position: 'absolute', left: 17, top: 16, width: 9, height: 9, boxSizing: 'border-box', borderRadius: '50%', background: isNew ? C.brand : 'var(--nw-card)', border: isNew ? 0 : '1.5px solid var(--nw-faint)', boxShadow: isNew ? '0 0 0 3px var(--nw-bw)' : 'none' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+          {date && <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--nw-muted)' }}>{date}</span>}
+          {isNew && <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: C.brand, background: 'var(--nw-bw)', padding: '2px 7px', borderRadius: 20 }}>New</span>}
         </div>
-        <h4 style={{ margin: '0 0 6px', fontSize: 14.5, fontWeight: 600, lineHeight: 1.35, letterSpacing: '-.01em', color: 'var(--nw-ink)' }}>{s.title}</h4>
-        {s.subtitle && <p style={{ margin: '0 0 11px', fontSize: 13, lineHeight: 1.55, color: 'var(--nw-ink2)' }}>{s.subtitle}</p>}
-        {cta.title && cta.uri && <a href={cta.uri} target="_blank" rel="noreferrer" style={{ fontSize: 13, fontWeight: 600, color: C.brand, textDecoration: 'none' }}>{cta.title} →</a>}
+        <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 600, lineHeight: 1.35, letterSpacing: '-.01em', color: 'var(--nw-ink)' }}>{s.title}</h4>
+        {s.subtitle && <p style={{ margin: '0 0 9px', fontSize: 12.5, lineHeight: 1.55, color: 'var(--nw-ink2)' }}>{s.subtitle}</p>}
+        {s.imageUri && <img src={s.imageUri} alt="" style={{ display: 'block', width: '100%', borderRadius: 10, boxShadow: '0 0 0 1px var(--nw-line)', margin: '2px 0 10px' }} />}
+        {cta.title && cta.uri && <a className="nw-more" href={cta.uri} target={cta.target || '_blank'} rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12.5, fontWeight: 600, color: C.brand, textDecoration: 'none' }}>{cta.title}<ArrowRight size={13} strokeWidth={2.2} /></a>}
       </article>
     );
   });
 }
-function PanelHead({ onClose }: { onClose: () => void }) {
+// The changelog header reads the flow's own title and subtitle when it has them.
+function PanelHead({ title, subtitle, onClose }: { title: string; subtitle?: string; onClose: () => void }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '17px 20px 13px', borderBottom: '1px solid var(--nw-line)' }}>
-      <div><div style={{ fontWeight: 700, fontSize: 16, letterSpacing: '-.01em', color: 'var(--nw-ink)' }}>Product updates</div><div style={{ fontSize: 12.5, color: 'var(--nw-muted)', marginTop: 2 }}>What&rsquo;s new in Northwind</div></div>
-      <button onClick={onClose} aria-label="Close" style={{ border: 0, background: 'none', color: 'var(--nw-faint)', padding: 3, borderRadius: 7, cursor: 'pointer', display: 'flex' }}><X size={18} /></button>
+    <div style={{ position: 'relative', padding: '16px 52px 8px 18px' }}>
+      <div style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-.01em', color: 'var(--nw-ink)' }}>{title}</div>
+      {subtitle && <div style={{ fontSize: 12.5, color: 'var(--nw-muted)', marginTop: 2 }}>{subtitle}</div>}
+      <button onClick={onClose} aria-label="Close" style={{ position: 'absolute', top: 12, right: 12, width: 24, height: 24, padding: 0, border: 0, borderRadius: '50%', background: 'var(--nw-hover)', color: 'var(--nw-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={13} strokeWidth={2.5} /></button>
     </div>
   );
 }
@@ -331,6 +418,10 @@ function PanelHead({ onClose }: { onClose: () => void }) {
 //                   Frigade's own Announcement is a dialog and would portal out of
 //                   the browser frame this demo stages the app inside)
 //   tour         -> product tour with a spotlight + coachmarks (headless)
+//   launch       -> feature-launch announcement that hands off to the changelog
+//                   (headless, for the same reason as the welcome modal)
+//   hints        -> beacons on several elements at once, each opening its own
+//                   tip (headless; a TOUR flow read non-sequentially)
 function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: boolean; setDark: React.Dispatch<React.SetStateAction<boolean>>; actionsRef?: React.MutableRefObject<((key: string) => void) | null>; still?: boolean }) {
   const { flow } = Frigade.useFlow(DEMO_FLOWS.changelog);
   const steps = flow ? Array.from(flow.steps.values()) : [];
@@ -362,14 +453,18 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const ckVisible = ckAllSteps.filter((s: any) => s.$state?.visible !== false);
   const [ckOpen, setCkOpen] = useState(false);
   const [activeStep, setActiveStep] = useState<string | null>(null); // checklist step whose hint is firing
-  const { flow: anFlow } = Frigade.useFlow(DEMO_FLOWS.announcement);
+  const { flow: fmFlow } = Frigade.useFlow(DEMO_FLOWS.form);
+  const [fmOpen, setFmOpen] = useState(false);
+  const [fmValues, setFmValues] = useState<Record<string, string>>({});
+  const fmFirstName = (fmValues.name || '').trim().split(/\s+/)[0] || '';
+  // Frigade interpolates ${firstName} in flow copy (the welcome title, the banner)
+  // from these variables, using the name the onboarding form collected.
+  const nameVars = useMemo(() => ({ firstName: fmFirstName ? `, ${fmFirstName}` : '' }), [fmFirstName]);
+  const { flow: anFlow } = Frigade.useFlow(DEMO_FLOWS.announcement, { variables: nameVars });
   const anStep: any = anFlow ? Array.from(anFlow.steps.values())[0] : null;
   const anPrimary = anStep ? ((anStep.primaryButton && anStep.primaryButton.title) || anStep.primaryButtonTitle) : null;
   const anSecondary = anStep ? ((anStep.secondaryButton && anStep.secondaryButton.title) || anStep.secondaryButtonTitle) : null;
   const [anOpen, setAnOpen] = useState(false);
-  const { flow: fmFlow } = Frigade.useFlow(DEMO_FLOWS.form);
-  const [fmOpen, setFmOpen] = useState(false);
-  const [fmValues, setFmValues] = useState<Record<string, string>>({});
   const [fmStepIdx, setFmStepIdx] = useState(0);
   // Live bridge from the embedded <Frigade.Form> to its custom preview panel. publish
   // returns the same object when a value is unchanged, so the field's publish-on-render
@@ -381,6 +476,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const [journey, setJourney] = useState(false); // true while the opening journey auto-plays (gates form -> welcome chain)
   const [consoleOpen, setConsoleOpen] = useState(false);
   const [bannerOpen, setBannerOpen] = useState(false);
+  const { flow: bnFlow } = Frigade.useFlow(DEMO_FLOWS.banner, { variables: nameVars });
   // The sidebar promo is inline chrome rather than an overlay, so it's present
   // by default and stays put while other surfaces come and go. Dismissing it or
   // taking its CTA completes the flow, which is why replaying has to restart it.
@@ -396,6 +492,15 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const [tourActive, setTourActive] = useState(false);
   const [tourIdx, setTourIdx] = useState(0);
   const [tb, setTb] = useState<{ sTop: number; sLeft: number; sW: number; sH: number; cTop: number; cLeft: number; place: string } | null>(null);
+  const { flow: laFlow } = Frigade.useFlow(DEMO_FLOWS.launch);
+  const laStep: any = laFlow ? Array.from(laFlow.steps.values())[0] : null;
+  const [laOpen, setLaOpen] = useState(false);
+  const { flow: hnFlow } = Frigade.useFlow(DEMO_FLOWS.hints);
+  const hnSteps: any[] = hnFlow ? Array.from(hnFlow.steps.values()) : [];
+  const [hintsOn, setHintsOn] = useState(false);
+  const [hintOpen, setHintOpen] = useState<string | null>(null);
+  // Each hint's beacon sits on its anchor's top-right corner; tipLeft keeps the tip inside the app.
+  const [hintPos, setHintPos] = useState<Record<string, { top: number; left: number; tipLeft: number }>>({});
   const appRef = useRef<HTMLDivElement>(null);
   const autoPlayedRef = useRef(false); // the opening journey auto-plays at most once per mount
   const tourStep: any = tourActive ? tourSteps[tourIdx] : null;
@@ -406,7 +511,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const surveyKey = 'nw-survey-seen:' + (typeof window !== 'undefined' ? getUserId() : 'x');
   useEffect(() => { setSeen(loadSet(seenKey)); /* eslint-disable-next-line */ }, []);
   useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { setBellOpen(false); setPanelOpen(false); setCkOpen(false); setAnOpen(false); setFmOpen(false); setConsoleOpen(false); setActiveStep(null); } }
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { setBellOpen(false); setPanelOpen(false); setCkOpen(false); setAnOpen(false); setFmOpen(false); setConsoleOpen(false); setActiveStep(null); setLaOpen(false); setHintOpen(null); } }
     document.addEventListener('keydown', onKey); return () => document.removeEventListener('keydown', onKey);
   }, []);
   // Deep-link an experience open (handy for screenshots + the Demo Console): ?cl=bell|panel
@@ -446,11 +551,17 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   }, []);
   useEffect(() => {
     const bn = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('bn') : null;
-    if (bn === 'open') setBannerOpen(true);
+    if (bn === 'open') replayBanner();
   }, []);
   useEffect(() => {
     const sv = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('sv') : null;
     if (sv === 'open') setSurveyOpen(true);
+  }, []);
+  useEffect(() => {
+    const q = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    if (q?.get('la') === 'open') setLaOpen(true);
+    if (q?.get('hn') === 'open') showHints();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // Auto-play the opening journey (form -> welcome -> tour). It pops on every fresh
   // load until the user has finished or skipped the onboarding form, so a returning
@@ -462,7 +573,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
     if (still) return;
     if (!fmFlow || !anFlow || !tourFlow || typeof window === 'undefined') return;
     if (autoPlayedRef.current) return;
-    if (/[?&](cl|ck|an|fm|dc|tour|hint|bn|sv)=/.test(window.location.search)) return;
+    if (/[?&](cl|ck|an|fm|dc|tour|hint|bn|sv|la|hn)=/.test(window.location.search)) return;
     if (localStorage.getItem('nw-onboarding-done:' + getUserId())) return;
     autoPlayedRef.current = true;
     setJourney(true); setFmStepIdx(0); setFmOpen(true);
@@ -472,12 +583,15 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   const unseen = steps.filter((s: any) => !seen.has(s.id));
   const unseenCount = unseen.length;
   function markSeen() {
+    completeStep('read-changelog'); // opening the changelog is what this checklist step watches
     setNewIds(new Set(unseen.map((s: any) => s.id)));
     if (!unseen.length) return;
     const next = new Set(seen); unseen.forEach((s: any) => { next.add(s.id); try { s.complete(); } catch {} });
     setSeen(next); saveSet(seenKey, next);
   }
   function toggleBell() { if (bellOpen) { setBellOpen(false); return; } setPanelOpen(false); setCkOpen(false); markSeen(); setBellOpen(true); }
+  // Copy comes from the flow, so edits in the Frigade dashboard show up here.
+  const ckTitle: string = ckFlow?.title || 'Get set up';
   const ckTotal = ckVisible.length;
   const ckDoneCount = ckVisible.filter((s: any) => s.$state?.completed).length;
   const ckPct = ckTotal ? Math.round((ckDoneCount / ckTotal) * 100) : 0;
@@ -485,9 +599,10 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   useEffect(() => { if (ckDoneCount >= 2 && typeof window !== 'undefined' && !localStorage.getItem(bannerKey)) setBannerOpen(true); /* eslint-disable-next-line */ }, [ckDoneCount]);
   // Survey fires once the whole checklist is complete (until dismissed); also console-triggerable.
   useEffect(() => { if (ckTotal > 0 && ckDoneCount === ckTotal && typeof window !== 'undefined' && !localStorage.getItem(surveyKey)) { setSurveyOpen(true); } /* eslint-disable-next-line */ }, [ckDoneCount, ckTotal]);
-  // In this demo the Create Agent button advances the next checklist step. In a
-  // real app you'd complete each step from its own product event (a key created,
-  // a teammate invited) or when a linked flow finishes (the form or the tour).
+  // In this demo, steps complete when you do the thing: click the control a step
+  // lights up, finish the tour, open the hints, open the changelog. In a real app
+  // you'd complete each from its own product event (a key created, a teammate
+  // invited) or when a linked flow finishes, the way the tour and hints do here.
   // That cross-flow, event-driven completion is what Frigade is built for.
   // Frigade owns checklist progress: complete the step and let the new $state come
   // back through useFlow. No local mirror, so progress follows the user across
@@ -522,6 +637,24 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   useEffect(() => { measureTour(); const on = () => measureTour(); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on); }, [tourActive, tourIdx, tourFlow]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!tourFlow) return; const t = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('tour') : null; if (t === 'open') startTour(); else if (t && /^[0-9]+$/.test(t)) { setTourIdx(Number(t)); setTourActive(true); } }, [tourFlow]); // eslint-disable-line react-hooks/exhaustive-deps
   function closeAnnouncement(complete: boolean) { setAnOpen(false); try { if (complete) anFlow?.complete?.(); else anFlow?.skip?.(); } catch {} }
+  function closeLaunch(complete: boolean) { setLaOpen(false); try { if (complete) laFlow?.complete?.(); else laFlow?.skip?.(); } catch {} }
+  // Hints read the same native `selector` the tour does, but all at once: one beacon
+  // per step that's still open. Replaying restarts the flow so every beacon is back.
+  function measureHints() {
+    const app = appRef.current;
+    if (!app || !hintsOn) return;
+    const a = app.getBoundingClientRect(); const tw = 224; const next: typeof hintPos = {};
+    hnSteps.forEach((s) => {
+      const el = s.selector ? (app.querySelector(s.selector) as HTMLElement | null) : null;
+      if (!el) return;
+      const r = el.getBoundingClientRect(); const left = r.right - a.left;
+      next[s.id] = { top: r.top - a.top, left, tipLeft: Math.max(12, Math.min(left - 26, a.width - tw - 12)) };
+    });
+    setHintPos(next);
+  }
+  useEffect(() => { measureHints(); const on = () => measureHints(); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on); }, [hintsOn, hnFlow]); // eslint-disable-line react-hooks/exhaustive-deps
+  function showHints() { try { hnFlow?.restart?.(); } catch {} setHintOpen(null); setHintsOn(true); }
+  function ackHint(s: any) { try { s.complete(); } catch {} setHintOpen(null); }
   // Frigade's Banner owns the flow's completion state (its primaryButton fires
   // flow.complete), so this only unmounts it and records the demo-local "don't
   // auto-show again" flag that the hero pills clear to replay it.
@@ -533,6 +666,12 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   function replayCard() {
     try { cardFlow?.restart?.(); } catch {}
     setCardOpen(true);
+  }
+  // Replaying restarts the flow so its "Got it" completes it again for real.
+  function replayBanner() {
+    try { localStorage.removeItem(bannerKey); } catch {}
+    try { bnFlow?.restart?.(); } catch {}
+    setBannerOpen(true);
   }
   function replaySurvey() {
     try { localStorage.removeItem(surveyKey); } catch {}
@@ -581,6 +720,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
     setJourney(false);
     setAnOpen(false); setFmOpen(false); setBellOpen(false); setPanelOpen(false);
     setCkOpen(false); setBannerOpen(false); setSurveyOpen(false); setTourActive(false);
+    setLaOpen(false); setHintsOn(false);
   }
   // A window dragged narrow mid-visit would otherwise strand whatever was open behind
   // the preview scrim. Going still means going back to the default screen.
@@ -598,10 +738,12 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
       case 'form': setFmStepIdx(0); setFmOpen(true); break;
       case 'tour': startTour(); break;
       case 'checklist': setCkOpen(true); break;
-      case 'banner': try { localStorage.removeItem(bannerKey); } catch {} setBannerOpen(true); break;
+      case 'banner': replayBanner(); break;
       case 'survey': replaySurvey(); break;
       case 'changelog': markSeen(); setBellOpen(true); break;
       case 'card': replayCard(); break;
+      case 'launch': setLaOpen(true); break;
+      case 'hints': showHints(); break;
     }
   }
   useEffect(() => { if (actionsRef) actionsRef.current = runExperience; });
@@ -614,8 +756,6 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
     // page now defaults to Assistant) with a clean slate so the journey replays.
     window.location.href = window.location.pathname + '?product=engage';
   }
-  const fmFirstName = (fmValues.name || '').trim().split(/\s+/)[0] || '';
-  const welcomeTitle = fmFirstName ? `Welcome, ${fmFirstName}` : ((anStep && anStep.title) || 'Welcome to the demo');
 
   return (
     <div ref={appRef} className={APP_SCOPE} style={{ ...cssVars(C), position: 'relative', display: 'flex', height: DEMO_H, background: C.bg, overflow: 'hidden' }}>
@@ -630,12 +770,12 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
         <nav style={{ flex: 1, marginTop: 3 }}>
           <div style={{ padding: '11px 10px 5px' }}><Ghost w={44} h={6} r={3} /></div>
           <NavGhost w={56} active /><NavGhost w={40} />
-          <NavTarget target="nav-api-keys" icon={KeyRound} label="API Keys" w={52} lit={activeTarget === 'nav-api-keys'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
+          <NavTarget target="nav-api-keys" icon={KeyRound} label="API Keys" w={52} lit={activeTarget === 'nav-api-keys'} hint={ckOpen ? '' : activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
           <div style={{ padding: '11px 10px 5px' }}><Ghost w={48} h={6} r={3} /></div>
-          <NavTarget target="nav-analytics" icon={BarChart3} label="Analytics" w={54} lit={activeTarget === 'nav-analytics'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
-          <NavTarget target="nav-logs" icon={ScrollText} label="Logs" w={30} lit={activeTarget === 'nav-logs'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
+          <NavTarget target="nav-analytics" icon={BarChart3} label="Analytics" w={54} lit={activeTarget === 'nav-analytics'} hint={ckOpen ? '' : activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
+          <NavTarget target="nav-logs" icon={ScrollText} label="Logs" w={30} lit={activeTarget === 'nav-logs'} hint={ckOpen ? '' : activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
           <div style={{ padding: '11px 10px 5px' }}><Ghost w={42} h={6} r={3} /></div>
-          <NavTarget target="nav-settings" icon={Settings2} label="Settings" w={48} lit={activeTarget === 'nav-settings'} hint={activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
+          <NavTarget target="nav-settings" icon={Settings2} label="Settings" w={48} lit={activeTarget === 'nav-settings'} hint={ckOpen ? '' : activeHintText} onFire={fireStep} onDismiss={() => setActiveStep(null)} />
         </nav>
         {/* Sidebar promo — a real <Frigade.Card>, and the demo's one inline
             surface. It renders in place inside the product's own chrome instead
@@ -650,38 +790,43 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
             onDismiss={() => setCardOpen(false)}
             onPrimary={async () => { await openCalPopup(); return false; }}
             css={{
-              // .fr-card is the root element, so its box styling goes top level.
+              // .fr-card is the root element, so its box styling goes top level. The
+              // brand gradient with rings off the top corner echoes the welcome art.
               marginBottom: 8,
-              background: 'var(--nw-bw)',
+              background: 'radial-gradient(circle at 100% 0%, transparent 0 30px, rgba(255,255,255,.18) 30px 31px, transparent 31px 52px, rgba(255,255,255,.12) 52px 53px, transparent 53px 76px, rgba(255,255,255,.07) 76px 77px, transparent 77px), radial-gradient(circle at 100% 0%, rgba(255,255,255,.22), rgba(255,255,255,0) 60%), linear-gradient(135deg, #2A78FF, #0049DB)',
               border: 0,
-              borderRadius: 11,
-              boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--nw-brand) 18%, transparent)',
-              padding: '10px 11px 11px',
-              gap: 7,
+              borderRadius: 12,
+              boxShadow: '0 10px 22px -12px rgba(0,73,219,.7)',
+              padding: '11px 12px 12px',
+              gap: 10,
               '.fr-card-header': { gap: 2 },
-              '.fr-title': { fontSize: 12.5, fontWeight: 600, letterSpacing: 0 },
-              '.fr-subtitle': { fontSize: 11, lineHeight: 1.45, color: 'var(--nw-ink2)' },
+              '.fr-title': { fontSize: 12.5, fontWeight: 600, letterSpacing: 0, color: '#fff' },
+              '.fr-subtitle': { fontSize: 11, lineHeight: 1.45, color: 'rgba(255,255,255,.78)' },
+              '.fr-dismiss': { color: 'rgba(255,255,255,.75)' },
               // The flow has no secondary button, but Card renders the slot
               // regardless, so hide the empty one.
               '.fr-button-secondary': { display: 'none' },
               '.fr-card-footer': { justifyContent: 'stretch' },
-              '.fr-button-primary': { padding: '6px 11px', minHeight: 0, width: '100%', boxShadow: BTN_BRAND },
-              '.fr-button-title': { fontSize: 11.5, fontWeight: 600 },
+              '.fr-button-primary': { padding: '6px 11px', minHeight: 0, width: '100%', background: '#fff', border: 0, borderRadius: 8, boxShadow: '0 1px 2px rgba(0,30,120,.25)', transition: 'transform .16s cubic-bezier(.23,1,.32,1)' },
+              '.fr-button-primary:hover': { background: 'rgba(255,255,255,.92)' },
+              '.fr-button-primary:active': { transform: 'scale(.97)' },
+              // Scoped through the footer to outrank the app-wide white primary-button text.
+              '.fr-card-footer .fr-button-primary .fr-button-title': { fontSize: 11.5, fontWeight: 600, color: C.brand },
             }}
           />
         )}
         <div style={{ position: 'relative' }}>
           <button data-ck onClick={() => { setBellOpen(false); setPanelOpen(false); setCkOpen((o) => !o); if (tourActive && tourStep && tourStep.props && tourStep.props.gate === 'ck-open') advanceTour(); }} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 11px', border: 0, borderRadius: 10, background: C.card, boxShadow: C.cardSh, cursor: 'pointer', overflow: 'hidden' }}>
             <span className="ck-sweep" aria-hidden />
-            <Ring pct={ckPct} /><span style={{ flex: 1, textAlign: 'left', fontSize: 13, fontWeight: 500, color: C.ink }}>Get set up</span><span style={{ fontSize: 12, fontWeight: 600, color: C.muted }}>{ckPct}%</span>
+            <Ring pct={ckPct} /><span style={{ flex: 1, textAlign: 'left', fontSize: 13, fontWeight: 500, color: C.ink }}>{ckTitle}</span><span style={{ fontSize: 12, fontWeight: 600, color: C.muted }}>{ckPct}%</span>
           </button>
-          <div className={'ck-pop' + (ckOpen ? ' open' : '')} role="dialog" aria-label="Get set up">
+          <div className={'ck-pop' + (ckOpen ? ' open' : '')} role="dialog" aria-label={ckTitle}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '12px 13px 4px' }}>
-              <div><div style={{ fontSize: 13.5, fontWeight: 600, color: C.ink }}>Get set up</div><div style={{ fontSize: 12, color: C.muted, marginTop: 1 }}>{ckPct}% complete</div></div>
+              <div><div style={{ fontSize: 13.5, fontWeight: 600, color: C.ink }}>{ckTitle}</div><div style={{ fontSize: 12, color: C.muted, marginTop: 1 }}>{ckPct}% complete</div></div>
               <button onClick={() => setCkOpen(false)} aria-label="Close" style={{ border: 0, background: 'none', color: C.faint, padding: 3, borderRadius: 6, cursor: 'pointer', display: 'flex' }}><X size={15} /></button>
             </div>
             <div style={{ height: 6, borderRadius: 99, background: C.bg, margin: '4px 13px 8px', overflow: 'hidden' }}><div style={{ width: ckPct + '%', height: '100%', background: C.brand, transition: 'width .4s cubic-bezier(.4,0,.2,1)' }} /></div>
-            <div style={{ fontSize: 11.5, color: C.faint, padding: '0 13px 7px' }}>Pick a step and we&rsquo;ll point you to it.</div>
+            {ckFlow?.subtitle && <div style={{ fontSize: 11.5, color: C.faint, padding: '0 13px 7px' }}>{ckFlow.subtitle}</div>}
             <div style={{ padding: '2px 6px 4px', display: 'flex', flexDirection: 'column', gap: 1 }}>
               {ckVisible.map((s: any) => {
                 const isDone = !!s.$state?.completed; const Ic = CK_ICONS[s.id] || Bot; const isActive = activeStep === s.id;
@@ -698,8 +843,8 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
                   </div>
                 );
                 return (
-                  <div key={s.id} className={((isDone ? '' : 'ck-item') + (!isDone && s.id === 'go-live' ? ' ck-unlocked' : '')) || undefined} onClick={isDone || s.__mock ? undefined : () => { setCkOpen(false); if (s.props && s.props.action === 'tour') startTour(); else setActiveStep(s.id); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px', borderRadius: 8, fontSize: 12.5, cursor: isDone || s.__mock ? 'default' : 'pointer', color: isDone ? C.muted : C.ink2, background: isActive ? C.brandWeak : 'transparent' }}>
-                    <Ic size={16} color={isDone ? C.muted : C.brand} />
+                  <div key={s.id} className={((isDone ? '' : 'ck-item') + (!isDone && s.id === 'go-live' ? ' ck-unlocked' : '')) || undefined} onClick={isDone || s.__mock ? undefined : () => { setCkOpen(false); if (s.props && s.props.action === 'tour') startTour(); else if (s.props && s.props.action === 'hints') { showHints(); completeStep(s.id); } else setActiveStep(s.id); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px', borderRadius: 8, fontSize: 12.5, cursor: isDone || s.__mock ? 'default' : 'pointer', color: isDone ? C.muted : C.ink2, background: isActive ? C.brandWeak : 'transparent' }}>
+                    <Ic className="ck-ic" size={16} color={isDone ? C.muted : C.brand} />
                     <span style={{ flex: 1, textDecoration: isDone ? 'line-through' : 'none' }}>{s.title}</span>
                     {isDone ? <CheckCircle2 size={19} color={C.brand} /> : <span style={{ width: 18, height: 18, borderRadius: '50%', border: `1.6px solid ${isActive ? C.brand : C.line}` }} />}
                   </div>
@@ -717,16 +862,23 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14, padding: '14px 18px 11px' }}>
           <Ghost w={72} h={13} r={5} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, width: 148, height: 32, padding: '0 10px', borderRadius: 9, background: C.bg }}><Search size={14} color={C.faint} /><Ghost w={56} h={8} /></div>
+            <div data-hint="search" style={{ display: 'flex', alignItems: 'center', gap: 7, width: 148, height: 32, padding: '0 10px', borderRadius: 9, background: C.bg }}><Search size={14} color={C.faint} /><Ghost w={56} h={8} /></div>
             <button data-target="theme" onClick={() => { setDark((d) => !d); if (tourActive && tourStep && tourStep.props && tourStep.props.gate === 'theme') advanceTour(); }} aria-label="Toggle theme" style={{ width: 32, height: 32, borderRadius: 9, background: C.card, boxShadow: C.cardSh, border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.ink2, cursor: 'pointer' }}>{dark ? <Moon size={16} /> : <Sun size={16} />}</button>
             <div style={{ padding: '0 14px', height: 32, display: 'flex', alignItems: 'center', borderRadius: 9, background: C.card, boxShadow: C.cardSh }}><Ghost w={36} h={8} /></div>
             <div style={{ position: 'relative' }} data-target="create-agent">
-              <button onClick={() => { const lit = activeTarget === 'create-agent'; completeStep('create-agent'); setActiveStep(null); if (lit) setCkOpen(true); if (tourActive && tourStep && tourStep.props && tourStep.props.gate === 'create-agent') advanceTour(); }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, background: C.dark, color: '#fff', border: 0, cursor: 'pointer', boxShadow: activeTarget === 'create-agent' ? `0 0 0 2px ${C.brand}, 0 0 0 5px ${C.brandWeak}` : 'none', transition: 'box-shadow .2s ease' }}><Plus size={15} /> Create Agent</button>
-              {activeTarget === 'create-agent' && <HintBubble text={activeHintText} side="bottom" onDismiss={() => setActiveStep(null)} />}
+              {/* Ghosted like the rest of the host app until the checklist's
+                  "Create your first agent" step lights it up. */}
+              {activeTarget === 'create-agent'
+                ? <button className="nw-pop" onClick={() => { completeStep('create-agent'); setActiveStep(null); setCkOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, background: C.dark, color: '#fff', border: 0, cursor: 'pointer', boxShadow: `0 0 0 2px ${C.brand}, 0 0 0 5px ${C.brandWeak}` }}><Plus size={15} /> Create Agent</button>
+                : <div aria-hidden style={{ display: 'flex', alignItems: 'center', gap: 7, height: 32, padding: '0 12px', borderRadius: 9, background: C.card, boxShadow: C.cardSh }}><Ghost w={14} h={14} r={4} /><Ghost w={76} h={8} /></div>}
+              {activeTarget === 'create-agent' && !ckOpen && <HintBubble text={activeHintText} side="bottom" onDismiss={() => setActiveStep(null)} />}
             </div>
-            <button data-cl-bell onClick={toggleBell} aria-label="Product updates" style={{ position: 'relative', width: 32, height: 32, borderRadius: 9, background: C.card, boxShadow: C.cardSh, border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: bellOpen ? C.brand : C.ink2, cursor: 'pointer' }}>
-              <Bell size={17} />{unseenCount > 0 && <span style={{ position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: '50%', background: C.brand, boxShadow: `0 0 0 2px ${C.card}`, animation: 'nwpulse 1.9s infinite' }} />}
-            </button>
+            <div style={{ position: 'relative' }}>
+              <button data-cl-bell onClick={() => { toggleBell(); if (activeTarget === 'bell') setActiveStep(null); }} aria-label="Product updates" style={{ position: 'relative', width: 32, height: 32, borderRadius: 9, background: C.card, boxShadow: activeTarget === 'bell' ? `0 0 0 2px ${C.brand}, 0 0 0 5px ${C.brandWeak}` : C.cardSh, border: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: bellOpen ? C.brand : C.ink2, cursor: 'pointer', transition: 'box-shadow .2s ease' }}>
+                <Bell size={17} />{unseenCount > 0 && <span style={{ position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: '50%', background: C.brand, boxShadow: `0 0 0 2px ${C.card}`, animation: 'nwpulse 1.9s infinite' }} />}
+              </button>
+              {activeTarget === 'bell' && !ckOpen && <HintBubble text={activeHintText} side="bottom" caret={11} onDismiss={() => setActiveStep(null)} />}
+            </div>
           </div>
         </div>
         {/* Frigade's own Banner, rendering the flow's title, subtitle and its
@@ -738,23 +890,32 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
           <Frigade.Banner
             flowId={DEMO_FLOWS.banner}
             forceMount
-            variables={{ firstName: fmFirstName ? `, ${fmFirstName}` : '' }}
-            onDismiss={closeBanner}
+            variables={nameVars}
+            // Close on the click itself: onComplete only fires the first time, so a
+            // replayed (already completed) banner would otherwise ignore "Got it".
+            onPrimary={() => { closeBanner(); return true; }}
             onComplete={closeBanner}
             css={{
               // .fr-card / .fr-banner both sit on the root element, so they're styled
-              // at the top level; nested selectors only reach descendants.
+              // at the top level; nested selectors only reach descendants. The icon
+              // tile is a ::before (Banner has no icon slot), and the rings off the
+              // right edge are the same motif as the welcome and the sidebar card.
               margin: '0 16px 2px',
               animation: 'nwslide .4s cubic-bezier(.4,0,.2,1) both',
-              background: 'var(--nw-bw)',
+              display: 'flex',
+              alignItems: 'center',
+              background: 'radial-gradient(circle at 100% 50%, transparent 0 34px, color-mix(in srgb, var(--nw-brand) 16%, transparent) 34px 35px, transparent 35px 62px, color-mix(in srgb, var(--nw-brand) 11%, transparent) 62px 63px, transparent 63px 92px, color-mix(in srgb, var(--nw-brand) 7%, transparent) 92px 93px, transparent 93px), linear-gradient(90deg, var(--nw-card) 50%, var(--nw-bw))',
               border: 0,
-              padding: '12px 14px',
+              borderRadius: 12,
+              boxShadow: '0 0 0 1px var(--nw-line), 0 8px 20px -12px rgba(18,24,40,.2)',
+              padding: '11px 14px 11px 12px',
               gap: 12,
-              boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--nw-brand) 20%, transparent)',
-              '.fr-banner-title-wrapper': { gap: 1 },
+              '&::before': { content: '""', flexShrink: 0, width: 34, height: 34, borderRadius: 10, background: `${SPARKLE_SVG} center / 15px no-repeat, linear-gradient(135deg, #2A78FF, #0049DB)`, boxShadow: '0 6px 14px -6px rgba(0,73,219,.6)' },
+              '.fr-banner-title-wrapper': { gap: 1, flex: 1, minWidth: 0 },
               '.fr-title': { fontSize: 13, fontWeight: 600, letterSpacing: 0 },
               '.fr-subtitle': { fontSize: 12, lineHeight: 1.45, color: 'var(--nw-ink2)' },
-              '.fr-button-primary': { padding: '8px 14px', minHeight: 0, boxShadow: BTN_BRAND },
+              '.fr-button-primary': { padding: '8px 14px', minHeight: 0, borderRadius: 9, boxShadow: BTN_BRAND, transition: 'transform .16s cubic-bezier(.23,1,.32,1)' },
+              '.fr-button-primary:active': { transform: 'scale(.97)' },
               '.fr-button-title': { fontSize: 12.5, fontWeight: 600 },
             }}
           />
@@ -769,7 +930,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
                   <td style={{ padding: '13px 12px', borderBottom: `1px solid ${C.line}` }}><Ghost w={[78, 64, 86][i]} h={18} r={6} /></td>
                   <td style={{ padding: '13px 12px', borderBottom: `1px solid ${C.line}` }}><div style={{ display: 'flex', alignItems: 'center', gap: 7 }}><Ghost w={7} h={7} r={4} /><Ghost w={46} h={8} /></div></td>
                   <td style={{ padding: '13px 12px', borderBottom: `1px solid ${C.line}` }}><Ghost w={44} h={8} /></td>
-                  <td style={{ padding: '13px 12px', borderBottom: `1px solid ${C.line}`, color: '#cdd2db', fontWeight: 700, letterSpacing: 1 }}>&#8942;</td>
+                  <td style={{ padding: '13px 12px', borderBottom: `1px solid ${C.line}`, color: '#cdd2db', fontWeight: 700, letterSpacing: 1 }}><span data-hint={i === 0 ? 'row-actions' : undefined}>&#8942;</span></td>
                 </tr>
               ))}
             </tbody>
@@ -779,77 +940,71 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
 
       <div style={{ position: 'absolute', right: 16, bottom: 14, zIndex: 20 }}>
         <div className={'dc-pop' + (consoleOpen ? ' open' : '')} role="dialog" aria-label="Demo controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 6px' }}><DotGrid color={C.brand} size={14} /><span style={{ fontSize: 13, fontWeight: 700, color: C.ink }}>Demo controls</span></div>
-          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.06em', color: C.faint, textTransform: 'uppercase', padding: '4px 14px 7px' }}>Replay an experience</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '0 12px 11px' }}>
-            {([['Welcome', Megaphone, () => setAnOpen(true)], ['Form', ClipboardList, () => { setFmStepIdx(0); setFmOpen(true); }], ['Tour', Route, () => startTour()], ['Checklist', ListChecks, () => { setBellOpen(false); setPanelOpen(false); setCkOpen(true); }], ['Banner', Flag, () => { try { localStorage.removeItem(bannerKey); } catch {} setBannerOpen(true); }], ['Survey', MessageSquare, () => replaySurvey()], ['Changelog', Newspaper, () => { setCkOpen(false); markSeen(); setBellOpen(true); }], ['Card', Sparkles, () => replayCard()]] as [string, IconType, () => void][]).map(([label, Ic, fn]) => (
-              <button key={label} onClick={() => { setConsoleOpen(false); fn(); }} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 500, color: C.ink2, background: C.card, border: `1px solid ${C.line}`, borderRadius: 8, padding: '6px 10px', cursor: 'pointer' }}><Ic size={13} color={C.brand} strokeWidth={2} />{label}</button>
-            ))}
-          </div>
-          <div style={{ borderTop: `1px solid ${C.line}`, padding: '10px 12px 12px' }}>
-            <button onClick={resetDemo} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: C.brand, background: C.brandWeak, border: 0, borderRadius: 9, padding: '9px', cursor: 'pointer' }}><RotateCcw size={14} /> Reset demo</button>
+          {/* Demo chrome, not part of Northwind or Frigade, so it's dressed as a dark
+              dev-tool panel, grouped the way the hero pills are. No header: the
+              trigger pill right below already names it. */}
+          {([
+            ['Onboarding', [['Form', ClipboardList, () => { setFmStepIdx(0); setFmOpen(true); }], ['Welcome', Megaphone, () => setAnOpen(true)], ['Tour', Route, () => startTour()], ['Checklist', ListChecks, () => { setBellOpen(false); setPanelOpen(false); setCkOpen(true); }], ['Hints', Lightbulb, () => showHints()]]],
+            ['Messaging & feedback', [['Announcement', Rocket, () => setLaOpen(true)], ['Banner', Flag, () => replayBanner()], ['Card', Sparkles, () => replayCard()], ['Survey', MessageSquare, () => replaySurvey()], ['Changelog', Newspaper, () => { setCkOpen(false); markSeen(); setBellOpen(true); }]]],
+          ] as [string, [string, IconType, () => void][]][]).map(([group, items]) => (
+            <div key={group} style={{ padding: '12px 10px 0' }}>
+              <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,.4)', padding: '0 4px 6px' }}>{group}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+                {items.map(([label, Ic, fn]) => (
+                  <button key={label} className="dc-tile nw-press" onClick={() => { setConsoleOpen(false); fn(); }} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5, fontWeight: 500, color: 'rgba(255,255,255,.88)', background: 'rgba(255,255,255,.045)', border: 0, borderRadius: 9, padding: '8px 10px', cursor: 'pointer', textAlign: 'left' }}><Ic size={15} color="#7DABFF" strokeWidth={2} />{label}</button>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div style={{ padding: '10px 10px 10px', marginTop: 8, borderTop: '1px solid rgba(255,255,255,.08)' }}>
+            <button className="dc-reset nw-press" onClick={resetDemo} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,.8)', background: 'transparent', border: 0, boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.12)', borderRadius: 9, padding: '8px', cursor: 'pointer' }}><RotateCcw size={14} /> Reset demo</button>
           </div>
         </div>
-        <button onClick={() => setConsoleOpen((o) => !o)} data-dc style={{ display: 'flex', alignItems: 'center', gap: 9, background: C.card, color: C.ink, padding: '8px 13px', borderRadius: 999, boxShadow: `0 8px 24px rgba(18,24,40,.16), 0 0 0 1px ${C.line}`, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', border: 0 }}>
-          <DotGrid color={C.brand} /> Frigade Demo Console <ChevronUp size={15} color={C.faint} style={{ transform: consoleOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} />
+        <button className="nw-press" onClick={() => setConsoleOpen((o) => !o)} data-dc style={{ display: 'flex', alignItems: 'center', gap: 9, background: '#151c2b', color: '#fff', padding: '8px 13px', borderRadius: 999, boxShadow: '0 10px 26px rgba(8,12,24,.28), 0 0 0 1px rgba(255,255,255,.08)', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', border: 0 }}>
+          <DotGrid color="#7DABFF" /> Frigade Demo Console <ChevronUp size={15} color="rgba(255,255,255,.5)" style={{ transform: consoleOpen ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} />
         </button>
       </div>
 
       {/* ---- Changelog surfaces (live, headless useFlow) ---- */}
       <div className={'cl-scrim' + (bellOpen || panelOpen ? ' open' : '')} onClick={() => { setBellOpen(false); setPanelOpen(false); }} />
       <aside className={'cl-bell' + (bellOpen ? ' open' : '')} role="dialog" aria-label="Product updates">
-        <PanelHead onClose={() => setBellOpen(false)} />
+        <PanelHead title={flow?.title || 'Product updates'} subtitle={flow?.subtitle || 'What\u2019s new in Northwind'} onClose={() => setBellOpen(false)} />
         <div className="cl-list">{!flow && <div style={{ padding: 20, color: C.faint, fontSize: 13 }}>Loading&hellip;</div>}{renderEntries(steps, newIds)}</div>
       </aside>
 
-      {/* Welcome announcement — split modal with a "what's inside" asset panel (headless useFlow) */}
-      {anOpen && anStep && (
-        <>
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,21,26,.34)', zIndex: 50 }} />
-          <div className="nw-hint" role="dialog" aria-label="Welcome" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', width: 600, maxWidth: '94%', background: C.card, borderRadius: 18, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
-            <div style={{ flex: 1, minWidth: 0, padding: '30px 30px 28px', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ width: 46, height: 46, borderRadius: 13, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}><Route size={23} strokeWidth={2} /></div>
-              <h3 style={{ margin: '0 0 9px', fontSize: 23, fontWeight: 700, letterSpacing: '-.02em', color: C.ink, lineHeight: 1.15 }}>{welcomeTitle}</h3>
-              {anStep.subtitle && <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: C.muted }}>{anStep.subtitle}</p>}
-              <div style={{ flex: 1, minHeight: 22 }} />
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                {anPrimary && <button onClick={() => { closeAnnouncement(true); startTour(); }} style={{ background: C.brand, color: '#fff', fontSize: 13.5, fontWeight: 600, padding: '11px 20px', borderRadius: 11, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{anPrimary}</button>}
-                {anSecondary && <button onClick={() => closeAnnouncement(false)} style={{ border: 0, background: 'none', color: C.muted, fontSize: 13, fontWeight: 600, padding: '10px 8px', borderRadius: 9, cursor: 'pointer' }}>{anSecondary}</button>}
-              </div>
-            </div>
-            <div style={{ width: 236, flexShrink: 0, background: C.wash, borderLeft: `1px solid ${C.washLine}`, padding: '26px 22px', position: 'relative' }}>
-              <button onClick={() => closeAnnouncement(false)} aria-label="Close" style={{ position: 'absolute', top: 12, right: 12, border: 0, background: 'none', color: C.faint, padding: 4, borderRadius: 7, cursor: 'pointer', display: 'flex' }}><X size={16} /></button>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: C.faint, marginBottom: 13 }}>What&rsquo;s inside</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                {([[Route, 'Product tour', 'A guided, 3-step walkthrough'], [ListChecks, 'Setup checklist', 'Hints that light up the UI'], [Newspaper, 'Changelog', '5 new updates to read']] as [IconType, string, string][]).map(([Ic, t, s]) => (
-                  <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 11, background: C.card, borderRadius: 11, padding: '11px 12px', boxShadow: `0 0 0 1px ${C.line}` }}>
-                    <span style={{ width: 30, height: 30, borderRadius: 9, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Ic size={16} strokeWidth={2} /></span>
-                    <div style={{ minWidth: 0 }}><div style={{ fontSize: 12.5, fontWeight: 600, color: C.ink }}>{t}</div><div style={{ fontSize: 11, color: C.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s}</div></div>
-                  </div>
-                ))}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '3px 4px 0', fontSize: 11.5, fontWeight: 500, color: C.muted }}><Plus size={13} /> Banners, surveys, and more</div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Welcome announcement (headless useFlow): two buttons, start the tour or skip it.
+          The welcome flow carries no image, so the app draws its own art. */}
+      {anOpen && anStep && <AnnouncementModal label="Welcome" image={anStep.imageUri} art={<WelcomeArt />} title={anStep.title} text={anStep.subtitle} cta={anPrimary} onCta={() => { closeAnnouncement(true); startTour(); }} skip={{ label: anSecondary || 'Skip tour', onClick: () => closeAnnouncement(false) }} />}
 
-      {/* Onboarding form — a real <Frigade.Form> (left) inside our split modal, with a
-          custom live-preview panel (right) that Frigade can't render. The form's steps,
-          fields, options and buttons all come from the flow YAML; NwFormField renders
-          each input in Northwind's style and reports values to the preview via context. */}
+      {/* Product announcement (headless useFlow). Its button hands off to the changelog.
+          Frigade steps have one imageUri, so the dark-mode image rides in a custom prop. */}
+      {laOpen && laStep && <AnnouncementModal label={laStep.title} image={(dark && laStep.props?.darkImageUri) || laStep.imageUri} title={laStep.title} text={laStep.subtitle} cta={laStep.primaryButton?.title || laStep.primaryButtonTitle} onCta={() => { closeLaunch(true); markSeen(); setBellOpen(true); }} onClose={() => closeLaunch(false)} />}
+
+      {/* Hints: a pulsing beacon on each open step's anchor; clicking one opens its
+          tip, and "Got it" completes that step so its beacon goes away (headless useFlow). */}
+      {hintsOn && hnSteps.filter((s) => !s.$state?.completed && hintPos[s.id]).map((s) => {
+        const p = hintPos[s.id]; const open = hintOpen === s.id;
+        return (
+          <React.Fragment key={s.id}>
+            <button className="nw-beacon" onClick={() => setHintOpen(open ? null : s.id)} aria-label={s.title} aria-expanded={open} style={{ position: 'absolute', top: p.top - 8, left: p.left - 8, width: 16, height: 16, padding: 0, borderRadius: '50%', border: `2px solid ${C.card}`, background: C.brand, cursor: 'pointer', zIndex: 40 }} />
+            {open && <HintBubble title={s.title} text={s.subtitle} side="bottom" at={{ top: p.top + 16, left: p.tipLeft }} caret={p.left - p.tipLeft} action={{ label: s.primaryButton?.title || s.primaryButtonTitle || 'Got it', onClick: () => ackHint(s) }} onDismiss={() => setHintOpen(null)} />}
+          </React.Fragment>
+        );
+      })}
+
+      {/* Onboarding form: a real <Frigade.Form> under a live preview of the profile
+          it's setting up. The form's steps, fields, options and buttons all come from
+          the flow YAML; NwFormField renders each input in Northwind's style and reports
+          values to the preview via context. The X skips the form. */}
       {fmOpen && (
         <FormLiveContext.Provider value={formLive}>
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,21,26,.34)', zIndex: 50 }} />
-          <div className="nw-hint" role="dialog" aria-label="Set up your workspace" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', display: 'flex', width: 660, maxWidth: '94%', background: C.card, borderRadius: 16, overflow: 'hidden', boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
-            <div style={{ flex: 1, minWidth: 0, padding: '20px 26px 22px', display: 'flex', flexDirection: 'column' }}>
-              {/* Custom chrome above the form: progress the flow can't draw, and Skip. */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <div style={{ display: 'flex', gap: 4 }}>{FORM_PANEL.map((_, i) => (<span key={i} style={{ height: 4, width: 20, borderRadius: 99, background: i <= fmStepIdx ? C.brand : C.line, transition: 'background .25s ease' }} />))}</div>
-                  <span style={{ fontSize: 11.5, fontWeight: 600, color: C.faint }}>Step {fmStepIdx + 1} of {FORM_PANEL.length}</span>
-                </div>
-                <button onClick={skipForm} style={{ border: 0, background: 'none', color: C.muted, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '4px 6px' }}>Skip</button>
+          <div className="nw-hint" role="dialog" aria-label="Set up your workspace" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 360, maxWidth: '94%', maxHeight: 'calc(100% - 24px)', overflowY: 'auto', background: C.card, borderRadius: 16, boxShadow: '0 30px 80px rgba(18,24,40,.34), 0 0 0 1px rgba(18,24,40,.05)', zIndex: 51 }}>
+            <FormPreview values={fmValues} step={fmStepIdx} />
+            <button onClick={skipForm} aria-label="Skip" style={{ position: 'absolute', top: 10, right: 10, width: 24, height: 24, border: 0, borderRadius: '50%', background: 'var(--nw-hover)', color: 'var(--nw-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={13} strokeWidth={2.5} /></button>
+            <div style={{ padding: '14px 22px 20px' }}>
+              <div role="img" aria-label={`Step ${fmStepIdx + 1} of ${FORM_ORDER.length}`} style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 14 }}>
+                {FORM_ORDER.map((id, i) => <span key={id} style={{ height: 5, width: i === fmStepIdx ? 18 : 5, borderRadius: 99, background: i <= fmStepIdx ? C.brand : C.line, transition: 'width .25s cubic-bezier(.23,1,.32,1), background .25s ease' }} />)}
               </div>
               <Frigade.Form
                 flowId={DEMO_FLOWS.form}
@@ -859,38 +1014,22 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
                 onDismiss={() => { closeFormToJourney(); }}
                 css={{
                   // Frigade.Form owns the title, subtitle, fields and Continue/Back
-                  // buttons; the theme handles colour. The outer panel already pads the
-                  // content, so .fr-form/.fr-card carry none of their own — otherwise the
-                  // form nests a second 20px of padding and reads as bloated.
-                  '.fr-form, .fr-card': { background: 'transparent', border: 0, boxShadow: 'none', padding: 0, gap: 0 },
-                  '.fr-form-step-header': { padding: 0, marginBottom: 14 },
-                  '.fr-title': { fontSize: 19, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.25, marginBottom: 5 },
-                  '.fr-subtitle': { fontSize: 13, lineHeight: 1.5, color: 'var(--nw-muted)' },
-                  // DOM order is [Back, Continue], so a plain row puts Back left and
-                  // Continue right — the conventional wizard layout.
-                  '.fr-form-step-footer': { padding: 0, marginTop: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-                  '.fr-button-primary': { padding: '9px 18px', minHeight: 0, boxShadow: BTN_BRAND },
-                  '.fr-button-secondary': { background: 'none', border: 0, color: 'var(--nw-muted)', fontSize: 13, fontWeight: 600, padding: '8px 4px', boxShadow: 'none' },
+                  // buttons; the theme handles colour. .fr-form is the root element, so
+                  // its box styling goes top level: the modal already pads the content.
+                  background: 'transparent', border: 0, boxShadow: 'none', padding: 0, gap: 0,
+                  '.fr-form-step-header': { padding: 0, marginBottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' },
+                  '.fr-title': { fontSize: 16.5, fontWeight: 700, letterSpacing: '-.01em', lineHeight: 1.25, marginBottom: 3 },
+                  '.fr-subtitle': { fontSize: 12.5, lineHeight: 1.5, color: 'var(--nw-muted)', textWrap: 'balance' },
+                  // DOM order is [Back, Continue]: two equal buttons, or Continue
+                  // full width on the first step, like the announcements.
+                  '.fr-form-step-footer': { padding: 0, marginTop: 18, display: 'flex', gap: 8 },
+                  '.fr-form-step-footer > button': { flex: 1, minHeight: 0, padding: '9px 16px', borderRadius: 10, transition: 'transform .16s cubic-bezier(.23,1,.32,1)' },
+                  '.fr-form-step-footer > button:active': { transform: 'scale(.97)' },
+                  '.fr-button-primary': { boxShadow: BTN_BRAND },
+                  '.fr-button-secondary': { background: 'var(--nw-card)', border: 0, boxShadow: '0 0 0 1px var(--nw-line)', color: 'var(--nw-ink)' },
+                  '.fr-button-title': { fontSize: 13.5, fontWeight: 600 },
                 }}
               />
-            </div>
-            <div style={{ width: 264, flexShrink: 0, background: C.wash, borderLeft: `1px solid ${C.washLine}`, padding: '22px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              {FORM_PANEL.map((ff, i) => {
-                const fdone = i < fmStepIdx; const fcur = i === fmStepIdx; const val = fmValues[ff.id];
-                return (
-                  <div key={ff.id} style={{ display: 'flex', gap: 11 }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                      <span style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: (fdone || fcur) ? C.brand : C.card, border: (fdone || fcur) ? 'none' : `1.5px solid ${C.line}`, color: (fdone || fcur) ? '#fff' : C.muted, fontSize: 11.5, fontWeight: 700 }}>{fdone ? <Check size={13} strokeWidth={3} /> : i + 1}</span>
-                      {i < FORM_PANEL.length - 1 && <span style={{ width: 2, flex: 1, minHeight: 16, background: fdone ? C.brand : C.line }} />}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, marginBottom: i < FORM_PANEL.length - 1 ? 8 : 0, background: C.card, borderRadius: 10, padding: '8px 11px', boxShadow: fcur ? `0 0 0 1px ${C.brand}, 0 6px 16px rgba(1,94,251,.12)` : `0 0 0 1px ${C.line}`, transition: 'box-shadow .2s ease' }}>
-                      <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: fcur ? C.brand : C.faint }}>{ff.short}</div>
-                      <div style={{ fontSize: 12.5, fontWeight: 500, color: val ? C.ink : C.faint, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{val || ff.ph}</div>
-                    </div>
-                  </div>
-                );
-              })}
-              <div style={{ fontSize: 11.5, lineHeight: 1.5, color: C.muted, marginTop: 14, display: 'flex', alignItems: 'center', gap: 7 }}><DotGrid color={C.brand} size={13} />Routes on every answer, in real time.</div>
             </div>
           </div>
         </FormLiveContext.Provider>
@@ -908,10 +1047,10 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
             <h4 style={{ margin: '0 0 6px', fontSize: 15.5, fontWeight: 700, letterSpacing: '-.01em', color: C.ink }}>{tourStep.title}</h4>
             {tourStep.subtitle && <p style={{ margin: '0 0 14px', fontSize: 13, lineHeight: 1.5, color: C.ink2 }}>{tourStep.subtitle}</p>}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-              <button onClick={skipTour} style={{ border: 0, background: 'none', color: C.muted, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '6px 2px' }}>Skip tour</button>
+              <button onClick={skipTour} style={{ border: 0, background: 'none', color: C.muted, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', padding: '6px 2px' }}>{tourStep.secondaryButton?.title || 'Skip tour'}</button>
               {tourStep.props && tourStep.props.gate
-                ? <span style={{ fontSize: 12.5, fontWeight: 600, color: C.brand, display: 'flex', alignItems: 'center', gap: 7 }}><span className="nw-gate-dot" aria-hidden />{GATE_LABELS[tourStep.props.gate] || 'Take the action'}</span>
-                : <button onClick={advanceTour} style={{ background: C.brand, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 16px', borderRadius: 9, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{tourIdx >= tourSteps.length - 1 ? 'Finish' : 'Next'}</button>}
+                ? <span style={{ fontSize: 12.5, fontWeight: 600, color: C.brand, display: 'flex', alignItems: 'center', gap: 7 }}><span className="nw-gate-dot" aria-hidden />{tourStep.props.gateLabel || GATE_LABELS[tourStep.props.gate] || 'Take the action'}</span>
+                : <button onClick={advanceTour} style={{ background: C.brand, color: '#fff', fontSize: 13, fontWeight: 600, padding: '8px 16px', borderRadius: 9, border: 0, cursor: 'pointer', boxShadow: BTN_BRAND }}>{tourStep.primaryButton?.title || (tourIdx >= tourSteps.length - 1 ? 'Finish' : 'Next')}</button>}
             </div>
           </div>
         </>
@@ -939,29 +1078,33 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
           css={{
             position: 'absolute', left: '50%', bottom: 18, transform: 'translateX(-50%)',
             width: 372, maxWidth: 'calc(100% - 32px)', zIndex: 46, alignSelf: 'auto',
-            background: 'var(--nw-card)', borderRadius: 14, border: 0,
+            background: 'var(--nw-card)', borderRadius: 16, border: 0,
             boxShadow: '0 18px 48px rgba(18,24,40,.28), 0 0 0 1px var(--nw-line)',
             animation: 'nwrise .34s cubic-bezier(.4,0,.2,1) both',
             // .fr-form and .fr-nps sit on the root element, so their box styling
             // belongs at the top level here; a nested selector would only reach
             // descendants and silently do nothing.
-            padding: '17px 18px 16px',
+            padding: '18px 18px 16px',
             minWidth: 0,
-            '.fr-card-header': { minWidth: 0 },
-            '.fr-form-step-header': { padding: 0, gap: 4 },
-            '.fr-title': { fontSize: 14.5, fontWeight: 600, letterSpacing: '-.01em' },
-            '.fr-subtitle': { fontSize: 12.5, lineHeight: 1.5, color: 'var(--nw-muted)' },
+            // Centered copy and a round X in the corner, like the announcements.
+            '.fr-card-header': { minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' },
+            '.fr-form-step-header': { padding: '0 26px', gap: 4 },
+            '.fr-title': { fontSize: 15, fontWeight: 700, letterSpacing: '-.01em' },
+            '.fr-subtitle': { fontSize: 12.5, lineHeight: 1.5, color: 'var(--nw-muted)', textWrap: 'balance' },
+            '.fr-dismiss': { position: 'absolute', top: 10, right: 10, width: 24, height: 24, padding: 0, borderRadius: '50%', background: 'var(--nw-hover)', color: 'var(--nw-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+            '.fr-dismiss svg': { width: 13, height: 13 },
             // NPS hides the footer on the rating step, and our nested rule would
-            // replace that wholesale, so re-state it for step 0. Reversed because
-            // the DOM order is [secondary, primary] and this surface leads with
-            // the primary CTA.
+            // replace that wholesale, so re-state it for step 0. Otherwise two
+            // equal buttons, DOM order [secondary, primary].
             '.fr-form-step-footer': svIdx === 0
               ? { display: 'none' }
-              : { padding: 0, marginTop: 14, display: 'flex', flexDirection: 'row-reverse', justifyContent: 'flex-end', gap: 8 },
-            '.fr-button-primary': { padding: '9px 16px', minHeight: 0, height: 'auto', boxShadow: BTN_BRAND },
-            '.fr-button-secondary': { padding: '8px 13px', minHeight: 0, height: 'auto' },
+              : { padding: 0, marginTop: 14, display: 'flex', gap: 8 },
+            '.fr-form-step-footer > button': { flex: 1, minHeight: 0, height: 'auto', padding: '9px 14px', borderRadius: 10, transition: 'transform .16s cubic-bezier(.23,1,.32,1)' },
+            '.fr-form-step-footer > button:active': { transform: 'scale(.97)' },
+            '.fr-button-primary': { boxShadow: BTN_BRAND },
+            '.fr-button-secondary': { background: 'var(--nw-card)', border: 0, boxShadow: '0 0 0 1px var(--nw-line)', color: 'var(--nw-ink)' },
             // The title span carries a 20px line-height at 13px, which pushes the
-            // button to 40px; the hand-built version it replaced sat at ~35px.
+            // button to 40px.
             '.fr-button-title': { fontSize: 13, fontWeight: 600, lineHeight: '16px' },
           }}
         />
@@ -2251,7 +2394,7 @@ export default function NorthwindPage() {
         @property --nw-sweep{syntax:'<angle>';initial-value:0deg;inherits:false}
         @keyframes nwsweep{0%{--nw-sweep:0deg;opacity:0}3%{opacity:1}33%{opacity:1}38%{--nw-sweep:360deg;opacity:0}100%{--nw-sweep:360deg;opacity:0}}
         .ck-sweep{position:absolute;inset:0;border-radius:10px;padding:1.2px;background:conic-gradient(from var(--nw-sweep,0deg),transparent 0deg,#015efb 30deg,transparent 78deg);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;opacity:0;animation:nwsweep 5.5s linear 1.2s infinite}
-        .ck-pop{position:absolute;bottom:100%;left:-6px;width:256px;margin-bottom:9px;background:var(--nw-card,#fff);border-radius:12px;box-shadow:0 16px 48px rgba(18,24,40,.18),0 0 0 1px var(--nw-line);transform-origin:bottom center;opacity:0;transform:scale(.97) translateY(12px);pointer-events:none;transition:opacity .28s cubic-bezier(.4,0,.2,1),transform .28s cubic-bezier(.4,0,.2,1);z-index:40}
+        .ck-pop{position:absolute;bottom:100%;left:-6px;width:256px;margin-bottom:9px;background:var(--nw-card,#fff);border-radius:12px;box-shadow:0 16px 48px rgba(18,24,40,.18),0 0 0 1px var(--nw-line);transform-origin:bottom center;opacity:0;transform:scale(.97) translateY(12px);pointer-events:none;transition:opacity .28s cubic-bezier(.4,0,.2,1),transform .28s cubic-bezier(.4,0,.2,1);z-index:65}
         .ck-pop.open{opacity:1;transform:none;pointer-events:auto}
         .ck-item{transition:background .15s ease}.ck-item:hover{background:var(--nw-hover,#f5f6f8)}
         /* Locked checklist step: tooltip appears on hover/focus; the row itself is inert. */
@@ -2263,6 +2406,68 @@ export default function NorthwindPage() {
         @keyframes ckunlockp{0%{background:var(--nw-bw,#e8f0fe)}100%{background:transparent}}
         .nw-hint{animation:nwhintin .24s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwhintin{from{opacity:0}to{opacity:1}}
+        .nw-tip{animation:nwtip .16s cubic-bezier(.23,1,.32,1) both}
+        @keyframes nwtip{from{opacity:0;scale:.96}}
+        .nw-press{transition:transform .16s cubic-bezier(.23,1,.32,1)}
+        .nw-press:active{transform:scale(.97)}
+        .nw-beacon{animation:nwbeacon 1.8s infinite}
+        .nw-slot{animation:nwslot 1.6s ease-in-out infinite}
+        @keyframes nwslot{50%{opacity:.45}}
+        .nw-pop{animation:nwpop .24s cubic-bezier(.23,1,.32,1) both}
+        @keyframes nwpop{from{opacity:0;transform:translateY(3px)}}
+        .nw-input{transition:border-color .15s ease,box-shadow .15s ease}
+        .nw-input:focus{border-color:var(--nw-brand)!important;box-shadow:0 0 0 3px var(--nw-bw)}
+        .ck-ic *,.dc-tile svg *{transform-box:fill-box;transform-origin:center}
+        .dc-tile{--ic-glow:#bcd4ff}
+        :is(.ck-item,.dc-tile):hover .lucide-route path{animation:ckdraw .6s cubic-bezier(.65,0,.35,1)}
+        :is(.ck-item,.dc-tile):hover .lucide-route circle:last-child{animation:ckpop .4s .45s cubic-bezier(.23,1,.32,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-bot path:nth-child(5),:is(.ck-item,.dc-tile):hover .lucide-bot path:nth-child(6){animation:ckblink .45s ease-in-out}
+        .lucide-bot path:first-child{transform-origin:100% 100%}
+        :is(.ck-item,.dc-tile):hover .lucide-bot path:first-child{animation:ckwiggle .55s ease-in-out}
+        :is(.ck-item,.dc-tile):hover .lucide-lightbulb path:first-child{animation:ckglow .8s ease-out}
+        :is(.ck-item,.dc-tile):hover .lucide-key-round{animation:ckturn .6s cubic-bezier(.23,1,.32,1)}
+        .lucide-key-round{transform-origin:69% 31%}
+        :is(.ck-item,.dc-tile):hover .lucide-newspaper path:nth-child(4){animation:ckblock .4s cubic-bezier(.65,0,.35,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-newspaper path:nth-child(2){animation:ckline .3s .2s cubic-bezier(.65,0,.35,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-newspaper path:nth-child(3){animation:ckline .3s .32s cubic-bezier(.65,0,.35,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-clipboard-list path:nth-child(5){animation:ckdot .3s cubic-bezier(.23,1,.32,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-clipboard-list path:nth-child(3){animation:ckdash .3s .08s cubic-bezier(.65,0,.35,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-clipboard-list path:nth-child(6){animation:ckdot .3s .16s cubic-bezier(.23,1,.32,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-clipboard-list path:nth-child(4){animation:ckdash .3s .24s cubic-bezier(.65,0,.35,1) both}
+        .lucide-megaphone{transform-origin:15% 55%}
+        :is(.ck-item,.dc-tile):hover .lucide-megaphone{animation:ckshout .6s ease-in-out}
+        :is(.ck-item,.dc-tile):hover .lucide-list-checks path:nth-child(2){animation:ckcheck .3s cubic-bezier(.65,0,.35,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-list-checks path:nth-child(1){animation:ckcheck .3s .18s cubic-bezier(.65,0,.35,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-rocket{animation:cklaunch .7s cubic-bezier(.65,0,.35,1)}
+        .lucide-flag path{transform-origin:0% 50%}
+        :is(.ck-item,.dc-tile):hover .lucide-flag path{animation:ckwave .7s ease-in-out}
+        :is(.ck-item,.dc-tile):hover .lucide-sparkles path:nth-child(1){animation:cksparkle .5s cubic-bezier(.23,1,.32,1)}
+        :is(.ck-item,.dc-tile):hover .lucide-sparkles path:nth-child(2),:is(.ck-item,.dc-tile):hover .lucide-sparkles path:nth-child(3){animation:ckdot .35s .12s cubic-bezier(.23,1,.32,1) both}
+        :is(.ck-item,.dc-tile):hover .lucide-sparkles path:nth-child(4),:is(.ck-item,.dc-tile):hover .lucide-sparkles path:nth-child(5){animation:ckdot .35s .24s cubic-bezier(.23,1,.32,1) both}
+        .lucide-message-square{transform-origin:12% 88%}
+        :is(.ck-item,.dc-tile):hover .lucide-message-square{animation:ckbubble .5s cubic-bezier(.23,1,.32,1)}
+        @keyframes ckdot{from{transform:scale(0)}60%{transform:scale(1.5)}to{transform:scale(1)}}
+        @keyframes ckdash{from{stroke-dasharray:6;stroke-dashoffset:6}to{stroke-dasharray:6;stroke-dashoffset:0}}
+        @keyframes ckcheck{from{stroke-dasharray:9;stroke-dashoffset:9}to{stroke-dasharray:9;stroke-dashoffset:0}}
+        @keyframes ckshout{20%{transform:rotate(-14deg) scale(1.06)}45%{transform:rotate(8deg)}70%{transform:rotate(-4deg)}}
+        @keyframes cklaunch{35%{transform:translate(3px,-3px)}50%{transform:translate(8px,-8px);opacity:0}51%{transform:translate(-8px,8px);opacity:0}100%{transform:none;opacity:1}}
+        @keyframes ckwave{25%{transform:skewY(-9deg)}50%{transform:skewY(6deg)}75%{transform:skewY(-3deg)}}
+        @keyframes cksparkle{40%{transform:scale(1.15) rotate(18deg)}}
+        @keyframes ckbubble{30%{transform:scale(.85)}60%{transform:scale(1.1)}}
+        @keyframes ckdraw{from{stroke-dasharray:60;stroke-dashoffset:60}to{stroke-dasharray:60;stroke-dashoffset:0}}
+        @keyframes ckpop{0%{transform:scale(.3)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+        @keyframes ckblink{0%,100%{transform:scaleY(1)}45%{transform:scaleY(.1)}}
+        @keyframes ckwiggle{25%{transform:rotate(-16deg)}60%{transform:rotate(9deg)}}
+        @keyframes ckglow{0%,100%{fill:var(--ic-glow,var(--nw-brand));fill-opacity:0}15%{fill:var(--ic-glow,var(--nw-brand));fill-opacity:.4}30%{fill:var(--ic-glow,var(--nw-brand));fill-opacity:.05}50%{fill:var(--ic-glow,var(--nw-brand));fill-opacity:.5}}
+        @keyframes ckturn{45%{transform:rotate(-38deg)}75%{transform:rotate(-30deg)}}
+        @keyframes ckblock{from{stroke-dasharray:24;stroke-dashoffset:24}to{stroke-dasharray:24;stroke-dashoffset:0}}
+        @keyframes ckline{from{stroke-dasharray:10;stroke-dashoffset:-10}to{stroke-dasharray:10;stroke-dashoffset:0}}
+        .nw-spin{animation:nwspin 20s linear infinite}
+        @keyframes nwspin{to{transform:rotate(360deg)}}
+        .nw-twinkle{animation:nwtwinkle 2.8s ease-in-out infinite}
+        @keyframes nwtwinkle{50%{opacity:.35;scale:.75}}
+        @media (prefers-reduced-motion:reduce){.nw-spin,.nw-twinkle{animation-play-state:paused}.nw-slot,.ck-item:hover .ck-ic,.ck-item:hover .ck-ic *,.dc-tile:hover svg,.dc-tile:hover svg *{animation:none}}
+        @keyframes nwbeacon{0%{box-shadow:0 0 0 0 rgba(1,94,251,.45)}70%{box-shadow:0 0 0 12px rgba(1,94,251,0)}100%{box-shadow:0 0 0 0 rgba(1,94,251,0)}}
         .nw-gate-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#015efb;animation:nwpulse 1.6s infinite}
         @keyframes nwslide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
         /* Frigade derives a primary button's label colour from its \`white\` token,
@@ -2273,15 +2478,24 @@ export default function NorthwindPage() {
         .nw-app .fr-button-primary,.nw-app .fr-button-primary .fr-button-title{color:#fff}
         .nw-rise{animation:nwrise .34s cubic-bezier(.4,0,.2,1) both}
         @keyframes nwrise{from{opacity:0;transform:translateX(-50%) translateY(16px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-        .nw-rate{transition:border-color .14s ease,color .14s ease,background .14s ease}
-        .nw-rate:hover{border-color:var(--nw-brand)!important;color:var(--nw-brand)!important;background:var(--nw-bw)!important}
-        .dc-pop{position:absolute;bottom:100%;right:0;margin-bottom:10px;width:236px;background:var(--nw-card,#fff);border-radius:13px;box-shadow:0 16px 48px rgba(18,24,40,.2),0 0 0 1px var(--nw-line);transform-origin:bottom right;opacity:0;transform:scale(.97) translateY(10px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:41}
+        .nw-rate{transition:border-color .14s ease,color .14s ease,background .14s ease,transform .16s cubic-bezier(.23,1,.32,1)}
+        .nw-rates:has(.nw-rate:hover) .nw-rate{border-color:var(--nw-brand)!important;color:var(--nw-brand)!important;background:var(--nw-bw)!important}
+        .nw-rates .nw-rate:hover~.nw-rate{border-color:var(--nw-line)!important;color:var(--nw-ink2)!important;background:var(--nw-card)!important}
+        .nw-rate:active{transform:scale(.95)}
+        .dc-pop{position:absolute;bottom:100%;right:0;margin-bottom:10px;width:300px;background:#151c2b;border-radius:14px;box-shadow:0 20px 50px rgba(8,12,24,.35),0 0 0 1px rgba(255,255,255,.07);transform-origin:bottom right;opacity:0;transform:scale(.97) translateY(10px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:41}
         .dc-pop.open{opacity:1;transform:none;pointer-events:auto}
         .cl-scrim{position:absolute;inset:0;background:rgba(20,21,26,.22);opacity:0;pointer-events:none;transition:opacity .26s ease;z-index:30}
         .cl-scrim.open{opacity:1;pointer-events:auto}
-        .cl-bell{position:absolute;top:54px;right:16px;width:360px;max-width:78%;max-height:440px;background:var(--nw-card,#fff);border-radius:14px;box-shadow:0 16px 48px rgba(18,24,40,.18),0 0 0 1px var(--nw-line);z-index:31;display:flex;flex-direction:column;overflow:hidden;transform-origin:top right;opacity:0;transform:scale(.97) translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+        .cl-bell{position:absolute;top:54px;right:16px;width:360px;max-width:78%;max-height:440px;background:var(--nw-card,#fff);border-radius:16px;box-shadow:0 16px 48px rgba(18,24,40,.18),0 0 0 1px var(--nw-line);z-index:31;display:flex;flex-direction:column;overflow:hidden;transform-origin:top right;opacity:0;transform:scale(.97) translateY(-6px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
         .cl-bell.open{opacity:1;transform:none;pointer-events:auto}
-        .cl-list{overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--nw-line,#e6e8ee) transparent}
+        .cl-rail{position:absolute;left:21px;top:0;bottom:0;width:1px;background:var(--nw-line)}
+        .cl-entry:first-child .cl-rail{top:20px}
+        .cl-entry:last-child .cl-rail{bottom:auto;height:20px}
+        .nw-more svg{transition:transform .16s cubic-bezier(.23,1,.32,1)}
+        .nw-more:hover svg{transform:translateX(2px)}
+        .dc-tile{transition:background .15s ease,transform .16s cubic-bezier(.23,1,.32,1)}
+        .dc-tile:hover,.dc-reset:hover{background:rgba(255,255,255,.09)!important}
+        .cl-list{padding:2px 0 8px;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent);mask-image:linear-gradient(to bottom,#000 calc(100% - 20px),transparent);overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--nw-line,#e6e8ee) transparent}
         .cl-list::-webkit-scrollbar{width:11px}
         .cl-list::-webkit-scrollbar-thumb{background:var(--nw-line,#e6e8ee);border-radius:8px;border:3px solid transparent;background-clip:padding-box}
         .cl-list::-webkit-scrollbar-track{background:transparent}
@@ -2326,8 +2540,12 @@ export default function NorthwindPage() {
           </div>
 
           {/* Each pill replays its Frigade surface in the live demo below (same actions as the Demo Console), scrolling it into view. */}
-          <div className="nw-pills" style={{ position: 'relative', zIndex: 1, display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', maxWidth: 1080, margin: '30px auto 0', padding: '0 24px' }}>
-            {EXPERIENCES.map((e) => <ExpBadge key={e.label} icon={e.icon} label={e.label} onClick={() => triggerDemo(e.action)} />)}
+          <div className="nw-pills" style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 1080, margin: '30px auto 0', padding: '0 24px' }}>
+            {EXPERIENCES.map((row, i) => (
+              <div key={i} style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
+                {row.map((e) => <ExpBadge key={e.label} icon={e.icon} label={e.label} onClick={() => triggerDemo(e.action)} />)}
+              </div>
+            ))}
           </div>
 
           <div className="nw-revealv" style={{ position: 'relative', zIndex: 1, marginTop: 30, padding: '0 16px 56px' }}>
