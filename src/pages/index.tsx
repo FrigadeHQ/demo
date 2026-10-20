@@ -1582,6 +1582,23 @@ function ProductPill() {
   );
 }
 
+// Assist API callout under the Assistant closing CTA, with the same copy as the one
+// on frigade.com's Assistant page. A dashed box tucked 46px behind the panel.
+function AssistApiLedge() {
+  return (
+    <div style={{ position: 'relative', zIndex: 0, margin: '-46px 20px 0', padding: '58px 24px 16px', border: '1px dashed #1b1b1d2e', background: '#fff', overflow: 'hidden' }}>
+      <span aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(1,94,251,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(1,94,251,0.06) 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
+      <div className="nw-apiledge" style={{ position: 'relative' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ display: 'grid', placeItems: 'center', width: 32, height: 32, flexShrink: 0, borderRadius: 9, background: MK.brand, color: '#fff', boxShadow: '0 2px 8px rgba(1,94,251,.3), inset 0 2.5px 1px rgba(255,255,255,.2)' }}><Braces size={16} strokeWidth={2.25} aria-hidden /></span>
+          <span style={{ fontSize: 13.5, lineHeight: 1.4, color: C.muted }}><span style={{ fontWeight: 600, color: C.ink }}>Already have an agent?</span> Add product answers and guidance with Assist API.</span>
+        </span>
+        <a className="nw-apiledge-link nw-arrow-link" href={`${MKT}/assist-api`} style={{ flexShrink: 0, color: C.brand, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', textDecoration: 'none' }}><span className="nw-arrow-label">Explore the Assist API</span><ArrowRight className="nw-arrow-glyph" size={14} aria-hidden /></a>
+      </div>
+    </div>
+  );
+}
+
 // The other demo, offered where a page ends. A visitor who reads all the way down
 // has scrolled well past the switcher, so this is the last chance to say the second
 // demo exists — which is why it's a card now and not the grey footnote it was.
@@ -1837,7 +1854,7 @@ function MarketingFooter() {
 /* ---------- Framing page = native Frigade marketing hero ---------- */
 
 // The shared value-prop grid uses the marketing site's square, ruled cells.
-function BenefitsSection({ title, items }: { title: string; items: { icon: IconType; title: string; desc: string }[] }) {
+function BenefitsSection({ title, items }: { title: React.ReactNode; items: { icon: IconType; title: string; desc: string }[] }) {
   return (
     <div className="nw-benefits" style={{ width: '100%' }}>
       <div style={{ textAlign: 'center', maxWidth: 688, margin: '0 auto 40px', padding: '0 24px' }}>
@@ -1874,7 +1891,7 @@ function ProductCta({ title, subtext, product }: { title: string; subtext: strin
     { right: '14%', bottom: '19%', width: 40, height: 40, transform: 'rotate(-9deg)' },
   ];
   const motion = [{ duration: '6s', delay: '0s', direction: 'normal' }, { duration: '7.5s', delay: '-2.5s', direction: 'reverse' }, { duration: '6.8s', delay: '-1.2s', direction: 'reverse' }, { duration: '8s', delay: '-4s', direction: 'normal' }];
-  return <div className="nw-product-cta" data-product={product} style={{ position: 'relative', isolation: 'isolate', overflow: 'hidden', background: palette.panel }}>
+  return <div className="nw-product-cta" data-product={product} style={{ position: 'relative', zIndex: 1, isolation: 'isolate', overflow: 'hidden', background: palette.panel }}>
     <span aria-hidden className="nw-cta-dots"><AnimatedDots /></span>
     <span aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: '-40%', height: '80%', pointerEvents: 'none', background: `radial-gradient(58% 100% at 50% 100%, ${palette.glow}, rgba(255,255,255,0) 70%)` }} />
     {icons.map((Icon, i) => <span key={i} className="nw-cta-tile" aria-hidden style={{ position: 'absolute', pointerEvents: 'none', ...slots[i] }}>
@@ -2040,7 +2057,7 @@ function AssistantSection() {
       {/* Page hero. */}
       <section style={{ position: 'relative', overflow: 'clip visible' }}>
         <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '16px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
-          <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See the assistant in action.</h2>
+          <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See Frigade Assistant in action.</h2>
           <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Watch Frigade answer questions, guide users, and complete tasks in your product.</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
@@ -2127,6 +2144,7 @@ function AssistantSection() {
           title="Add Frigade Assistant to your product."
           subtext="Get started with the SDK, or book a call to discuss your product."
         />
+        <AssistApiLedge />
         <OtherDemoCard to="engage" />
       </RailBand>
     </>
@@ -2340,12 +2358,14 @@ export default function NorthwindPage() {
         @media(min-width:768px){.nw-product-cta{padding:96px 48px}.nw-cta-title{font-size:52px}.nw-cta-tile{display:block}}
         /* A drawn rule and 3px arrow nudge match the main site's text links. */
         .nw-arrow-link{display:inline-flex;align-items:center;gap:4px}
+        .nw-apiledge{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+        @media(min-width:640px){.nw-apiledge{flex-direction:row;justify-content:space-between;gap:24px;text-align:left}}
         .nw-arrow-label{position:relative}
         .nw-arrow-label::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;background:currentColor;opacity:.7;transform:scaleX(0);transform-origin:left;transition:transform 240ms cubic-bezier(.32,.72,0,1)}
         .nw-arrow-glyph{flex-shrink:0;transition:transform 240ms cubic-bezier(.32,.72,0,1)}
         @media(hover:hover) and (pointer:fine){
-          .nw-otherdemo:hover .nw-arrow-glyph,.nw-cta-booking:hover .nw-arrow-glyph{transform:translateX(3px)}
-          .nw-otherdemo:hover .nw-arrow-label::after,.nw-cta-booking:hover .nw-arrow-label::after{transform:scaleX(1)}
+          .nw-otherdemo:hover .nw-arrow-glyph,.nw-cta-booking:hover .nw-arrow-glyph,.nw-apiledge-link:hover .nw-arrow-glyph{transform:translateX(3px)}
+          .nw-otherdemo:hover .nw-arrow-label::after,.nw-cta-booking:hover .nw-arrow-label::after,.nw-apiledge-link:hover .nw-arrow-label::after{transform:scaleX(1)}
           .nw-cta-primary:hover{transform:scale(1.02);box-shadow:0 14px 36px -10px rgba(0,26,80,.55)}
           .nw-cta-primary:active{transform:scale(.97)}
         }
@@ -2585,7 +2605,7 @@ export default function NorthwindPage() {
           <div style={{ maxWidth: 1240, margin: '0 auto' }}>
             <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 80, paddingBottom: 0, paddingInline: 0 }}>
               <BenefitsSection
-                title="Everything you just saw, from one SDK."
+                title={<><span style={{ display: 'inline-block' }}>Everything you just saw,</span> <span style={{ display: 'inline-block' }}>from one SDK.</span></>}
                 items={BENEFITS}
               />
             </div>
