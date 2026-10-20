@@ -1098,11 +1098,12 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
             // descendants and silently do nothing.
             padding: '18px 18px 16px',
             minWidth: 0,
-            // Centered copy and a round X in the corner, like the announcements.
-            '.fr-card-header': { minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' },
-            '.fr-form-step-header': { padding: '0 26px', gap: 4 },
+            // Left-aligned like a toast, so the copy lines up with the scale below,
+            // with the announcements' round X in the corner.
+            '.fr-card-header': { minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' },
+            '.fr-form-step-header': { padding: '0 30px 0 0', gap: 4 },
             '.fr-title': { fontSize: 15, fontWeight: 700, letterSpacing: '-.01em' },
-            '.fr-subtitle': { fontSize: 12.5, lineHeight: 1.5, color: 'var(--nw-muted)', textWrap: 'balance' },
+            '.fr-subtitle': { fontSize: 12.5, lineHeight: 1.5, color: 'var(--nw-muted)', textWrap: 'pretty' },
             '.fr-dismiss': { position: 'absolute', top: 10, right: 10, width: 24, height: 24, padding: 0, borderRadius: '50%', background: 'var(--nw-hover)', color: 'var(--nw-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' },
             '.fr-dismiss svg': { width: 13, height: 13 },
             // NPS hides the footer on the rating step, and our nested rule would
