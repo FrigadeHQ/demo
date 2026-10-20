@@ -666,7 +666,10 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
   }
   useEffect(() => { measureHints(); const on = () => measureHints(); window.addEventListener('resize', on); return () => window.removeEventListener('resize', on); }, [hintsOn, hnFlow]); // eslint-disable-line react-hooks/exhaustive-deps
   function showHints() { try { hnFlow?.restart?.(); } catch {} setHintOpen(null); setHintsOn(true); }
+  // "Got it" completes a hint and its X dismisses it (Frigade records a skip). Either
+  // way the beacon is gone for good, until the hints are replayed.
   function ackHint(s: any) { try { s.complete(); } catch {} setHintOpen(null); }
+  function dismissHint(s: any) { try { s.skip(); } catch {} setHintOpen(null); }
   // Frigade's Banner owns the flow's completion state (its primaryButton fires
   // flow.complete), so this only unmounts it and records the demo-local "don't
   // auto-show again" flag that the hero pills clear to replay it.
@@ -879,10 +882,11 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
             <div style={{ padding: '0 14px', height: 32, display: 'flex', alignItems: 'center', borderRadius: 9, background: C.card, boxShadow: C.cardSh }}><Ghost w={36} h={8} /></div>
             <div style={{ position: 'relative' }} data-target="create-agent">
               {/* Ghosted like the rest of the host app until the checklist's
-                  "Create your first agent" step lights it up. */}
+                  "Create your first agent" step lights it up. Both states are the
+                  same 32px-tall, 125px-wide box, so the toolbar doesn't shift. */}
               {activeTarget === 'create-agent'
-                ? <button className="nw-pop" onClick={() => { completeStep('create-agent'); setActiveStep(null); setCkOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, background: C.dark, color: '#fff', border: 0, cursor: 'pointer', boxShadow: `0 0 0 2px ${C.brand}, 0 0 0 5px ${C.brandWeak}` }}><Plus size={15} /> Create Agent</button>
-                : <div aria-hidden style={{ display: 'flex', alignItems: 'center', gap: 7, height: 32, padding: '0 12px', borderRadius: 9, background: C.card, boxShadow: C.cardSh }}><Ghost w={14} h={14} r={4} /><Ghost w={76} h={8} /></div>}
+                ? <button className="nw-pop" onClick={() => { completeStep('create-agent'); setActiveStep(null); setCkOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, background: C.dark, color: '#fff', border: 0, cursor: 'pointer', boxShadow: `0 0 0 2px ${C.brand}, 0 0 0 5px ${C.brandWeak}` }}><Plus size={15} /> Create Agent</button>
+                : <div aria-hidden style={{ display: 'flex', alignItems: 'center', gap: 7, height: 32, padding: '0 12px', borderRadius: 9, background: C.card, boxShadow: C.cardSh }}><Ghost w={14} h={14} r={4} /><Ghost w={80} h={8} /></div>}
               {activeTarget === 'create-agent' && !ckOpen && <HintBubble text={activeHintText} side="bottom" onDismiss={() => setActiveStep(null)} />}
             </div>
             <div style={{ position: 'relative' }}>
@@ -993,13 +997,14 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
       {laOpen && laStep && <AnnouncementModal label={laStep.title} image={(dark && laStep.props?.darkImageUri) || laStep.imageUri} title={laStep.title} text={laStep.subtitle} cta={laStep.primaryButton?.title || laStep.primaryButtonTitle} onCta={() => { closeLaunch(true); markSeen(); setBellOpen(true); }} onClose={() => closeLaunch(false)} />}
 
       {/* Hints: a pulsing beacon on each open step's anchor; clicking one opens its
-          tip, and "Got it" completes that step so its beacon goes away (headless useFlow). */}
-      {hintsOn && hnSteps.filter((s) => !s.$state?.completed && hintPos[s.id]).map((s) => {
+          tip. "Got it" completes the step and the X dismisses it; either way its beacon
+          is gone for good (headless useFlow). */}
+      {hintsOn && hnSteps.filter((s) => !s.$state?.completed && !s.$state?.skipped && hintPos[s.id]).map((s) => {
         const p = hintPos[s.id]; const open = hintOpen === s.id;
         return (
           <React.Fragment key={s.id}>
             <button className="nw-beacon" onClick={() => setHintOpen(open ? null : s.id)} aria-label={s.title} aria-expanded={open} style={{ position: 'absolute', top: p.top - 8, left: p.left - 8, width: 16, height: 16, padding: 0, borderRadius: '50%', border: `2px solid ${C.card}`, background: C.brand, cursor: 'pointer', zIndex: 40 }} />
-            {open && <HintBubble title={s.title} text={s.subtitle} side="bottom" at={{ top: p.top + 16, left: p.tipLeft }} caret={p.left - p.tipLeft} action={{ label: s.primaryButton?.title || s.primaryButtonTitle || 'Got it', onClick: () => ackHint(s) }} onDismiss={() => setHintOpen(null)} />}
+            {open && <HintBubble title={s.title} text={s.subtitle} side="bottom" at={{ top: p.top + 16, left: p.tipLeft }} caret={p.left - p.tipLeft} action={{ label: s.primaryButton?.title || s.primaryButtonTitle || 'Got it', onClick: () => ackHint(s) }} onDismiss={() => dismissHint(s)} />}
           </React.Fragment>
         );
       })}
