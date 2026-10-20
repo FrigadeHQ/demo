@@ -1893,24 +1893,21 @@ function ProductCta({ title, subtext, product }: { title: string; subtext: strin
   </div>;
 }
 
-// "Built with a Claude skill" section for the Engage page. This whole demo was
-// generated with the frigade-engage skill for Claude Code, so we say so here and
-// link it. The framing stays agent-agnostic (any AI coding agent) while the
-// specifics name Claude, which is what ships today. Mirrors the treatment on
-// frigade.com/engage. Light page chrome; the terminal card is the one dark element.
+// "Built with the skill" section for the Engage page. The frigade-engage skill is
+// harness-neutral (Claude Code reads its SKILL.md; Codex, Cursor and other
+// AGENTS.md-aware agents read its AGENTS.md), so the copy names the agents and the
+// terminal has a tab per agent CLI. Light page chrome; the terminal card is the one
+// dark element.
+const SKILL_AGENTS: [string, string][] = [['Claude Code', 'claude'], ['Codex', 'codex'], ['Cursor', 'agent']];
 function BuiltWithSkill() {
   const codeStyle: React.CSSProperties = { fontFamily: MONO, fontSize: '0.9em', background: C.brandWeak, color: C.brand, padding: '1px 6px', borderRadius: 5 };
-  const points = [
-    { t: 'Typed and documented', d: 'The SDK includes TypeScript types and documentation for its components and APIs.' },
-    { t: 'Claude Code skill', d: 'Describe the checklist, tour, or form you want to build.' },
-    { t: 'Reviewable output', d: 'Review the generated code in a pull request before shipping.' },
-  ];
+  const [agent, setAgent] = useState(0);
   const dim = '#8a93a8', tint = '#5b9bff', hair = 'rgba(255,255,255,0.07)';
   return (
     <div style={{ maxWidth: 1016, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', maxWidth: 660, margin: '0 auto 38px' }}>
-        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Build Engage flows with Claude Code.</h2>
-        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Use the <code style={codeStyle}>frigade-engage</code> skill to create flows and connect <code style={codeStyle}>@frigade/react</code> in your app. This demo&rsquo;s onboarding flows were built with the skill.</p>
+        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Build Engage flows with your coding agent.</h2>
+        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Use the <code style={codeStyle}>frigade-engage</code> skill in Claude Code, Codex, Cursor, or another coding agent to create flows and wire them into your app with <code style={codeStyle}>@frigade/react</code>. This demo&rsquo;s onboarding flows were built with the skill.</p>
       </div>
 
       {/* Terminal snippet. Accents use a lighter blue than the brand token, which
@@ -1920,27 +1917,19 @@ function BuiltWithSkill() {
           <span style={{ width: 11, height: 11, borderRadius: 999, background: '#ff5f57' }} />
           <span style={{ width: 11, height: 11, borderRadius: 999, background: '#febc2e' }} />
           <span style={{ width: 11, height: 11, borderRadius: 999, background: '#28c840' }} />
-          <span style={{ marginLeft: 8, fontFamily: MONO, fontSize: 11.5, color: 'rgba(255,255,255,0.38)' }}>app · claude</span>
+          <div role="tablist" aria-label="Coding agent" style={{ display: 'flex', gap: 2, marginLeft: 10 }}>
+            {SKILL_AGENTS.map(([name], i) => (
+              <button key={name} role="tab" aria-selected={agent === i} onClick={() => setAgent(i)} style={{ fontFamily: MONO, fontSize: 11.5, padding: '3px 9px', borderRadius: 6, border: 0, cursor: 'pointer', color: agent === i ? '#eaf0fb' : 'rgba(255,255,255,0.4)', background: agent === i ? 'rgba(255,255,255,0.08)' : 'transparent', transition: 'color .15s ease, background .15s ease' }}>{name}</button>
+            ))}
+          </div>
         </div>
         <div style={{ padding: '15px 18px 17px', fontFamily: MONO, fontSize: 13, lineHeight: 1.9, color: '#c7d0e0', overflowX: 'auto' }}>
-          <div><span style={{ color: dim }}>$</span> claude</div>
+          <div><span style={{ color: dim }}>$</span> {SKILL_AGENTS[agent][1]}</div>
           <div style={{ color: '#eaf0fb' }}><span style={{ color: tint }}>›</span> Build a getting-started checklist and a product tour for new users with Frigade Engage.</div>
           <div style={{ color: dim }}>Loading skill: <span style={{ color: tint }}>frigade-engage</span> …</div>
           <div style={{ color: dim }}>Reading types from <span style={{ color: tint }}>@frigade/react</span> …</div>
           <div style={{ color: dim }}>Generating flows, wiring <span style={{ color: tint }}>@frigade/react</span>, opening PR …</div>
         </div>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 18, maxWidth: 760, margin: '34px auto 0' }}>
-        {points.map((p) => (
-          <div key={p.t} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: 999, background: C.brandWeak, color: C.brand, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}><Check size={13} strokeWidth={3} /></span>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{p.t}</div>
-              <div style={{ fontSize: 12.5, lineHeight: 1.5, color: C.muted }}>{p.d}</div>
-            </div>
-          </div>
-        ))}
       </div>
 
       {/* Dark "get the skill" button pairs with the terminal + github mark; the docs
