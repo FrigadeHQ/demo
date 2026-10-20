@@ -166,25 +166,25 @@ const EXPERIENCES: { label: string; icon: IconType; action: string }[] = [
 const CK_ICONS: Record<string, IconType> = { 'take-a-tour': Route, 'create-agent': Bot, 'add-key': KeyRound, 'invite-team': UserPlus, 'view-analytics': BarChart3, 'view-logs': ScrollText, 'connect-sso': ShieldCheck, 'go-live': Rocket };
 // Each checklist step completes on a real user property, not an imperative call. Doing
 // the action sets the property; the flow's completionCriteria (user.property(...)) then
-// marks the step done. This is the "fires on real events" path the benefits copy claims.
+// marks the step done.
 const CK_PROPERTY: Record<string, string> = { 'take-a-tour': 'tookTour', 'create-agent': 'createdAgent', 'add-key': 'addedApiKey', 'invite-team': 'invitedTeam', 'view-analytics': 'viewedAnalytics' };
 // Abridged marketing value props for the section below the demo (Engage-framed, marketing voice).
 const BENEFITS: { icon: IconType; title: string; desc: string }[] = [
-  { icon: LayoutGrid, title: 'Native to your product', desc: 'Frigade surfaces inherit your design system. Type, color, and spacing, all of it. They read as part of your app, not a third-party widget.' },
-  { icon: Database, title: 'Skip the infrastructure', desc: 'No state machines, no targeting logic, no event plumbing to maintain. Frigade handles it and you call the API.' },
-  { icon: Zap, title: 'Fires on real events', desc: 'Target by event, trait, or progress. The right flow shows up at the right moment, with no hardcoding.' },
-  { icon: CodeXml, title: 'Headless or styled', desc: 'Use the components, or bring your own UI and let Frigade run the logic underneath.' },
-  { icon: Route, title: 'Every onboarding surface', desc: 'Announcements, tours, checklists, surveys, banners, and changelog. Build them all from one SDK.' },
+  { icon: LayoutGrid, title: 'Match your app’s design', desc: 'Use your fonts, colors, and spacing with Frigade’s components, or build your own UI.' },
+  { icon: Database, title: 'Progress and targeting', desc: 'Frigade tracks completion and manages which users see each flow.' },
+  { icon: Zap, title: 'Trigger flows from user activity', desc: 'Show a banner after two checklist steps, or a survey when onboarding is complete.' },
+  { icon: CodeXml, title: 'Components or your own UI', desc: 'Use the React components, or read flow content and update progress through the API.' },
+  { icon: Route, title: 'Eight examples to try', desc: 'Forms, announcements, checklists, tours, banners, surveys, cards, and a changelog.' },
   { icon: RotateCcw, title: 'Ship without deploys', desc: 'Edit copy, steps, and targeting from the dashboard. Flows update without a release.' },
 ];
 // Assistant value props for the section below the Assistant video (marketing voice).
 const ASSISTANT_BENEFITS: { icon: IconType; title: string; desc: string }[] = [
-  { icon: Bot, title: 'Trained on your product', desc: 'Assistant learns your docs, UI, and data, so answers are grounded in how your product actually works.' },
-  { icon: MessageSquare, title: 'Answers in real time', desc: 'Users get help in-app, in the moment, instead of leaving for a help center or a support queue.' },
-  { icon: Route, title: 'Guides, not just chats', desc: 'It can call tools and walk users through real actions, not just reply with a wall of text.' },
-  { icon: CheckCircle2, title: 'Always accurate', desc: 'Responses cite real sources and stay current as your product changes.' },
-  { icon: Sparkles, title: 'Deflects support', desc: 'Resolve the common questions automatically and take repetitive load off your team.' },
-  { icon: CodeXml, title: 'Drop-in SDK', desc: 'Add it with a few lines and style it to match your product. No new stack to learn.' },
+  { icon: Bot, title: 'Product context', desc: 'Answers draw on your documentation, interface, and connected data.' },
+  { icon: MessageSquare, title: 'Help inside your app', desc: 'Users can ask a question without leaving the page they’re working on.' },
+  { icon: Route, title: 'Tools and guided steps', desc: 'The assistant can call your tools or walk users through a task on screen.' },
+  { icon: CheckCircle2, title: 'Answers with sources', desc: 'Users can follow citations to check the source behind an answer.' },
+  { icon: Sparkles, title: 'Fewer repeat questions', desc: 'Let users get answers to common questions before contacting support.' },
+  { icon: CodeXml, title: 'React SDK', desc: 'Add the assistant to your app and style it to match your product.' },
 ];
 // Tour steps carry their DOM anchor in the flow's native `selector` field now, read
 // straight off tourStep.selector. GATE_LABELS still maps a step's props.gate to the
@@ -890,7 +890,7 @@ function NorthwindApp({ dark, setDark, actionsRef, still = false }: { dark: bool
                   </div>
                 );
               })}
-              <div style={{ fontSize: 11.5, lineHeight: 1.5, color: C.muted, marginTop: 14, display: 'flex', alignItems: 'center', gap: 7 }}><DotGrid color={C.brand} size={13} />Routes on every answer, in real time.</div>
+              <div style={{ fontSize: 11.5, lineHeight: 1.5, color: C.muted, marginTop: 14, display: 'flex', alignItems: 'center', gap: 7 }}><DotGrid color={C.brand} size={13} />See your answers as you go.</div>
             </div>
           </div>
         </FormLiveContext.Provider>
@@ -1676,12 +1676,11 @@ function MarketingFooter() {
 /* ---------- Framing page = native Frigade marketing hero ---------- */
 
 // The shared value-prop grid uses the marketing site's square, ruled cells.
-function BenefitsSection({ title, subtitle, items }: { title: string; subtitle: string; items: { icon: IconType; title: string; desc: string }[] }) {
+function BenefitsSection({ title, items }: { title: string; items: { icon: IconType; title: string; desc: string }[] }) {
   return (
     <div className="nw-benefits" style={{ width: '100%' }}>
       <div style={{ textAlign: 'center', maxWidth: 688, margin: '0 auto 40px', padding: '0 24px' }}>
-        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>{title}</h2>
-        <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>{subtitle}</p>
+        <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>{title}</h2>
       </div>
       <div className="nw-benefits-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 1, background: MK.hair, borderTop: `1px solid ${MK.hair}` }}>
         {items.map((b) => {
@@ -1741,17 +1740,16 @@ function ProductCta({ title, subtext, product }: { title: string; subtext: strin
 function BuiltWithSkill() {
   const codeStyle: React.CSSProperties = { fontFamily: MONO, fontSize: '0.9em', background: C.brandWeak, color: C.brand, padding: '1px 6px', borderRadius: 5 };
   const points = [
-    { t: 'Typed and documented', d: 'Engage ships as typed TypeScript with full SDK docs, so your agent already knows how to use it.' },
-    { t: 'Claude today, more soon', d: 'The Claude skill is live now. Cursor, Codex, and other agents are available on request.' },
-    { t: 'Reviewable output', d: 'Your agent ships real Engage code through your normal pipeline. Nothing is guessed at runtime.' },
+    { t: 'Typed and documented', d: 'The SDK includes TypeScript types and documentation for its components and APIs.' },
+    { t: 'Claude Code skill', d: 'Describe the checklist, tour, or form you want to build.' },
+    { t: 'Reviewable output', d: 'Review the generated code in a pull request before shipping.' },
   ];
   const dim = '#8a93a8', tint = '#5b9bff', hair = 'rgba(255,255,255,0.07)';
   return (
     <div style={{ maxWidth: 1016, margin: '0 auto' }}>
       <div style={{ textAlign: 'center', maxWidth: 660, margin: '0 auto 38px' }}>
-        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Engage is code. Your AI agent already knows what to do with it.</h2>
-        {/* nbsp keeps "way" glued to "that" so the paragraph never ends on a one-word line. */}
-        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Frigade ships the <code style={codeStyle}>frigade-engage</code> skill for Claude Code. Describe the onboarding, tour, or survey you want; Claude writes it against Engage components, wires the <code style={codeStyle}>@frigade/react</code> SDK, and opens the PR. Every flow in this demo was built exactly that&nbsp;way.</p>
+        <h2 className="nw-h2" style={{ margin: '0 0 14px', fontWeight: 700, color: C.ink }}>Build Engage flows with Claude Code.</h2>
+        <p className="nw-pretty" style={{ margin: 0, fontSize: 15.5, lineHeight: 1.6, color: C.muted }}>Use the <code style={codeStyle}>frigade-engage</code> skill to create flows and connect <code style={codeStyle}>@frigade/react</code> in your app. This demo&rsquo;s onboarding flows were built with the skill.</p>
       </div>
 
       {/* Terminal snippet. Accents use a lighter blue than the brand token, which
@@ -1848,8 +1846,8 @@ function SkillsSection() {
   return (
     <RailBand id="skills">
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
-        <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>Real actions, no code required.</h2>
-        <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, then runs real actions for your users. To show how fast it picks things up, we pointed it at Hacker News, Spotify, and Jira. It learned each one and drove it end to end, with no code and nothing mapped by hand.</p>
+        <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>Complete tasks with Skills.</h2>
+        <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Watch Frigade use Jira, Spotify, and Hacker News to complete tasks for a user.</p>
         <LearnMoreLink href="https://frigade.com/features/skills" label="Learn more about Skills" />
       </div>
       <div style={{ ...MARKETING_VIDEO_FRAME }}>
@@ -1858,15 +1856,15 @@ function SkillsSection() {
       <div style={{ marginTop: 56 }}>
         <div style={{ textAlign: 'center', marginBottom: 18 }}>
           <div style={{ fontSize: 16, fontWeight: 650, color: C.ink }}>Watch skills in action</div>
-          <div style={{ fontSize: 13.5, lineHeight: 1.5, color: C.muted, marginTop: 4 }}>Each one was trained in a single sitting, without a line of code.</div>
+          <div style={{ fontSize: 13.5, lineHeight: 1.5, color: C.muted, marginTop: 4 }}>Choose an app to watch its demo.</div>
         </div>
         <SkillsChooser defaultSkill="jira" scrollTargetId="skills" skills={SKILL_VIDEOS.filter((s) => s.key !== 'full-demo')} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
         {[
-          { icon: Sparkles, t: 'Learns any product', d: 'Frigade uses your product like a user, so no actions need mapping.' },
-          { icon: Zap, t: 'Real actions, not answers', d: 'It completes the task with the user’s own permissions.' },
-          { icon: Lock, t: 'No code, you stay in control', d: 'Review each skill and switch on only what you want.' },
+          { icon: Sparkles, t: 'Learns your product’s workflows', d: 'Frigade learns the steps for a task by using your product.' },
+          { icon: Zap, t: 'Uses each user’s permissions', d: 'Tasks run with the access the user already has.' },
+          { icon: Lock, t: 'Choose which skills to enable', d: 'Review each skill before making it available to users.' },
         ].map((u) => {
           const Icon = u.icon;
           return (
@@ -1893,7 +1891,7 @@ function AssistantSection() {
       <section style={{ position: 'relative', overflow: 'clip visible' }}>
         <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '16px 24px 80px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
           <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See the assistant in action.</h2>
-          <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>AI that learns your product and stays up to date on its own.</p>
+          <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Watch Frigade answer questions, guide users, and complete tasks in your product.</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
             <a href={APP_URL_ASSISTANT} target="_blank" rel="noreferrer" style={{ padding: '9px 16px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#fff', background: 'linear-gradient(rgb(0,110,255) 0%, rgb(0,86,248) 100%)', boxShadow: CTA_BRAND, textDecoration: 'none' }}>Get started</a>
             <button data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 500, color: 'rgb(26,27,47)', background: 'linear-gradient(rgb(255,255,255) 0%, rgba(194,200,209,0.12) 100%)', boxShadow: CTA_SECONDARY, border: 0, cursor: 'pointer' }}>Book a call</button>
@@ -1901,11 +1899,11 @@ function AssistantSection() {
         </div>
       </section>
 
-      {/* General intro: the assistant learns your product like a power user, so it has real context. */}
+      {/* Product tours demonstrated on Airbnb. */}
       <RailBand>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
-          <h2 className="nw-h2 nw-nowrap-lg" style={{ margin: 0, fontWeight: 700, color: C.ink }}>It knows your product like a power user.</h2>
-          <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it, the way a power user would. That context is what lets it actually help your users, guiding them through real workflows instead of pointing at a help article.</p>
+          <h2 className="nw-h2 nw-nowrap-lg" style={{ margin: 0, fontWeight: 700, color: C.ink }}>Guide users through your product.</h2>
+          <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Frigade learns your product by using it and refreshes that knowledge as it changes. Watch it walk a user through a task on Airbnb.</p>
           <LearnMoreLink href="https://frigade.com/features/ai-generated-tours" label="Learn more about product tours" />
         </div>
         <div style={{ ...MARKETING_VIDEO_FRAME, aspectRatio: '16 / 9' }}>
@@ -1913,9 +1911,9 @@ function AssistantSection() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
           {[
-            { icon: Sparkles, t: 'No setup, no scripting', d: 'Frigade learns by using your product, so nothing needs to be mapped or configured.' },
-            { icon: Route, t: 'Guided tours, generated', d: 'It walks users through real workflows it learned itself, not a static tour you built by hand.' },
-            { icon: RotateCcw, t: 'Always up to date', d: 'Ship a change and it relearns on its own. Nothing to update by hand.' },
+            { icon: Sparkles, t: 'No tour scripts', d: 'Generate tours without scripting each step.' },
+            { icon: Route, t: 'Guidance on the live screen', d: 'Point users to the buttons and fields they need for the task.' },
+            { icon: RotateCcw, t: 'Updates as your product changes', d: 'Frigade revisits your product to learn new screens and workflows.' },
           ].map((u) => {
             const Icon = u.icon;
             return (
@@ -1934,8 +1932,8 @@ function AssistantSection() {
       {/* Suggestions demo: proactive engagement. Header + video + use-case value row. */}
       <RailBand id="suggestions">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, textAlign: 'center', marginBottom: 30 }}>
-          <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>A virtual AE for every user.</h2>
-          <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Suggestions proactively onboard new users, drive feature adoption, and nudge the next step at the moment that matters. The impact of an account exec on every account, with almost none of the effort.</p>
+          <h2 className="nw-h2" style={{ margin: 0, fontWeight: 700, color: C.ink }}>Suggest what to do next.</h2>
+          <p className="nw-balance" style={{ margin: 0, maxWidth: 620, fontSize: 15, lineHeight: '24px', color: C.muted }}>Suggestions help users finish setup and discover features they haven&rsquo;t used.</p>
           <LearnMoreLink href="https://frigade.com/features/suggestions" label="Learn more about Suggestions" />
         </div>
         <div style={{ ...MARKETING_VIDEO_FRAME }}>
@@ -1943,9 +1941,9 @@ function AssistantSection() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20, maxWidth: 900, margin: '36px auto 0' }}>
           {[
-            { icon: UserPlus, t: 'Onboard new users', d: 'AI-generated onboarding walks each signup to their first win.' },
-            { icon: Sparkles, t: 'Drive feature adoption', d: 'Surface the feature they are missing, right when it counts.' },
-            { icon: Megaphone, t: 'Reach every account', d: 'Proactive nudges at scale, with almost no effort from you.' },
+            { icon: UserPlus, t: 'Finish setup', d: 'Guide new users through the steps to get started.' },
+            { icon: Sparkles, t: 'Discover features', d: 'Introduce features a user hasn’t tried yet.' },
+            { icon: Megaphone, t: 'Help before users ask', d: 'Offer a next step without waiting for a question.' },
           ].map((u) => {
             const Icon = u.icon;
             return (
@@ -1967,8 +1965,7 @@ function AssistantSection() {
       {/* Shared value props. */}
       <RailBand flush bottom={0}>
         <BenefitsSection
-          title="Support that scales with your product."
-          subtitle="Trained on your product and always up to date. Here's what that unlocks."
+          title="Help users inside your product."
           items={ASSISTANT_BENEFITS}
         />
       </RailBand>
@@ -1977,8 +1974,8 @@ function AssistantSection() {
       <RailBand flush top={64} bottom={96}>
         <ProductCta
           product="assistant"
-          title="AI that actually knows your product."
-          subtext="Frigade Assistant learns your product and stays up to date automatically. Add it to yours in an afternoon."
+          title="Add Frigade Assistant to your product."
+          subtext="Get started with the SDK, or book a call to discuss your product."
         />
         <OtherDemoCard to="engage" />
       </RailBand>
@@ -2322,7 +2319,7 @@ export default function NorthwindPage() {
               from one line to two and shoved the whole page down 68px. */}
           <div className="nw-reveal" style={{ position: 'relative', zIndex: 1, maxWidth: 1080, margin: '0 auto', padding: '16px 24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 16 }}>
             <h2 className="nw-h1" style={{ margin: 0, fontWeight: 700, color: C.ink, fontVariationSettings: '"opsz" 32' }}>See what Engage can do.</h2>
-            <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Real onboarding, tours, and checklists, all built with Frigade Engage.</p>
+            <p className="nw-balance" style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, color: C.muted, maxWidth: 560 }}>Try onboarding flows, tours, and checklists built with Frigade Engage.</p>
           </div>
 
           {/* Each pill replays its Frigade surface in the live demo below (same actions as the Demo Console), scrolling it into view. */}
@@ -2364,7 +2361,6 @@ export default function NorthwindPage() {
             <div className="nw-rail-inset nw-sr" style={{ borderTop: '1px solid #1b1b1d0a', paddingTop: 80, paddingBottom: 0, paddingInline: 0 }}>
               <BenefitsSection
                 title="Everything you just saw, from one SDK."
-                subtitle="Native to your product and driven by real events. This is what powers it."
                 items={BENEFITS}
               />
             </div>
@@ -2385,7 +2381,7 @@ export default function NorthwindPage() {
               <ProductCta
                 product="engage"
                 title="The backend for product onboarding."
-                subtext="Build the experiences you want and ship them fast. This whole demo was built with Frigade and an AI agent, using the frigade-engage skill, in less than an afternoon."
+                subtext="Use the frigade-engage skill to build your first flow, or start with the code from this demo."
               />
               <OtherDemoCard to="assistant" />
             </div>
