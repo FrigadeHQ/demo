@@ -25,7 +25,8 @@ const marketingMono = IBM_Plex_Mono({ subsets: ['latin'], weight: '500', display
 // social link-preview tags (Open Graph + Twitter). The preview image is committed
 // at public/images/og-demo.png; og:image needs an absolute URL, hence SITE_URL.
 const SITE_URL = 'https://demo.frigade.com';
-const OG_IMAGE = `${SITE_URL}/images/og-demo.png`;
+// Bump ?v= when the image changes, so link previews that cached the old one refresh.
+const OG_IMAGE = `${SITE_URL}/images/og-demo.png?v=2`;
 const TITLE = 'Frigade Demo';
 const DESCRIPTION =
   'Frigade is the AI-native product adoption platform. Watch Frigade Assistant guide users through tasks, then try Frigade Engage tours and checklists.';
