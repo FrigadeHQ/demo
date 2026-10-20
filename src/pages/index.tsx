@@ -304,6 +304,18 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
   // Publish the display label (option label, or the raw text) for the preview panel.
   const display = opts ? (opts.find((o) => o.value === field.value)?.label ?? '') : (field.value ?? '');
   useEffect(() => { publish?.(fieldData.id, display); }, [display, fieldData.id, publish]);
+  // Focus the text field once it's fully on screen, and never scroll to it: the form
+  // opens by itself on a first visit, and autoFocus would drag the page down to the
+  // demo (or leave an off-screen input catching the visitor's keys). The short window
+  // covers a hero pill's smooth scroll without grabbing focus during a later scroll.
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const el = inputRef.current; if (!el) return;
+    const io = new IntersectionObserver(([e]) => { if (e.intersectionRatio >= 1) { el.focus({ preventScroll: true }); io.disconnect(); } }, { threshold: 1 });
+    io.observe(el);
+    const t = setTimeout(() => io.disconnect(), 1500);
+    return () => { io.disconnect(); clearTimeout(t); };
+  }, []);
 
   // Colours are var(--nw-*), not the module C, because this component renders outside
   // NorthwindApp's themed C. That's what lets these inputs re-skin with the dark toggle.
@@ -323,7 +335,7 @@ function NwFormField({ field, fieldData }: Frigade.FormFieldProps) {
     );
   }
   return (
-    <input autoFocus className="nw-input" maxLength={40} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid var(--nw-line)', background: 'var(--nw-card)', fontSize: 13.5, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
+    <input ref={inputRef} className="nw-input" maxLength={40} value={field.value ?? ''} onChange={(e) => field.onChange(e.target.value)} placeholder={fieldData.placeholder} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid var(--nw-line)', background: 'var(--nw-card)', fontSize: 13.5, color: 'var(--nw-ink)', outline: 'none', boxSizing: 'border-box' }} />
   );
 }
 
