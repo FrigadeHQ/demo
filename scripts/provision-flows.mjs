@@ -88,7 +88,7 @@ export const FLOWS = [
         {
           id: 'welcome',
           title: 'Welcome to the demo${firstName}',
-          subtitle: 'Take the tour for a quick look at a few Frigade components in action, so you can see what you can build inside a real product.',
+          subtitle: 'Take a short tour, then try the checklists, forms, and announcements yourself.',
           primaryButton: { title: 'Show me around', action: 'flow.complete' },
           secondaryButton: { title: 'Skip tour', action: 'flow.skip' },
         },
@@ -113,7 +113,6 @@ export const FLOWS = [
         {
           id: 'role',
           title: 'What best describes you?',
-          subtitle: 'Frigade forms take any field type and can hand off to any flow.',
           primaryButton: { title: 'Continue' },
           secondaryButton: { title: 'Back', action: 'flow.back' },
           fields: [{ id: 'role', type: 'select', required: true, options: [{ label: 'Engineer', value: 'engineer' }, { label: 'Product', value: 'product' }, { label: 'Founder or exec', value: 'founder' }, { label: 'Other', value: 'other' }] }],
@@ -121,7 +120,6 @@ export const FLOWS = [
         {
           id: 'usecase',
           title: 'What interests you most?',
-          subtitle: 'A simple example, but Frigade forms can branch and apply logic on any answer.',
           primaryButton: { title: 'Finish setup' },
           secondaryButton: { title: 'Back', action: 'flow.back' },
           fields: [{ id: 'usecase', type: 'select', options: [{ label: 'Onboarding & checklists', value: 'onboarding' }, { label: 'Product tours', value: 'tours' }, { label: 'Announcements & changelog', value: 'announcements' }, { label: 'Surveys & NPS', value: 'surveys' }] }],
@@ -137,9 +135,9 @@ export const FLOWS = [
     type: 'TOUR',
     data: YAML.stringify({
       steps: [
-        { id: 'orient', title: 'Frigade can spotlight anything', subtitle: 'Highlight any element in your real product to point users exactly where to go, with no screenshots to keep up to date.', selector: '[data-tour="workspace"]', props: { place: 'bottom' } },
-        { id: 'theme', title: 'Yours, in any theme', subtitle: 'Frigade surfaces inherit your product styling. Switch to dark and watch everything follow along.', selector: '[data-target="theme"]', props: { place: 'bottom', gate: 'theme' } },
-        { id: 'gated', title: 'Gated on real actions', subtitle: 'A step can wait until you take a real action. Open your checklist to get credit for finishing this tour.', selector: '[data-ck]', props: { place: 'top', gate: 'ck-open' } },
+        { id: 'orient', title: 'Point users to a page element', subtitle: 'This tour highlights the workspace menu. Each step can point to a different element in your app.', selector: '[data-tour="workspace"]', props: { place: 'bottom' } },
+        { id: 'theme', title: 'Try dark mode', subtitle: 'The demo uses the same theme for the app and its Frigade components. Switch to dark mode to see both change.', selector: '[data-target="theme"]', props: { place: 'bottom', gate: 'theme' } },
+        { id: 'gated', title: 'Finish by opening your checklist', subtitle: 'This step waits until you open the checklist. Try it to complete the tour.', selector: '[data-ck]', props: { place: 'top', gate: 'ck-open' } },
       ],
     }),
   },
@@ -151,7 +149,7 @@ export const FLOWS = [
     type: 'BANNER',
     data: YAML.stringify({
       steps: [
-        { id: 'progress', title: 'Nice work${firstName}', subtitle: 'You just completed two checklist steps! Frigade flows fire on real events like that, so the right message lands at the right moment.', primaryButton: { title: 'Got it', action: 'flow.complete' } },
+        { id: 'progress', title: 'Checklist progress${firstName}', subtitle: 'This banner is set to appear after two checklist steps are complete. You can also replay it from the demo controls.', primaryButton: { title: 'Got it', action: 'flow.complete' } },
       ],
     }),
   },
@@ -181,7 +179,7 @@ export const FLOWS = [
           subtitle: 'Everything in this demo is built with Frigade, and you can add any of it to your own product.',
           // No uri on the primary: the app intercepts it in onPrimary to open the
           // Cal.com popup in place, rather than sending you to another tab.
-          primaryButton: { title: 'Grab a time with us', action: false },
+          primaryButton: { title: 'Book a call', action: false },
           secondaryButton: { title: 'Get started', uri: 'https://app.frigade.com', target: '_blank', action: false },
         },
       ],
