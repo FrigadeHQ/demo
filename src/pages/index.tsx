@@ -1586,7 +1586,7 @@ function ProductPill() {
 // on frigade.com's Assistant page. A dashed box tucked 46px behind the panel.
 function AssistApiLedge() {
   return (
-    <div style={{ position: 'relative', zIndex: 0, margin: '-46px 20px 0', padding: '58px 24px 16px', border: '1px dashed #1b1b1d2e', background: '#fff', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', zIndex: 0, margin: '-46px 20px 0', padding: '58px 24px 16px', border: '1px dashed #1b1b1d2e', borderRadius: '0 0 16px 16px', background: '#fff', overflow: 'hidden' }}>
       <span aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(1,94,251,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(1,94,251,0.06) 1px, transparent 1px)', backgroundSize: '15px 15px' }} />
       <div className="nw-apiledge" style={{ position: 'relative' }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
