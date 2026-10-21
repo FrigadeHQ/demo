@@ -1716,7 +1716,7 @@ function MarketingFooter() {
         .nw-ftr-mx{margin-left:0;margin-right:0}
         @media(min-width:640px){.nw-ftr-mx{margin-left:32px;margin-right:32px}}
         @media(min-width:1024px){.nw-ftr-mx{margin-left:100px;margin-right:100px}}
-        .nw-ftr-brand{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px 32px;padding:32px 24px;border-bottom:1px solid ${MK.hair}}
+        .nw-ftr-brand{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px 24px;padding:32px 24px;border-bottom:1px solid ${MK.hair}}
         .nw-ftr-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 24px;padding:40px 24px}
         .nw-ftr-compare{display:flex;flex-direction:column;gap:16px;padding:28px 24px;border-top:1px solid ${MK.hair}}
         .nw-ftr-dark{min-height:max(440px,calc(40vw + 192px))}
@@ -1727,10 +1727,13 @@ function MarketingFooter() {
         .nw-ftr-link:hover{color:#015efb}
         .nw-ftr-social{transition:background-color .15s ease}
         .nw-ftr-social:hover{background:#fafafa}
-        .nw-ftr-proof{display:flex;flex-wrap:wrap;align-items:center;gap:16px 20px}
+        .nw-ftr-backer{display:inline-flex;min-height:40px;align-items:center;gap:10px;text-decoration:none}
+        .nw-ftr-backer strong{font-weight:500;color:${C.ink};transition:color .15s ease}
+        .nw-ftr-backer:hover strong{color:${MK.brand}}
+        .nw-ftr-proof{display:contents;flex-wrap:wrap;align-items:center;gap:16px 20px}
         .nw-ftr-socials{display:flex;gap:4px}
-        @media(min-width:640px){.nw-ftr-socials{padding-left:16px;border-left:1px solid ${MK.hair}}}
-        .nw-ftr-award:focus-visible,.nw-ftr-security:focus-visible{outline:2px solid ${MK.brand};outline-offset:4px}
+        @media(min-width:640px){.nw-ftr-proof{display:flex}.nw-ftr-socials{padding-left:16px;border-left:1px solid ${MK.hair}}}
+        .nw-ftr-backer:focus-visible,.nw-ftr-award:focus-visible,.nw-ftr-security:focus-visible{outline:2px solid ${MK.brand};outline-offset:4px}
         .nw-ftr-security{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;flex-shrink:0}
         .nw-ftr-social:focus-visible{outline:none;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(1,94,251,.4)}
         /* Hover the X mark and the old Twitter bird takes its place. */
@@ -1759,10 +1762,17 @@ function MarketingFooter() {
       <div style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
         <div className="nw-ftr-mx" style={{ borderTop: `1px solid ${MK.hair}` }}>
           <div className="nw-ftr-brand">
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px 40px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '16px 32px' }}>
               <button type="button" aria-label="Scroll to top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })} style={{ display: 'inline-flex', background: 'none', border: 0, padding: 0, cursor: 'pointer' }}><img src="/images/frigade-logo.svg" alt="Frigade" width={82} height={26} /></button>
               <address style={{ fontSize: 12, lineHeight: 1.65, color: C.muted, fontStyle: 'normal' }}>945 Market St.<br />San Francisco, CA 94103</address>
             </div>
+            <a className="nw-ftr-backer" href={MKT + '/about#investors'}>
+              <img src="/images/y-combinator.svg" alt="" width={28} height={28} style={{ flexShrink: 0 }} />
+              <span style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 12, lineHeight: '16px' }}>
+                <span style={{ color: C.muted }}>Backed by</span>
+                <strong>Y Combinator</strong>
+              </span>
+            </a>
             <div className="nw-ftr-proof">
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <a className="nw-ftr-award" href="https://www.g2.com/products/frigade-frigade/reviews" target="_blank" rel="noreferrer"><img src="/images/g2-high-performer-fall-2026.svg" alt="G2 High Performer, Fall 2026" width={92} height={106} style={{ height: 48, width: 'auto', transform: 'translateY(2px)' }} /></a>
