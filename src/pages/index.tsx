@@ -1724,12 +1724,12 @@ function MarketingFooter() {
         @media(min-width:768px){.nw-ftr-brand,.nw-ftr-cols,.nw-ftr-compare,.nw-ftr-dark .nw-ftr-mx{padding-left:48px;padding-right:48px}.nw-ftr-dark{min-height:440px}}
         @media(min-width:1024px){.nw-ftr-cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px;padding-top:48px;padding-bottom:48px}.nw-ftr-compare{flex-direction:row;gap:32px}}
         .nw-ftr-link{color:#4a5063;transition:color .15s ease}
-        .nw-ftr-link:hover{color:#015efb}
+        .nw-ftr-link:hover{color:#0e1426}
         .nw-ftr-social{transition:background-color .15s ease}
         .nw-ftr-social:hover{background:#fafafa}
         .nw-ftr-backer{display:inline-flex;min-height:40px;align-items:center;gap:10px;text-decoration:none}
         .nw-ftr-backer strong{font-weight:500;color:${C.ink};transition:color .15s ease}
-        .nw-ftr-backer:hover strong{color:${MK.brand}}
+        .nw-ftr-backer:hover strong{color:#0e1426}
         .nw-ftr-proof{display:contents;flex-wrap:wrap;align-items:center;gap:16px 20px}
         .nw-ftr-socials{display:flex;gap:4px}
         @media(min-width:640px){.nw-ftr-proof{display:flex}.nw-ftr-socials{padding-left:16px;border-left:1px solid ${MK.hair}}}
@@ -2299,7 +2299,7 @@ export default function NorthwindPage() {
         .mh-mrow{transition:background-color .15s ease}
         .mh-mrow:hover{background:#fafafa}
         .mh-mlink{display:block;padding:10px 0;font-size:16px;font-weight:500;color:#1a233c;text-decoration:none;transition:color .15s ease}
-        .mh-mlink:hover{color:#015efb}
+        .mh-mlink:hover{color:#0e1426}
         .mh-trigger{display:inline-flex;align-items:center;gap:4px;margin:0 -10px;padding:6px 10px;border:0;border-radius:8px;background:transparent;color:#1a233c;font-family:inherit;font-size:14px;font-weight:500;line-height:16px;white-space:nowrap;cursor:pointer;transition:background-color .15s ease}
         .mh-trigger:hover,.mh-trigger[data-on="true"]{background:#fafafa}
         /* Rail geometry, copied from the marketing site: a 1240 canvas, then
