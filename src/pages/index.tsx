@@ -1661,14 +1661,14 @@ const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
   // Alphabetical by competitor, same as the published column.
   { heading: 'Guides', links: [{ t: 'Adoption platforms', h: '/blog/ten-digital-adoption-platforms-2026' }, { t: 'Ticket deflection', h: '/blog/how-to-deflect-support-tickets' }, { t: 'Support AI tools', h: '/blog/eight-customer-support-ai-tools-2026' }] },
   { heading: 'Compare', links: [{ t: 'Frigade vs. Appcues', h: '/compare/appcues' }, { t: 'Frigade vs. Chameleon', h: '/compare/chameleon' }, { t: 'Frigade vs. Fin', h: '/compare/fin' }, { t: 'Frigade vs. HubSpot', h: '/compare/hubspot' }, { t: 'Frigade vs. Pendo', h: '/compare/pendo' }, { t: 'Frigade vs. Pylon', h: '/compare/pylon' }, { t: 'Frigade vs. Userflow', h: '/compare/userflow' }, { t: 'Frigade vs. Userpilot', h: '/compare/userpilot' }, { t: 'Frigade vs. WalkMe', h: '/compare/walkme' }, { t: 'Frigade vs. Whatfix', h: '/compare/whatfix' }, { t: 'Frigade vs. Zendesk', h: '/compare/zendesk' }] },
-  { heading: 'Case Studies', links: [{ t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }, { t: 'Simplify', h: '/case-studies/simplify' }, { t: 'Kimoby', h: '/case-studies/kimoby' }, { t: 'Morning Consult', h: '/case-studies/morning-consult' }, { t: 'Retell', h: '/case-studies/retell' }] },
+  { heading: 'Customers', links: [{ t: 'All stories', h: '/case-studies' }, { t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }, { t: 'Simplify', h: '/case-studies/simplify' }, { t: 'Kimoby', h: '/case-studies/kimoby' }, { t: 'Morning Consult', h: '/case-studies/morning-consult' }, { t: 'Retell', h: '/case-studies/retell' }] },
   // "Contact us" opens the marketing site's contact modal via its #cta:
   // hash deep-link (frigade.com/contact and /demo are not real routes).
   // "Get a demo" (h: '#cal:demo') is rendered as a Cal popup trigger below,
   // booking the same frigade-demo-call calendar as the page's other CTAs.
   { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Security', h: '/security' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
 ];
-const FOOTER_GROUPS = [['Use Cases'], ['Features'], ['Resources', 'Guides'], ['Company', 'Case Studies']].map(headings =>
+const FOOTER_GROUPS = [['Use Cases'], ['Features'], ['Resources', 'Guides'], ['Company', 'Customers']].map(headings =>
   headings.flatMap(heading => FOOTER_COLS.filter(col => col.heading === heading)),
 );
 const FOOTER_COMPARISONS = FOOTER_COLS.find(col => col.heading === 'Compare')!;
