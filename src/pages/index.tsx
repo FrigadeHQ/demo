@@ -1654,21 +1654,21 @@ const FOOTER_SOCIALS: { p: string; h: string; icon: React.ReactNode }[] = [
   },
 ];
 // Footer columns mirror the live Frigade marketing site's published links.
-const FOOTER_COLS: { heading: string; links: { t: string; h: string }[] }[] = [
+const FOOTER_COLS: { heading: string; href?: string; links: { t: string; h: string }[] }[] = [
   { heading: 'Features', links: [{ t: 'Skills', h: '/features/skills' }, { t: 'Generative UI', h: '/features/generative-ui' }, { t: 'Mobile', h: '/features/mobile' }, { t: 'AI-Generated Tours', h: '/features/ai-generated-tours' }, { t: 'Suggestions', h: '/features/suggestions' }, { t: 'Tool Calls', h: '/features/tool-calls' }, { t: 'Always Accurate', h: '/features/always-accurate' }, { t: 'Integrations', h: '/features/integrations' }, { t: 'Insights', h: '/features/insights' }, { t: 'Feedback', h: '/features/feedback' }, { t: 'Developer', h: '/features/developer' }] },
   { heading: 'Use Cases', links: [{ t: 'Support Deflection', h: '/use-cases/support-deflection' }, { t: 'User Activation', h: '/use-cases/user-activation' }, { t: 'Virtual CSM', h: '/use-cases/virtual-csm' }, { t: 'Feature Adoption', h: '/use-cases/feature-adoption' }, { t: 'Expansion & Upsell', h: '/use-cases/expansion-upsell' }] },
   { heading: 'Resources', links: [{ t: 'How it works', h: '/how-it-works' }, { t: 'Reviews', h: '/reviews' }, { t: 'Blog', h: '/blog' }, { t: 'Updates', h: '/updates' }, { t: 'Engage docs', h: 'https://engage-docs.frigade.com' }, { t: 'Glossary', h: '/glossary' }, { t: 'Product Onboarding', h: 'https://productonboarding.com' }, { t: 'Assistant Demo', h: 'https://demo.frigade.com/?product=assistant' }, { t: 'Engage Demo', h: 'https://demo.frigade.com/?product=engage' }] },
   // Alphabetical by competitor, same as the published column.
   { heading: 'Guides', links: [{ t: 'Adoption platforms', h: '/blog/ten-digital-adoption-platforms-2026' }, { t: 'Ticket deflection', h: '/blog/how-to-deflect-support-tickets' }, { t: 'Support AI tools', h: '/blog/eight-customer-support-ai-tools-2026' }] },
   { heading: 'Compare', links: [{ t: 'Frigade vs. Appcues', h: '/compare/appcues' }, { t: 'Frigade vs. Chameleon', h: '/compare/chameleon' }, { t: 'Frigade vs. Fin', h: '/compare/fin' }, { t: 'Frigade vs. HubSpot', h: '/compare/hubspot' }, { t: 'Frigade vs. Pendo', h: '/compare/pendo' }, { t: 'Frigade vs. Pylon', h: '/compare/pylon' }, { t: 'Frigade vs. Userflow', h: '/compare/userflow' }, { t: 'Frigade vs. Userpilot', h: '/compare/userpilot' }, { t: 'Frigade vs. WalkMe', h: '/compare/walkme' }, { t: 'Frigade vs. Whatfix', h: '/compare/whatfix' }, { t: 'Frigade vs. Zendesk', h: '/compare/zendesk' }] },
-  { heading: 'Case Studies', links: [{ t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }, { t: 'Simplify', h: '/case-studies/simplify' }, { t: 'Kimoby', h: '/case-studies/kimoby' }, { t: 'Morning Consult', h: '/case-studies/morning-consult' }, { t: 'Retell', h: '/case-studies/retell' }] },
+  { heading: 'Customers', href: '/case-studies', links: [{ t: 'Valley', h: '/case-studies/valley' }, { t: 'Hotplate', h: '/case-studies/hotplate' }, { t: 'Simplify', h: '/case-studies/simplify' }, { t: 'Kimoby', h: '/case-studies/kimoby' }, { t: 'Morning Consult', h: '/case-studies/morning-consult' }, { t: 'Retell', h: '/case-studies/retell' }] },
   // "Contact us" opens the marketing site's contact modal via its #cta:
   // hash deep-link (frigade.com/contact and /demo are not real routes).
   // "Get a demo" (h: '#cal:demo') is rendered as a Cal popup trigger below,
   // booking the same frigade-demo-call calendar as the page's other CTAs.
   { heading: 'Company', links: [{ t: 'About', h: '/about' }, { t: 'Security', h: '/security' }, { t: 'Pricing', h: '/pricing' }, { t: 'Contact us', h: 'https://frigade.com/#cta:contact' }, { t: 'Get a demo', h: '#cal:demo' }] },
 ];
-const FOOTER_GROUPS = [['Use Cases'], ['Features'], ['Resources', 'Guides'], ['Company', 'Case Studies']].map(headings =>
+const FOOTER_GROUPS = [['Use Cases'], ['Features'], ['Resources', 'Guides'], ['Company', 'Customers']].map(headings =>
   headings.flatMap(heading => FOOTER_COLS.filter(col => col.heading === heading)),
 );
 const FOOTER_COMPARISONS = FOOTER_COLS.find(col => col.heading === 'Compare')!;
@@ -1696,7 +1696,7 @@ function MarketingFooter() {
   const head: React.CSSProperties = { fontSize: 13, fontWeight: 600, color: C.ink, margin: '0 0 12px' };
   const link: React.CSSProperties = { display: 'inline-block', padding: '4px 0', fontSize: 12.5, lineHeight: 1.6, textDecoration: 'none' };
   const renderFooterCol = (col: (typeof FOOTER_COLS)[number]) => <div key={col.heading}>
-    <p style={head}>{col.heading}</p>
+    <p style={head}>{col.href ? <a className="nw-ftr-heading" href={ext(col.href)}>{col.heading}</a> : col.heading}</p>
     <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 4 }}>
       {col.links.map(l => <li key={l.h}>{l.h === '#cal:demo' ?
         <button className="nw-ftr-link" data-cal-link={CAL_LINK_ASSISTANT} data-cal-namespace={CAL_NS_ASSISTANT} data-cal-config={CAL_CONFIG} style={{ ...link, background: 'none', border: 0, cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}>{l.t}</button> :
@@ -1725,6 +1725,8 @@ function MarketingFooter() {
         @media(min-width:1024px){.nw-ftr-cols{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px;padding-top:48px;padding-bottom:48px}.nw-ftr-compare{flex-direction:row;gap:32px}}
         .nw-ftr-link{color:#4a5063;transition:color .15s ease}
         .nw-ftr-link:hover{color:#015efb}
+        .nw-ftr-heading{color:inherit;text-decoration:none;white-space:nowrap}
+        .nw-ftr-heading:hover{color:#015efb}
         .nw-ftr-social{transition:background-color .15s ease}
         .nw-ftr-social:hover{background:#fafafa}
         .nw-ftr-backer{display:inline-flex;min-height:40px;align-items:center;gap:10px;text-decoration:none}
